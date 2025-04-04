@@ -1,0 +1,304 @@
+﻿<%@ Page Title="" Language="C#" Culture="en-GB" MasterPageFile="~/Branch.Master" AutoEventWireup="true"
+    CodeBehind="Notification.aspx.cs" Inherits="SreeVisalamChitFundLtd_phase1.Notification" %>
+
+<asp:Content ID="Content1" ContentPlaceHolderID="cphHead" runat="server">
+</asp:Content>
+<asp:Content ID="Content2" ContentPlaceHolderID="cphMainContent" runat="server">
+    <style type="text/css">
+        .Grid, .Grid th, .Grid td {
+            border: 1px solid #2F4F4F;
+        }
+
+        .panelstyle {
+            margin-left: 80px;
+        }
+
+        .paddingtd {
+            padding-left: 10px;
+        }
+        .TamilFont{
+           font-family:Bamini;
+        }
+        @font-face{
+            font-family:myFont;
+            src:url('../fonts/Bamini.ttf') format('truetype'),
+                url('../fonts/Bamini.eot') format('embedded-opentype'),
+                url('../fonts/Bamini.svg') format('svg'),
+                url('../fonts/Bamini.woff') format('woff');
+        }
+        .TamilText{
+            font-family:myFont;
+        }
+        /*@font-face{
+            font-family:Bamini;
+            src:url("fonts/Bamini.eot");
+        }*/
+        .auto-style1 {
+            width: 106px;
+        }
+    </style>
+    <div class="row">
+        <div class="twelve columns">
+            <div class="box_c_heading">
+                <p>Notifications & Circulars</p>
+            </div>
+            <div>
+                <asp:Panel ID="msgPanel" runat="server">
+                    <table>
+                        <tr>
+                            <td style="vertical-align:top;padding-right:5px;">
+                                <asp:Label ID="lblLang" runat="server" Text="Select the Language : " Visible="true"></asp:Label> 
+                            </td>
+                            <td>
+                                <asp:DropDownList ID="ddlLanguage" runat="server" CssClass="chzn-select" OnSelectedIndexChanged="ddlLanguage_SelectedIndexChanged" Height="35px" Width="168px" >
+                                </asp:DropDownList>
+                            </td>
+                            <td style="vertical-align:top;padding-right:5px;">
+                                <asp:Button ID="btnOk" runat="server" Text="Ok" CssClass="GreenyPushButton" OnClick="btnOk_Click" Visible="true" />
+                            </td>
+                            <td style="vertical-align:top;padding-right:5px;">
+                                <asp:Button ID="btnAll" runat="server" Text="View All Notifications" CssClass="GreenyPushButton" OnClick="btnAll_Click"  />
+                            </td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td>
+                                <asp:Button ID="btnFont" runat="server" Text="Download Tamil Font" CssClass="GreenyPushButton" OnClick="btnFont_Click" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="vertical-align: top; padding-right: 5px;">
+                                <asp:Label ID="label1" runat="server" Text="Enter Notification to Scroll:" Visible="true"></asp:Label>
+                            </td>
+                            <td style="vertical-align: top; padding-right: 5px">
+                                <%--<asp:TextBox ID="txtScroll" runat="server" TextMode="MultiLine" cssclass="TamilFont" Font-Names="Bamini" ></asp:TextBox>--%>
+                                <asp:TextBox ID="txtTamil" runat="server" TextMode="MultiLine" cssclass="TamilFont" Font-Names="Bamini" Visible="true" ></asp:TextBox>
+                                <%--<asp:TextBox ID="txtTamil" runat="server" TextMode="MultiLine" CssClass="TamilFont"></asp:TextBox>--%>
+                                <asp:TextBox ID="txtScroll" runat="server" TextMode="MultiLine"></asp:TextBox>
+                                <asp:RequiredFieldValidator ID="validator1" runat="server" ValidationGroup="group" ControlToValidate="txtScroll"
+                                    ErrorMessage="Enter the Notification Message" Display="Dynamic"></asp:RequiredFieldValidator>
+                                <asp:RequiredFieldValidator ID="RequiredFieldValidator1" runat="server" ValidationGroup="group" ControlToValidate="txtScroll"
+                                    ErrorMessage="Enter the Notification Message" Display="Dynamic"></asp:RequiredFieldValidator>
+                            </td>
+                            <td>
+                                <asp:Label ID="lblTamil" runat="server"></asp:Label>
+                            </td>
+                            <td >
+                                <asp:Label ID="Label2" runat="server" Text="Choose colour "></asp:Label>
+                            </td>
+                            <td>
+                                <asp:Button ID="btnRed" runat="server" BackColor="Red" Height="35px" Width="50px" OnClick="btnRed_Click" />
+                            </td>
+                            <td>
+                                <asp:Button ID="btnGreen" runat="server" BackColor="Green" Height="35px" Width="50px" OnClick="btnGreen_Click"/>
+                            </td>
+                            <td>
+                                <asp:Button ID="btnBlue" runat="server" BackColor="Blue" Height="35px" Width="50px" OnClick="btnBlue_Click"/>
+                            </td>
+                            
+                        </tr>
+                        <tr>
+                            <td style="display: table-cell; vertical-align: top; padding-right: 5px; float: right; padding-bottom: 10px;">
+                                <asp:Button ID="btnAdd" CssClass="GreenyPushButton" class="btn" runat="server" Text="ADD" OnClick="btnAdd_Click" />
+                                <asp:Button ID="btnCancel" CssClass="GreenyPushButton" class="btn" runat="server" Text="CANCEL" OnClick="btnCancel_Click"  />
+                            </td>
+                        </tr>
+                    </table>
+                </asp:Panel>
+                <div>
+                </div>
+                <div>
+
+
+                    <asp:GridView ID="gv_editNotificaion" runat="server" BorderStyle="None" CssClass="Grid" HeaderStyle-Font-Bold="true" Font-Names="Verdana" ForeColor="Black" GridLines="Both" CellSpacing="2"
+                        AutoGenerateColumns="false" PageSize="50" ShowFooter="true" BackColor="White" BorderColor="Red" BorderWidth="1px" CellPadding="2" Width="800px" OnRowCommand="gv_editNotificaion_RowCommand" AllowPaging="True" Font-Size="10.2pt" OnRowDataBound="gv_editNotificaion_RowDataBound">
+                        <Columns>
+                            <%--<asp:TemplateField HeaderText="S.No" ItemStyle-HorizontalAlign="Left" ItemStyle-Width="15px" ItemStyle-Wrap="false" >
+                           <ItemTemplate>
+                               <asp:Label ID="lblSNo" runat="server" Text='<%#Container.DataItemIndex+1%>'></asp:Label>
+                           </ItemTemplate>
+                       </asp:TemplateField>--%>
+                            <asp:TemplateField HeaderText="S.No" ItemStyle-HorizontalAlign="Left" ItemStyle-Width="15px">
+                                <ItemTemplate>
+                                    <asp:Label ID="lblSno" runat="server" Text='<%#Container.DataItemIndex+1 %>'></asp:Label>
+                                </ItemTemplate>
+
+                                <ItemStyle HorizontalAlign="Left" Width="15px"></ItemStyle>
+                            </asp:TemplateField>
+                            <asp:TemplateField HeaderText="ID" Visible="false">
+                                <ItemTemplate>
+                                    <asp:Label ID="lblId" runat="server" Text='<%#Eval("ID") %>'></asp:Label>
+                                </ItemTemplate>
+                            </asp:TemplateField>
+                            <asp:TemplateField HeaderText="Notification Message" ItemStyle-HorizontalAlign="Left" ItemStyle-Width="80px" ItemStyle-Wrap="true">
+                                <ItemTemplate>
+                                    <asp:Label ID="lblMsg" runat="server" Text='<%#Eval("Message")%>'></asp:Label>
+                                    <asp:HiddenField ID="hfMsg" runat="server" Value='<%#Bind("Font") %>' Visible="false" />
+                                </ItemTemplate>
+                                <EditItemTemplate>
+                                    <asp:TextBox ID="txtMsg" runat="server" Width="300px" Text='<%#Eval("Message") %>'></asp:TextBox>
+                                    <%--<asp:RequiredFieldValidator ID="rfvMessage" runat="server" ControlToValidate="txtMsg" ErrorMessage="*"></asp:RequiredFieldValidator>--%>
+                                </EditItemTemplate>
+
+                                <ItemStyle HorizontalAlign="Left" Wrap="True" Width="80px"></ItemStyle>
+                            </asp:TemplateField>
+                            
+                            <asp:TemplateField HeaderText="Status" ItemStyle-HorizontalAlign="Left" ItemStyle-Width="15px" ItemStyle-Wrap="false">
+                                <ItemTemplate>
+                                    <asp:Label ID="lblStatus" runat="server" Text='<%#Eval("Status") %>'></asp:Label>
+                                </ItemTemplate>
+                                <EditItemTemplate>
+                                    <%--<asp:TextBox ID="txtStatus" runat="server" Width="30px" Text='<%#Eval("Status") %>'></asp:TextBox>--%>
+                                    <asp:RadioButtonList ID="RadioButtonList1" runat="server">
+                                        <asp:ListItem Text="Active" Value="1"></asp:ListItem>
+                                        <asp:ListItem Text="Inactive" Value="0"></asp:ListItem>
+                                    </asp:RadioButtonList>
+                                </EditItemTemplate>
+
+                                <ItemStyle HorizontalAlign="Left" Wrap="False" Width="15px"></ItemStyle>
+                            </asp:TemplateField>
+                            <asp:TemplateField ItemStyle-Width="40px" ItemStyle-HorizontalAlign="Left" ItemStyle-Wrap="false">
+                                <ItemTemplate>
+                                    <asp:LinkButton ID="lbtnEdit" runat="server" Text="Edit" CommandArgument='<%#Eval("ID") %>' CommandName="EditRow"></asp:LinkButton>
+                                    <asp:LinkButton ID="lbtnDelete" CausesValidation="false" OnClientClick="return confirm('Are you sure want to delete?');" runat="server" Text="Delete" CommandArgument='<%#Eval("ID") %>' CommandName="DeleteRow"></asp:LinkButton>
+                                </ItemTemplate>
+                                <EditItemTemplate>
+                                    <asp:LinkButton ID="lbtnUpdate" runat="server" Text="Update" CommandArgument='<%#Eval("ID") %>' CommandName="UpdateRow"></asp:LinkButton>
+                                    <asp:LinkButton ID="lbtnCancel" CausesValidation="false" runat="server" Text="Cancel" CommandArgument='<%#Eval("ID") %>' CommandName="UpdateCancel"></asp:LinkButton>
+                                </EditItemTemplate>
+
+                                <ItemStyle HorizontalAlign="Left" Wrap="False" Width="40px"></ItemStyle>
+                            </asp:TemplateField>
+                        </Columns>
+                    </asp:GridView>
+
+                </div>
+            </div>
+            <asp:Panel ID="panelUpload" runat="server">
+                <%-- <div style="padding-top:10px;vertical-align:top;">
+                    <asp:Button ID="btnCirculars" runat="server" Text="Circulars" CssClass="GreenyPushButton" class="btn" OnClick="btnCirculars_Click" />
+                </div>--%>
+                <div>
+                    <table>
+                        <tr>
+                            <td style="vertical-align: top; padding-right: 5px; padding-bottom: 10px; padding-top: 10px;">
+                                <asp:FileUpload ID="FileUpload1" runat="server" Width="442px" Height="33px" Visible="False" BackColor="#CCFFFF" BorderStyle="None" ToolTip="Choose File" />
+                            </td>
+                            <td style="vertical-align: top; padding-right: 5px; padding-bottom: 10px; padding-top: 10px;">
+                                <asp:Label ID="lblDate" runat="server" Text="Date" Visible="true"></asp:Label>
+                            </td>
+                            <td style="vertical-align: top; padding-right: 5px; padding-bottom: 10px; padding-top: 10px;">
+                                <asp:TextBox ID="txtDate" runat="server" CssClass="input-text maskdate" Visible="true" Height="35px" Width="100px"></asp:TextBox>
+                                <asp:RequiredFieldValidator ID="requiredField1" runat="server" ValidationGroup="a" EnableClientScript="false" ErrorMessage="*" 
+                                    Display="Dynamic" ControlToValidate="txtDate"></asp:RequiredFieldValidator>
+                                <asp:CompareValidator ID="compareValidator1" runat="server" ValidationGroup="a" EnableClientScript="false" ErrorMessage="*" 
+                                    Display="Dynamic" ControlToValidate="txtDate" Operator="DataTypeCheck" Type="Date"></asp:CompareValidator>
+                            </td>
+                            <td style="vertical-align: top; padding-right: 5px; padding-bottom: 10px; padding-top: 10px;">
+                                <asp:Button ID="btnUpload" runat="server" Text="Upload" OnClick="btnUpload_Click" CssClass="GreenyPushButton" class="btn" Visible="False" />
+                            </td>
+                            
+                        </tr>
+                    </table>
+                </div>
+            </asp:Panel>
+            <div>
+                <div >
+                    <p style="font-size:13px;font-weight:700">CIRCULARS:</p>
+                </div>
+
+                <asp:GridView ID="gvUploads" runat="server" BorderStyle="None" CssClass="Grid" HeaderStyle-Font-Bold="true" Font-Names="Verdana" ForeColor="Black" GridLines="Both" CellSpacing="2"
+                    AutoGenerateColumns="false" PageSize="50" ShowFooter="true" BackColor="White" BorderColor="Red" BorderWidth="1px" CellPadding="2" Width="800px" OnRowCommand="gvUploads_RowCommand" AllowPaging="True" Font-Size="10.2pt">
+                    <Columns>
+                        <asp:TemplateField HeaderText="S.No" ItemStyle-HorizontalAlign="Left" ItemStyle-Width="10px">
+                            <ItemTemplate>
+                                <asp:Label ID="lblSno" runat="server" Text='<%#Container.DataItemIndex+1 %>'></asp:Label>
+                            </ItemTemplate>
+
+                            <ItemStyle HorizontalAlign="Left" Width="10px"></ItemStyle>
+                        </asp:TemplateField>
+                        <asp:TemplateField HeaderText="File Name" ItemStyle-HorizontalAlign="Left" ItemStyle-Width="80px" ItemStyle-Wrap="false">
+                            <ItemTemplate>
+                                <asp:LinkButton ID="lnkBtnFile" runat="server" Text='<%#Eval("File Name") %>' CommandArgument='<%#Eval("File Name") %>' CommandName="Download"></asp:LinkButton>
+                            </ItemTemplate>
+
+                            <ItemStyle HorizontalAlign="Left" Wrap="False" Width="80px"></ItemStyle>
+                        </asp:TemplateField>
+                        <%--<asp:TemplateField HeaderText="Size of the File" ItemStyle-HorizontalAlign="Left" ItemStyle-Width="80px" ItemStyle-Wrap="false">
+                            <ItemTemplate>
+                                <asp:Label ID="lblSize" runat="server" Text='<%#Eval("Size of the File") %>'></asp:Label>
+                            </ItemTemplate>
+                        </asp:TemplateField>--%>
+                        <asp:TemplateField HeaderText="File Extension" ItemStyle-HorizontalAlign="Left" ItemStyle-Width="80px" ItemStyle-Wrap="false">
+                            <ItemTemplate>
+                                <asp:Label ID="lblExtension" runat="server" Text='<%#Eval("File Extension") %>'></asp:Label>
+                            </ItemTemplate>
+
+                            <ItemStyle HorizontalAlign="Left" Wrap="False" Width="80px"></ItemStyle>
+                        </asp:TemplateField>
+                        <asp:TemplateField HeaderText="Date" ItemStyle-HorizontalAlign="Left" ItemStyle-Width="15px" ItemStyle-Wrap="false">
+                            <ItemTemplate>
+                                <asp:Label ID="lblDate" runat="server" Text='<%#Eval("Date1") %>'></asp:Label>
+                            </ItemTemplate>
+                        </asp:TemplateField>
+                        <asp:TemplateField HeaderText="" ItemStyle-HorizontalAlign="Left" ItemStyle-Width="30px" ItemStyle-Wrap="false">
+                            <ItemTemplate>
+                                <asp:LinkButton ID="lnkbtnDelete" runat="server" Text="Delete" CommandArgument='<%#Eval("File Name")%>' CommandName="DeleteFile" OnClientClick="return confirm('Are you sure want to delete?');"></asp:LinkButton>
+                            </ItemTemplate>
+
+                            <ItemStyle HorizontalAlign="Left" Wrap="False" Width="15px"></ItemStyle>
+                        </asp:TemplateField>
+                    </Columns>
+                </asp:GridView>
+            </div>
+            <div style="padding-top: 5px;">
+
+                <asp:GridView ID="gvUploadsUsers" runat="server" BorderStyle="None" CssClass="Grid" HeaderStyle-Font-Bold="true" Font-Names="Verdana" ForeColor="Black" GridLines="Both" CellSpacing="2"
+                    AutoGenerateColumns="false" PageSize="50" ShowFooter="true" BackColor="White" BorderColor="Red" BorderWidth="1px" CellPadding="2" Width="800px" OnRowCommand="gvUploadsUsers_RowCommand" AllowPaging="True" Font-Size="10.2pt">
+                    <Columns>
+                        <asp:TemplateField HeaderText="S.No" ItemStyle-HorizontalAlign="Left" ItemStyle-Width="10px">
+                            <ItemTemplate>
+                                <asp:Label ID="lblSno" runat="server" Text='<%#Container.DataItemIndex+1 %>'></asp:Label>
+                            </ItemTemplate>
+
+                            <ItemStyle HorizontalAlign="Left" Width="10px"></ItemStyle>
+                        </asp:TemplateField>
+                        <asp:TemplateField HeaderText="File Name" ItemStyle-HorizontalAlign="Left" ItemStyle-Width="80px" ItemStyle-Wrap="false">
+                            <ItemTemplate>
+                                <asp:LinkButton ID="lnkBtnFile" runat="server" Text='<%#Eval("File Name") %>' CommandArgument='<%#Eval("File Name") %>' CommandName="Download"></asp:LinkButton>
+                            </ItemTemplate>
+
+                            <ItemStyle HorizontalAlign="Left" Wrap="False" Width="80px"></ItemStyle>
+                        </asp:TemplateField>
+                        <%--<asp:TemplateField HeaderText="Size of the File" ItemStyle-HorizontalAlign="Left" ItemStyle-Width="80px" ItemStyle-Wrap="false">
+                            <ItemTemplate>
+                                <asp:Label ID="lblSize" runat="server" Text='<%#Eval("Size of the File") %>'></asp:Label>
+                            </ItemTemplate>
+                        </asp:TemplateField>--%>
+                        <asp:TemplateField HeaderText="File Extension" ItemStyle-HorizontalAlign="Left" ItemStyle-Width="80px" ItemStyle-Wrap="false">
+                            <ItemTemplate>
+                                <asp:Label ID="lblExtension" runat="server" Text='<%#Eval("File Extension") %>'></asp:Label>
+                            </ItemTemplate>
+
+                            <ItemStyle HorizontalAlign="Left" Wrap="False" Width="80px"></ItemStyle>
+                        </asp:TemplateField>
+                        <asp:TemplateField HeaderText="Date" ItemStyle-HorizontalAlign="Left" ItemStyle-Width="15px" ItemStyle-Wrap="false">
+                            <ItemTemplate>
+                                <asp:Label ID="lblDate" runat="server" Text='<%#Eval("Date1") %>'></asp:Label>
+                            </ItemTemplate>
+                        </asp:TemplateField>
+                    </Columns>
+                </asp:GridView>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            prth_mask_input.init();
+        });
+        var prm = Sys.WebForms.PageRequestManager.getInstance();
+        prm.add_endRequest(function () {
+            prth_mask_input.init();
+        });
+    </script>
+</asp:Content>

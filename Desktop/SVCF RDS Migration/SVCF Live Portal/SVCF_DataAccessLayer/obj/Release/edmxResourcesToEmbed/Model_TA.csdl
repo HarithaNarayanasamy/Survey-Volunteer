@@ -1,0 +1,270 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="svcfModel" Alias="Self" xmlns="http://schemas.microsoft.com/ado/2009/11/edm" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation">
+  <EntityType Name="auctiondetail">
+    <Key>
+      <PropertyRef Name="inccolumn" />
+    </Key>
+    <Property Name="inccolumn" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
+    <Property Name="BranchID" Type="Int64" Nullable="false" />
+    <Property Name="GroupID" Type="Int64" Nullable="false" />
+    <Property Name="AuctionDate" Type="DateTime" />
+    <Property Name="ReBidNO" Type="Int64" />
+    <Property Name="DrawNO" Type="Int64" />
+    <Property Name="PrizedMemberID" Type="Int64" />
+    <Property Name="MemberID" Type="Int64" />
+    <Property Name="IsPrized" Type="String" MaxLength="1" FixedLength="false" Unicode="false" />
+    <Property Name="IsReAuction" Type="Boolean" />
+    <Property Name="CreatedDate" Type="DateTime" />
+    <Property Name="ModifiedDate" Type="DateTime" />
+    <Property Name="ISActive" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+  </EntityType>
+  <EntityType Name="branchdetail">
+    <Key>
+      <PropertyRef Name="Head_Id" />
+      <PropertyRef Name="aid" />
+    </Key>
+    <Property Name="B_Code" Type="Int64" Nullable="false" />
+    <Property Name="B_Name" Type="String" MaxLength="100" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="B_Head" Type="String" MaxLength="100" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="B_Address" Type="String" MaxLength="65535" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="B_PhoneNo" Type="String" MaxLength="30" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="B_EMail" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+    <Property Name="B_DOC" Type="DateTime" />
+    <Property Name="Head_Id" Type="Int64" Nullable="false" />
+    <Property Name="aid" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
+    <Property Name="Place" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+  </EntityType>
+  <EntityType Name="groupmaster">
+    <Key>
+      <PropertyRef Name="aid" />
+      <PropertyRef Name="Head_Id" />
+      <PropertyRef Name="GROUPNO" />
+    </Key>
+    <Property Name="aid" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
+    <Property Name="Head_Id" Type="Int64" Nullable="false" />
+    <Property Name="BranchID" Type="Int64" Nullable="false" />
+    <Property Name="GROUPNO" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="PSOOrderNo" Type="String" MaxLength="13" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="PSOOrderDate" Type="DateTime" Nullable="false" />
+    <Property Name="PSODROffice" Type="String" MaxLength="30" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="ChitAgreementNo" Type="String" MaxLength="13" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="ChitAgreementYear" Type="Int64" Nullable="false" />
+    <Property Name="AgreementDate" Type="DateTime" Nullable="false" />
+    <Property Name="ChitPeriod" Type="Int64" Nullable="false" />
+    <Property Name="ChitCategory" Type="String" MaxLength="10" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="ChitStartDate" Type="DateTime" Nullable="false" />
+    <Property Name="ChitEndDate" Type="DateTime" Nullable="false" />
+    <Property Name="NoofMembers" Type="Int64" Nullable="false" />
+    <Property Name="AuctionDate" Type="DateTime" />
+    <Property Name="AuctionTime" Type="Time" Nullable="false" />
+    <Property Name="AuctionEndTime" Type="String" MaxLength="30" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="DueDate" Type="DateTime" />
+    <Property Name="PriorIntimationDate" Type="DateTime" />
+    <Property Name="SDP_FDRNO" Type="String" MaxLength="45" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="SDP_Bank" Type="String" MaxLength="45" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="SDP_BankPlace" Type="String" MaxLength="45" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="SDP_Commencement" Type="DateTime" Nullable="false" />
+    <Property Name="SDP_Maturity" Type="DateTime" Nullable="false" />
+    <Property Name="SDP_PeriodinMonths" Type="Int64" Nullable="false" />
+    <Property Name="IsFinished" Type="Byte" Nullable="false" />
+    <Property Name="IsDeleted" Type="Boolean" />
+    <Property Name="CreatedDate" Type="DateTime" />
+    <Property Name="ModifiedDate" Type="DateTime" />
+    <Property Name="ISActive" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+  </EntityType>
+  <EntityType Name="headstree">
+    <Key>
+      <PropertyRef Name="NodeID" />
+    </Key>
+    <Property Name="NodeID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
+    <Property Name="ParentID" Type="Int64" Nullable="false" />
+    <Property Name="Node" Type="String" MaxLength="255" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="TreeHint" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+    <Property Name="Branchid" Type="Int64" />
+    <Property Name="App_Branchid" Type="Int64" />
+    <Property Name="CreatedDate" Type="DateTime" />
+    <Property Name="ModifiedDate" Type="DateTime" />
+    <Property Name="ISActive" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+  </EntityType>
+  <EntityType Name="membermaster">
+    <Key>
+      <PropertyRef Name="MemberIDNew" />
+    </Key>
+    <Property Name="MemberIDNew" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
+    <Property Name="BranchId" Type="Int64" Nullable="false" />
+    <Property Name="CustomerName" Type="String" MaxLength="1073741823" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="TypeOfMember" Type="String" MaxLength="1073741823" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="Gender" Type="String" MaxLength="1073741823" FixedLength="false" Unicode="false" />
+    <Property Name="Age" Type="Int64" />
+    <Property Name="DOB" Type="DateTime" />
+    <Property Name="FatherHusbandName" Type="String" MaxLength="1073741823" FixedLength="false" Unicode="false" />
+    <Property Name="MotherWifeName" Type="String" MaxLength="1073741823" FixedLength="false" Unicode="false" />
+    <Property Name="ProprietorName" Type="String" MaxLength="1073741823" FixedLength="false" Unicode="false" />
+    <Property Name="PartnersName" Type="String" MaxLength="1073741823" FixedLength="false" Unicode="false" />
+    <Property Name="DateOfPartnershipWithAmendment" Type="DateTime" />
+    <Property Name="compxerox" Type="String" MaxLength="1073741823" FixedLength="false" Unicode="false" />
+    <Property Name="dateofResol" Type="DateTime" />
+    <Property Name="ProfessionBusiness" Type="String" MaxLength="1073741823" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="NatureofProfessionBusiness" Type="String" MaxLength="1073741823" FixedLength="false" Unicode="false" />
+    <Property Name="ResidentialAddress" Type="String" MaxLength="65535" FixedLength="false" Unicode="false" />
+    <Property Name="AddressForCommunication" Type="String" MaxLength="65535" FixedLength="false" Unicode="false" />
+    <Property Name="ProofofResidence" Type="String" MaxLength="1073741823" FixedLength="false" Unicode="false" />
+    <Property Name="AddressProfessionBusiness" Type="String" MaxLength="1073741823" FixedLength="false" Unicode="false" />
+    <Property Name="TelephoneNoProfessionBusiness" Type="String" MaxLength="1073741823" FixedLength="false" Unicode="false" />
+    <Property Name="TelephoneNoResidence" Type="String" MaxLength="1073741823" FixedLength="false" Unicode="false" />
+    <Property Name="MobileNo" Type="String" MaxLength="1073741823" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="SalesTaxRegistrationNoTNGST" Type="String" MaxLength="1073741823" FixedLength="false" Unicode="false" />
+    <Property Name="CSTRegistrationNumber" Type="String" MaxLength="1073741823" FixedLength="false" Unicode="false" />
+    <Property Name="IncomeTaxPANoWardandCircle" Type="String" MaxLength="1073741823" FixedLength="false" Unicode="false" />
+    <Property Name="BankName" Type="String" MaxLength="40" FixedLength="false" Unicode="false" />
+    <Property Name="BranchName" Type="String" MaxLength="40" FixedLength="false" Unicode="false" />
+    <Property Name="SavingsCurrentAccountNo" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+    <Property Name="ProspectID" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+    <Property Name="MemberID" Type="String" MaxLength="20" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="Title" Type="String" MaxLength="5" FixedLength="false" Unicode="false" />
+    <Property Name="ApprovedStatus" Type="Int32" />
+    <Property Name="ReffererDetails" Type="String" MaxLength="65535" FixedLength="false" Unicode="false" />
+    <Property Name="ApprovedorRejectedDate" Type="DateTime" />
+    <Property Name="ProspectDate" Type="DateTime" />
+    <Property Name="IsDeleted" Type="Boolean" />
+    <Property Name="CreatedDate" Type="DateTime" />
+    <Property Name="ModifiedDate" Type="DateTime" />
+    <Property Name="ISActive" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+  </EntityType>
+  <EntityType Name="membertogroupmaster">
+    <Key>
+      <PropertyRef Name="Head_Id" />
+      <PropertyRef Name="GrpMemberID" />
+    </Key>
+    <Property Name="BranchID" Type="Int64" Nullable="false" />
+    <Property Name="MemberName" Type="String" MaxLength="100" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="MemberID" Type="Int64" Nullable="false" />
+    <Property Name="MemberAddress" Type="String" MaxLength="65535" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="Head_Id" Type="Int64" Nullable="false" />
+    <Property Name="GroupID" Type="Int64" Nullable="false" />
+    <Property Name="GrpMemberID" Type="String" MaxLength="13" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="NomineeName" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+    <Property Name="NomineeAddress" Type="String" MaxLength="65535" FixedLength="false" Unicode="false" />
+    <Property Name="card" Type="Boolean" Nullable="false" />
+    <Property Name="Isremoved" Type="Byte" Nullable="false" />
+    <Property Name="B_Id" Type="Int64" Nullable="false" />
+    <Property Name="M_Id" Type="Int64" Nullable="false" />
+    <Property Name="EstCallNoOfAuction" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+    <Property Name="EstSuretyDocument" Type="String" MaxLength="65535" FixedLength="false" Unicode="false" />
+    <Property Name="PoolNo" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="Flag" Type="Boolean" />
+    <Property Name="headofficesuggession" Type="String" MaxLength="65535" FixedLength="false" Unicode="false" />
+    <Property Name="aid" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
+    <Property Name="SuggestDate" Type="DateTime" />
+    <Property Name="CreatedDate" Type="DateTime" />
+    <Property Name="ModifiedDate" Type="DateTime" />
+    <Property Name="ISActive" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+  </EntityType>
+  <EntityType Name="trans_payment">
+    <Key>
+      <PropertyRef Name="autoid" />
+    </Key>
+    <Property Name="TransactionKey_Bank" Type="Int64" />
+    <Property Name="TransactionKey" Type="Int64" Nullable="false" />
+    <Property Name="DualTransactionKey" Type="Guid" Nullable="false" />
+    <Property Name="BranchID" Type="Int64" Nullable="false" />
+    <Property Name="ChitGroupID" Type="Int64" Nullable="false" />
+    <Property Name="TokenNumber" Type="Int64" Nullable="false" />
+    <Property Name="DrawNo" Type="Int64" Nullable="false" />
+    <Property Name="NextDrawNo" Type="Int64" />
+    <Property Name="PaymentApplyedOn" Type="DateTime" Nullable="false" />
+    <Property Name="ApprovedOn" Type="DateTime" Nullable="false" />
+    <Property Name="PaymentDate" Type="DateTime" Nullable="false" />
+    <Property Name="GuarantorID" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="Description" Type="String" MaxLength="65535" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="AuctionDate" Type="DateTime" />
+    <Property Name="AOSanctionNo" Type="Int64" Nullable="false" />
+    <Property Name="GuarantorName" Type="String" MaxLength="45" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="autoid" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
+    <Property Name="Flags" Type="Int32" Nullable="false" />
+    <Property Name="IsDeleted" Type="Int64" Nullable="false" />
+    <Property Name="CreatedDate" Type="DateTime" />
+    <Property Name="ModifiedDate" Type="DateTime" />
+    <Property Name="ISActive" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+  </EntityType>
+  <EntityType Name="transbank">
+    <Key>
+      <PropertyRef Name="TransactionKey" />
+    </Key>
+    <Property Name="BranchID" Type="Int64" />
+    <Property Name="TransactionKey" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
+    <Property Name="DualTransactionKey" Type="Guid" Nullable="false" />
+    <Property Name="T_Day" Type="Int64" Nullable="false" />
+    <Property Name="T_Month" Type="Int64" Nullable="false" />
+    <Property Name="T_Year" Type="Int64" Nullable="false" />
+    <Property Name="BankHeadID" Type="Int64" Nullable="false" />
+    <Property Name="Head_Id" Type="Int64" Nullable="false" />
+    <Property Name="MemberID" Type="Int64" />
+    <Property Name="CustomersBankName" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+    <Property Name="DateInCheque" Type="DateTime" Nullable="false" />
+    <Property Name="ChequeDDNO" Type="Int64" Nullable="false" />
+    <Property Name="IsBounced" Type="Boolean" Nullable="false" />
+    <Property Name="Trans_Type" Type="Int64" Nullable="false" />
+    <Property Name="IsDeleted" Type="Int64" Nullable="false" />
+    <Property Name="cardnumber" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="cardtype" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="isDeposit" Type="Int64" Nullable="false" />
+    <Property Name="isRelised" Type="Int64" Nullable="false" />
+    <Property Name="DateDeposit" Type="DateTime" />
+    <Property Name="DateRelisation" Type="DateTime" />
+    <Property Name="ReasonForReturnCheck" Type="String" MaxLength="65535" FixedLength="false" Unicode="false" />
+    <Property Name="remarks" Type="String" MaxLength="65535" FixedLength="false" Unicode="false" />
+    <Property Name="blockcheque" Type="Int64" Nullable="false" />
+    <Property Name="bankofdeposit" Type="String" MaxLength="65535" FixedLength="false" Unicode="false" />
+    <Property Name="dateofinstrument" Type="DateTime" />
+    <Property Name="place" Type="String" MaxLength="65535" FixedLength="false" Unicode="false" />
+    <Property Name="idofdepositbank" Type="Int32" />
+    <Property Name="IsChequeAvailable" Type="Boolean" Nullable="false" />
+    <Property Name="CreatedDate" Type="DateTime" />
+    <Property Name="ModifiedDate" Type="DateTime" />
+    <Property Name="ISActive" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+  </EntityType>
+  <EntityType Name="voucher">
+    <Key>
+      <PropertyRef Name="TransactionKey" />
+    </Key>
+    <Property Name="TransactionKey" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" />
+    <Property Name="DualTransactionKey" Type="Guid" Nullable="false" />
+    <Property Name="BranchID" Type="Int64" Nullable="false" />
+    <Property Name="CurrDate" Type="DateTime" Nullable="false" />
+    <Property Name="Voucher_No" Type="Int32" Nullable="false" />
+    <Property Name="Voucher_Type" Type="String" MaxLength="65532" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="Head_Id" Type="Int64" Nullable="false" />
+    <Property Name="ChoosenDate" Type="DateTime" Nullable="false" />
+    <Property Name="Narration" Type="String" MaxLength="65535" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="Series" Type="String" MaxLength="45" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="ReceievedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="Trans_Type" Type="Boolean" Nullable="false" />
+    <Property Name="T_Day" Type="Int64" Nullable="false" />
+    <Property Name="T_Month" Type="Int64" Nullable="false" />
+    <Property Name="T_Year" Type="Int64" Nullable="false" />
+    <Property Name="MemberID" Type="Int64" />
+    <Property Name="Trans_Medium" Type="Boolean" Nullable="false" />
+    <Property Name="RootID" Type="Int64" Nullable="false" />
+    <Property Name="ChitGroupId" Type="Int64" />
+    <Property Name="Other_Trans_Type" Type="Int64" Nullable="false" />
+    <Property Name="IsDeleted" Type="Int64" Nullable="false" />
+    <Property Name="IsAccepted" Type="Int32" Nullable="false" />
+    <Property Name="ApprovedDate" Type="DateTime" />
+    <Property Name="CreatedDate" Type="DateTime" />
+    <Property Name="ModifiedDate" Type="DateTime" />
+    <Property Name="ISActive" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="AppReceiptno" Type="String" MaxLength="1073741823" FixedLength="false" Unicode="false" />
+  </EntityType>
+  <EntityContainer Name="svcfEntities" annotation:LazyLoadingEnabled="true" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation">
+    <EntitySet Name="auctiondetails" EntityType="Self.auctiondetail" />
+    <EntitySet Name="branchdetails" EntityType="Self.branchdetail" />
+    <EntitySet Name="groupmasters" EntityType="Self.groupmaster" />
+    <EntitySet Name="headstrees" EntityType="Self.headstree" />
+    <EntitySet Name="membermasters" EntityType="Self.membermaster" />
+    <EntitySet Name="membertogroupmasters" EntityType="Self.membertogroupmaster" />
+    <EntitySet Name="trans_payment" EntityType="Self.trans_payment" />
+    <EntitySet Name="transbanks" EntityType="Self.transbank" />
+    <EntitySet Name="vouchers" EntityType="Self.voucher" />
+  </EntityContainer>
+</Schema>

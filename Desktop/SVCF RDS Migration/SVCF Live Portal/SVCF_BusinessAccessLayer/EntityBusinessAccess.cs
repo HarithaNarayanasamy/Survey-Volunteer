@@ -1,0 +1,735 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using SVCF_DataAccessLayer;
+using SVCF_PropertyLayer;
+namespace SVCF_BusinessAccessLayer
+{
+    public class EntityBusinessAccess
+    {
+        EntityDataAccess DA = new EntityDataAccess();
+        BindAdvance bindAdv = new BindAdvance();
+        BindDecree bindecree = new BindDecree();
+        BindPandL bindpandl = new BindPandL();
+
+        public void GetAllBranches()
+        {
+            DA.GetallBranches();
+        }
+
+        public IEnumerable<Modelbranch> GetAllBranch()
+        {
+            List<Modelbranch> BranchList = new List<Modelbranch>();
+            Modelbranch branch = null;
+            var branchlist = DA.GetallBranch();
+            foreach (var i in branchlist)
+            {
+                branch = new Modelbranch();
+                branch.branchid = i.NodeID;
+                branch.branchname = i.Node;
+                BranchList.Add(branch);
+            }
+            IEnumerable<Modelbranch> branchli = BranchList;
+            return branchli;
+        }
+        public string BL_Branch(int BranchID)
+        {
+            var branch = DA.DL_Branch(BranchID);
+            return branch;
+
+        }
+
+        public List<Trailbalance> BL_Trailbalance(int branchid, DateTime fromdate, DateTime todate)
+        {
+            List<Trailbalance> BranchList = new List<Trailbalance>();
+            var BranchList1 = DA.trailbalance(branchid, fromdate, todate).ToList();
+
+            BranchList = (from fff in BranchList1
+                          select new Trailbalance
+                          {
+                              date = fff.Date.ToString(),
+                              Branch = fff.Branch,
+                              Credit = fff.Credit,
+                              Debit = fff.Debit
+
+                          }).ToList();
+
+
+            return BranchList;
+        }
+        public List<Investments> BL_Invesments(int branchid, DateTime fromdate, DateTime todate)
+        {
+            List<Investments> inves = new List<Investments>();
+            var inveslist = DA.Dl_Invesments(branchid, fromdate, todate).ToList();
+
+            inves = (from fff in inveslist
+                     select new Investments
+                     {
+                         Heads = fff.Heads,
+                         Narration = fff.Narration,
+                         Credit = fff.Credit,
+                         Debit = fff.Debit
+
+                     }).ToList();
+
+            return inves;
+        }
+        public List<Investments> BL_Invesments1(int branchid, DateTime fromdate, DateTime todate)
+        {
+            List<Investments> invesnode = new List<Investments>();
+            var inveslist = DA.Dl_InvesmentsNode(branchid, fromdate, todate).ToList();
+
+            invesnode = (from fff in inveslist
+                         select new Investments
+                         {
+                             Heads = fff.Heads.ToString(),
+                             Narration = fff.Narration,
+                             Credit = fff.Credit,
+                             Debit = fff.Debit
+
+                         }).ToList();
+
+            return invesnode;
+        }
+
+
+        public List<BindAdvance> GetSundriesandAdvances_Closingbalance()
+        {
+            try
+            {
+                List<BindAdvance> AdvList = new List<BindAdvance>();
+                BindAdvance adv = null;
+                var getadv = DA.BindAdvances_ClosingBalance();
+                var getadvLi = getadv.ToList();
+                foreach (var r in getadvLi)
+                {
+                    adv = new BindAdvance();
+                    if (r.ParentID == 58 || r.ParentID == 59 || r.ParentID == 60)
+                        adv.Heads = GetMemberName_fromChitHeads(r.NodeID);
+                    else
+                        adv.Heads = r.Heads;
+                    adv.Headname = DA.GetHeadName(r.ParentID);
+                    adv.EB_Credit = r.EB_Credit;
+                    adv.EB_Debit = r.EB_Debit;
+                    adv.Narration = r.Narration;
+                    adv.NodeID = r.NodeID;
+                    adv.ParentID = r.ParentID;
+                    adv.PPA_Credit = r.PPA_Credit;
+                    adv.PPA_Debit = r.PPA_Debit;
+                    adv.RA_Credit = r.RA_Credit;
+                    adv.RA_Debit = r.RA_Debit;
+                    adv.SC_Credit = r.SC_Credit;
+                    adv.SC_Debit = r.SC_Debit;
+                    adv.SDeb_Credit = r.SDeb_Credit;
+                    adv.SDeb_Debit = r.SDeb_Debit;
+                    adv.S_Credit = r.S_Credit;
+                    adv.S_Debit = r.S_Debit;
+                    adv.TD_Credit = r.TD_Credit;
+                    adv.TD_Debit = r.TD_Debit;
+                    adv.VRA_Credit = r.VRA_Credit;
+                    adv.VRA_Debit = r.VRA_Debit;
+                    if (r.ParentID == 58)
+                        adv.remarks = GetChitName_fromChitHeads(r.NodeID);
+                    else if (r.ParentID == 59 || r.ParentID == 60)
+                        adv.remarks = r.Narration;
+                    else
+                        adv.remarks = "";
+                    AdvList.Add(adv);
+                }
+                return AdvList;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public List<BindAdvance> GetSundriesandAdvances_Openingbalance(int branchid, int rootid, DateTime todate)
+        {
+            try
+            {
+                List<BindAdvance> AdvList = new List<BindAdvance>();
+                BindAdvance adv = null;
+                var getadv = DA.BindAdvances_OpeningBalance(branchid, rootid, todate);
+                var getadvLi = getadv.ToList();
+                foreach (var r in getadvLi)
+                {
+                    adv = new BindAdvance();
+                    if (r.ParentID == 58 || r.ParentID == 59 || r.ParentID == 60)
+                        adv.Heads = GetMemberName_fromChitHeads(r.NodeID);
+                    else
+                        adv.Heads = r.Heads;
+                    adv.Headname = DA.GetHeadName(r.ParentID);
+                    adv.EB_Credit = r.EB_Credit;
+                    adv.EB_Debit = r.EB_Debit;
+                    adv.Narration = r.Narration;
+                    adv.NodeID = r.NodeID;
+                    adv.ParentID = r.ParentID;
+                    adv.PPA_Credit = r.PPA_Credit;
+                    adv.PPA_Debit = r.PPA_Debit;
+                    adv.RA_Credit = r.RA_Credit;
+                    adv.RA_Debit = r.RA_Debit;
+                    adv.SC_Credit = r.SC_Credit;
+                    adv.SC_Debit = r.SC_Debit;
+                    adv.SDeb_Credit = r.SDeb_Credit;
+                    adv.SDeb_Debit = r.SDeb_Debit;
+                    adv.S_Credit = r.S_Credit;
+                    adv.S_Debit = r.S_Debit;
+                    adv.TD_Credit = r.TD_Credit;
+                    adv.TD_Debit = r.TD_Debit;
+                    adv.VRA_Credit = r.VRA_Credit;
+                    adv.VRA_Debit = r.VRA_Debit;
+                    if (r.ParentID == 58)
+                        adv.remarks = GetChitName_fromChitHeads(r.NodeID);
+                    else if (r.ParentID == 59 || r.ParentID == 60)
+                        adv.remarks = r.Narration;
+                    else
+                        adv.remarks = "";
+                    AdvList.Add(adv);
+                }
+                return AdvList;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public List<BindAdvancePart2> GetSundriesandAdvancesPart2_Closingbalance(DateTime todate,int branchid)
+        {
+            try
+            {
+                List<BindAdvancePart2> AdvList = new List<BindAdvancePart2>();
+                BindAdvancePart2 adv = null;
+                var getadv = DA.BindAdvancesPart2_ClosingBalance(todate,branchid);
+                var getadvLi = getadv.ToList();
+                foreach (var r in getadvLi)
+                {
+                    adv = new BindAdvancePart2();
+                    if (r.ParentID == 58 || r.ParentID == 59 || r.ParentID == 60)
+                        adv.Heads = GetMemberName_fromChitHeads(r.NodeID);
+                    else
+                        adv.Heads = r.Heads;
+                    adv.Headname = DA.GetHeadName(r.ParentID);
+                    adv.ACA_Credit = r.ACA_Credit;
+                    adv.ACA_Debit = r.ACA_Debit;
+                    adv.Narration = r.Narration;
+                    adv.NodeID = r.NodeID;
+                    adv.ParentID = r.ParentID;
+                    adv.Advocate_Credit = r.Advocate_Credit;
+                    adv.Advocate_Debit = r.Advocate_Debit;
+                    adv.CAL_Credit = r.CAL_Credit;
+                    adv.CAL_Debit = r.CAL_Debit;
+                    adv.Cort_Credit = r.Cort_Credit;
+                    adv.Cort_Debit = r.Cort_Debit;
+                    adv.Degree_Credit = r.Degree_Credit;
+                    adv.Degree_Debit = r.Degree_Debit;
+                    adv.PA_Credit = r.PA_Credit;
+                    adv.PA_Debit = r.PA_Debit;
+                    adv.STMISS_Credit = r.STMISS_Credit;
+                    adv.STMISS_Debit = r.STMISS_Debit;
+                    adv.VA_Credit = r.VA_Credit;
+                    adv.VA_Debit = r.VA_Debit;
+                    if (r.ParentID == 58)
+                        adv.remarks = GetChitName_fromChitHeads(r.NodeID);
+                    else if (r.ParentID == 59 || r.ParentID == 60)
+                        adv.remarks = r.Narration;
+                    else
+                        adv.remarks = "";
+                    AdvList.Add(adv);
+                }
+                return AdvList;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public List<BindAdvancePart2> GetSundriesandAdvancesPart2_Openingbalance(DateTime todate,int branchid)
+        {
+            try
+            {
+                List<BindAdvancePart2> AdvList = new List<BindAdvancePart2>();
+                BindAdvancePart2 adv = null;
+                var getadv = DA.BindAdvancesPart2_OpeningBalance(todate,branchid);
+                var getadvLi = getadv.ToList();
+                foreach (var r in getadvLi)
+                {
+                    adv = new BindAdvancePart2();
+                    if (r.ParentID == 58 || r.ParentID == 59 || r.ParentID == 60)
+                    {
+                        adv.Heads = GetMemberName_fromChitHeads(r.NodeID);
+                        //if(adv.Heads==null) adv.Heads = r.Heads;
+                    }
+                    else
+                        adv.Heads = r.Heads;
+
+                    adv.Headname = DA.GetHeadName(r.ParentID);
+                    adv.ACA_Credit = r.ACA_Credit;
+                    adv.ACA_Debit = r.ACA_Debit;
+                    adv.Narration = r.Narration;
+                    adv.NodeID = r.NodeID;
+                    adv.ParentID = r.ParentID;
+                    adv.Advocate_Credit = r.Advocate_Credit;
+                    adv.Advocate_Debit = r.Advocate_Debit;
+                    adv.CAL_Credit = r.CAL_Credit;
+                    adv.CAL_Debit = r.CAL_Debit;
+                    adv.Cort_Credit = r.Cort_Credit;
+                    adv.Cort_Debit = r.Cort_Debit;
+                    adv.Degree_Credit = r.Degree_Credit;
+                    adv.Degree_Debit = r.Degree_Debit;
+                    adv.PA_Credit = r.PA_Credit;
+                    adv.PA_Debit = r.PA_Debit;
+                    adv.STMISS_Credit = r.STMISS_Credit;
+                    adv.STMISS_Debit = r.STMISS_Debit;
+                    adv.VA_Credit = r.VA_Credit;
+                    adv.VA_Debit = r.VA_Debit;
+                    if (r.ParentID == 58)
+                        adv.remarks = GetChitName_fromChitHeads(r.NodeID);
+                    else if (r.ParentID == 59 || r.ParentID == 60)
+                        adv.remarks = r.Narration;
+                    else
+                        adv.remarks = "";
+                    AdvList.Add(adv);
+                }
+                return AdvList;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+
+
+        public List<BindDecree> GetDecree_OpeningBalance(int branchid, DateTime todate)
+        {
+            try
+            {
+                List<BindDecree> DecreeList = new List<BindDecree>();
+                BindDecree dec = null;
+                var dec1list = DA.Decree_OpeningBalance(branchid, todate);
+                var getdecLi = dec1list.ToList();
+                DecreeList = new List<BindDecree>();
+                foreach (var li in getdecLi)
+                {
+                    dec = new BindDecree();
+                    dec.AdvocateCredit = li.AdvocateCredit;
+                    dec.AdvocateDebit = li.AdvocateDebit;
+                    dec.BalCredit = li.BalCredit;
+                    dec.BalDebit = li.BalDebit;
+                    dec.CourtCredit = li.CourtCredit;
+                    dec.CourtDebit = li.CourtDebit;
+                    dec.Crtotal = li.Crtotal;
+                    dec.Head = li.Head;
+                    dec.NodeID = li.NodeID;
+                    dec.TransactionKey = li.TransactionKey;
+                    dec.HeadName = DA.GetParentHeadName(li.NodeID);
+                    DecreeList.Add(dec);
+                }
+                return DecreeList;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public List<BindDecree> GetDecree_ClosingBalance()
+        {
+            try
+            {
+                List<BindDecree> DecreeList = new List<BindDecree>();
+                BindDecree dec = null;
+                var declist = DA.BindDecree_ClosingBalance();
+                var getdecLi = declist.ToList();
+                DecreeList = new List<BindDecree>();
+                foreach (var li in getdecLi)
+                {
+                    dec = new BindDecree();
+                    dec.AdvocateCredit = li.AdvocateCredit;
+                    dec.AdvocateDebit = li.AdvocateDebit;
+                    dec.BalCredit = li.BalCredit;
+                    dec.BalDebit = li.BalDebit;
+                    dec.CourtCredit = li.CourtCredit;
+                    dec.CourtDebit = li.CourtDebit;
+                    dec.Crtotal = li.Crtotal;
+                    dec.Head = li.Head;
+                    dec.NodeID = li.NodeID;
+                    dec.TransactionKey = li.TransactionKey;
+                    dec.HeadName = DA.GetParentHeadName(li.NodeID);
+                    DecreeList.Add(dec);
+                }
+                return DecreeList;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public List<BindPandL> GetPandL_OpeningBalance()
+        {
+            try
+            {
+                List<BindPandL> PL_List = new List<BindPandL>();
+                BindPandL pl = null;
+                var pandlist = DA.GetPandL_OpeningBalance();
+                var PandLList = pandlist.ToList();
+                foreach (var r in PandLList)
+                {
+                    pl = new BindPandL();
+                    pl.Heads = r.Heads;
+                    pl.Date = r.Date;
+                    pl.Credit = r.Credit;
+                    pl.Debit = r.Debit;
+                    PL_List.Add(pl);
+                }
+                return PL_List;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public List<BindPandL> GetPandL_ClosingBalance()
+        {
+            try
+            {
+                List<BindPandL> PL_List = new List<BindPandL>();
+                BindPandL pl = null;
+                var pandlist = DA.GetPandL_ClosingBalance();
+                foreach (var r in pandlist)
+                {
+                    pl = new BindPandL();
+                    pl.Heads = r.Heads;
+                    pl.Date = r.Date;
+                    pl.Credit = r.Credit;
+                    pl.Debit = r.Debit;
+                    PL_List.Add(pl);
+                }
+                return PL_List;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+        public List<TrialBalanceofOtherItems> GetTrialbb(int Value1, DateTime date)
+        {
+            List<TrialBalanceofOtherItems> tri = new List<TrialBalanceofOtherItems>();
+            var traillist = DA.triotheritem(Value1, date).ToList();
+            foreach (var li in traillist)
+            {
+                tri.Add(new TrialBalanceofOtherItems
+                {
+                    credit = li.Credit,
+                    Debit = li.Debit,
+                    Heads = li.Heads,
+                    NodeID = li.NodeID
+                });
+            }
+            return tri;
+        }
+        public IEnumerable<chitheads> Getnode()
+        {
+            List<chitheads> chitheadsList = new List<chitheads>();
+            chitheads node = null;
+            var chithead = DA.GetallChitheads();
+            foreach (var i in chithead)
+            {
+                node = new chitheads();
+                node.HeadId = i.HeadId;
+                node.MemberName = i.MemberName;
+                node.ChitName = i.ChitName;
+                chitheadsList.Add(node);
+            }
+            IEnumerable<chitheads> chit = chitheadsList;
+            return chit;
+        }
+        public List<Loan> GetLoan(int Value1, DateTime date)
+        {
+            List<Loan> tri = new List<Loan>();
+            var traillist = DA.triloandate(Value1, date).ToList();
+            foreach (var li in traillist)
+            {
+                tri.Add(new Loan
+                {
+                    ChoosenDate = li.ChoosenDate,
+                    Credit = li.Credit,
+                    Debit = li.Debit,
+                    Name = li.Name,
+                    NodeID = li.NodeID,
+                    ParentID = li.ParentID
+                });
+            }
+            return tri;
+        }
+        public List<BindScheduledbanks> GetSB_OpeningBalance(DateTime todte, int bid)
+        {
+            try
+            {
+                List<BindScheduledbanks> SbList = new List<BindScheduledbanks>();
+                BindScheduledbanks Sb = null;
+                var getsblist = DA.GetScheduledBank_Openingbalance(todte, bid);
+                foreach (var bnk in getsblist)
+                {
+                    Sb = new BindScheduledbanks();
+                    Sb.BankName = bnk.BankName;
+                    Sb.BankLocation = bnk.BankLocation;
+                    Sb.AccountNo = bnk.AccountNo;
+                    Sb.Credit = bnk.Credit;
+                    Sb.Debit = bnk.Debit;
+                    SbList.Add(Sb);
+                }
+                return SbList;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public List<BindScheduledbanks> GetSB_ClosingBalance(DateTime todte, int bid)
+        {
+            try
+            {
+                List<BindScheduledbanks> SbList = new List<BindScheduledbanks>();
+                BindScheduledbanks Sb = null;
+                var getsblist = DA.GetScheduledBank_Openingbalance(todte, bid);
+                foreach (var bnk in getsblist)
+                {
+                    Sb = new BindScheduledbanks();
+                    Sb.BankName = bnk.BankName;
+                    Sb.BankLocation = bnk.BankLocation;
+                    Sb.AccountNo = bnk.AccountNo;
+                    Sb.Credit = bnk.Credit;
+                    Sb.Debit = bnk.Debit;
+                    SbList.Add(Sb);
+                }
+                return SbList;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+
+        public List<BindFixedDepositwithBanks> GetFDwithBanks_OpeningBalance(DateTime todte, int bid)
+        {
+            try
+            {
+                List<BindFixedDepositwithBanks> FDBankList = new List<BindFixedDepositwithBanks>();
+                BindFixedDepositwithBanks FDbnk = null;
+                //var getsblist = DA.GetScheduledBank_Openingbalance(todte, bid);
+                var getfdlist = DA.GetFDwithBank_Openingbalance(todte,bid);
+                foreach (var bnk in getfdlist)
+                {
+                    FDbnk = new BindFixedDepositwithBanks();
+                    FDbnk.BankName = bnk.BankName;
+                    FDbnk.BankLocation = bnk.BankLocation;
+                    FDbnk.AccountNo = bnk.AccountNo;
+                    FDbnk.Credit = bnk.Credit;
+                    FDbnk.Debit = bnk.Debit;
+                    FDBankList.Add(FDbnk);
+                }
+                return FDBankList;
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+        }
+
+
+        public List<BindFixedDepositwithBanks> GetFDwithBanks_ClosingBalance(DateTime todte, int bid)
+        {
+            try
+            {
+                List<BindFixedDepositwithBanks> FDBankList = new List<BindFixedDepositwithBanks>();
+                BindFixedDepositwithBanks FDbnk = null;
+                var getsblist = DA.GetScheduledBank_Openingbalance(todte, bid);
+                foreach (var bnk in getsblist)
+                {
+                    FDbnk = new BindFixedDepositwithBanks();
+                    FDbnk.BankName = bnk.BankName;
+                    FDbnk.BankLocation = bnk.BankLocation;
+                    FDbnk.AccountNo = bnk.AccountNo;
+                    FDbnk.Credit = bnk.Credit;
+                    FDbnk.Debit = bnk.Debit;
+                    FDBankList.Add(FDbnk);
+                }
+                return FDBankList;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public string GetMemberName_fromChitHeads(long head_id)
+        {
+            try
+            {
+                return DA.GetMemberName_fromChitHeads(head_id);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public string GetChitName_fromChitHeads(long head_id)
+        {
+            try
+            {
+                return DA.GetChitName_fromChitHeads(head_id);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+        public List<monthlychit> Getmonthlychit(int Value1, DateTime date)
+        {
+            List<monthlychit> tri = new List<monthlychit>();
+            var traillist = DA.Mothlychit(Value1, date).ToList();
+            foreach (var li in traillist)
+            {
+                tri.Add(new monthlychit
+                {
+                    Heads = li.Heads,
+                    MonthlyDebit = li.MonthlyDebit,
+                    MothlyCredit = li.MothlyCredit
+                });
+            }
+            return tri;
+        }
+
+        public List<Trimonthly> GetTrimonthly(int Value1, DateTime date)
+        {
+            List<Trimonthly> tri = new List<Trimonthly>();
+            var traillist = DA.TrimonthlyChits(Value1, date).ToList();
+            foreach (var li in traillist)
+            {
+                tri.Add(new Trimonthly
+                {
+                    Heads = li.Heads,
+                    TrimonthlyChits = li.TrimonthlyChits,
+                    TrimonthlyChitsdebit = li.TrimonthlyChitsdebit
+                });
+            }
+            return tri;
+        }
+        public List<FortnightlyChit> GetFortnightlyChit(int Value1, DateTime date)
+        {
+            List<FortnightlyChit> tri = new List<FortnightlyChit>();
+            var traillist = DA.FortnightlyChits(Value1, date).ToList();
+            foreach (var li in traillist)
+            {
+                tri.Add(new FortnightlyChit
+                {
+                    Heads = li.Heads,
+                    FortnightlyCredit = li.FortnightlyCredit,
+                    FortnightlyDebit = li.FortnightlyDebit
+                });
+            }
+            return tri;
+        }
+        public List<RCM1Credit> GetRCM1Credit(int Value1, DateTime date)
+        {
+            List<RCM1Credit> tri = new List<RCM1Credit>();
+            var traillist = DA.RCM1Credit(Value1, date).ToList();
+            foreach (var li in traillist)
+            {
+                tri.Add(new RCM1Credit
+                {
+                    Heads = li.Heads,
+                    RCM1Credit1 = li.RCM1Credit,
+                    RCM1Debit = li.RCM1Debit
+                });
+            }
+            return tri;
+        }
+        public List<RCM2Credit> GetRCM2Credit(int Value1, DateTime date)
+        {
+            List<RCM2Credit> tri = new List<RCM2Credit>();
+            var traillist = DA.RCM2Credit(Value1, date).ToList();
+            foreach (var li in traillist)
+            {
+                tri.Add(new RCM2Credit
+                {
+                    Heads = li.Heads,
+                    RCM2Credit1 = li.RCM2Credit,
+                    RCM2Debit = li.RCM2Debit
+                });
+            }
+            return tri;
+        }
+        public List<UnpaidPrizeMoney> GetUnpaidPrizeMoney(int Value1, DateTime date)
+        {
+            List<UnpaidPrizeMoney> tri = new List<UnpaidPrizeMoney>();
+            var traillist = DA.UnpaidPrizeMoney(Value1, date).ToList();
+            foreach (var li in traillist)
+            {
+                tri.Add(new UnpaidPrizeMoney
+                {
+                    Heads = li.Heads,
+                    UnCredit = li.UnCredit,
+                    UnDebit = li.UnDebit
+                });
+            }
+            return tri;
+        }
+        public List<UnpaidPrizemoneypayable> GetUnpaidPrizemoneypayable(int Value1, DateTime date)
+        {
+            List<UnpaidPrizemoneypayable> tri = new List<UnpaidPrizemoneypayable>();
+            var traillist = DA.UnpaidPrizemoneypayable(Value1, date).ToList();
+            foreach (var li in traillist)
+            {
+                tri.Add(new UnpaidPrizemoneypayable
+                {
+                    Heads = li.Heads,
+                    OutCredit = li.OutCredit,
+                    OutDebit = li.OutDebit
+                });
+            }
+            return tri;
+        }
+        public List<OutStanding> GetOutStanding(int Value1, DateTime date)
+        {
+            List<OutStanding> tri = new List<OutStanding>();
+            var traillist = DA.OutStanding(Value1, date).ToList();
+            foreach (var li in traillist)
+            {
+                tri.Add(new OutStanding
+                {
+                    Heads = li.Heads,
+                    OutCredit = li.OutCredit,
+                    OutDebit = li.OutDebit
+                });
+            }
+            return tri;
+        }
+        public List<ChitCredit> GetChitCredit(int Value1, DateTime date)
+        {
+            List<ChitCredit> tri = new List<ChitCredit>();
+            var traillist = DA.ChitCredit(Value1, date).ToList();
+            foreach (var li in traillist)
+            {
+                tri.Add(new ChitCredit
+                {
+                    Heads = li.Heads,
+                    ChitCredit1 = li.ChitCredit,
+                    ChitDebit = li.ChitDebit
+                });
+            }
+            return tri;
+        }
+    }
+}

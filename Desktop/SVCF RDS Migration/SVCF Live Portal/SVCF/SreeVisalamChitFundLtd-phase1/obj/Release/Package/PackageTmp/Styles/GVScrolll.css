@@ -1,0 +1,61 @@
+﻿.GridviewScrollC2Header TH, .GridviewScrollC2Header TD 
+{ 
+    padding: 5px; 
+    font-weight: bold; 
+    white-space: nowrap; 
+    border-right: 1px solid #a0154a; 
+    border-bottom: 1px solid #a0154a; 
+    background-color:#a0154a;
+    color: #FFFFFF; 
+    text-align: center; 
+    vertical-align: middle; 
+    font-family: Times New Roman;
+    font-size:14px !important;
+    
+} 
+.GridviewScrollC2Item TD 
+{ 
+	font-size:12px !important;
+    padding: 5px; 
+    white-space: nowrap; 
+    border-right: 1px solid #a0154a; 
+    border-bottom: 1px solid #a0154a; 
+  background-color:#DDEEFF;
+    font-family:Helvetica;
+     text-align: center; 
+    vertical-align: middle; 
+} 
+.GridviewScrollC2Item TD :hover
+{
+	background-color:Silver;
+}
+
+.GridviewScrollC2Pager  
+{ 
+    border-top: 1px solid #a0154a; 
+    background-color: #FFFFFF; 
+    font-family:Helvetica;
+} 
+.GridviewScrollC2Pager TD 
+{ 
+    padding-top: 3px; 
+    font-size: 14px; 
+    padding-left: 5px; 
+    padding-right: 5px; 
+    font-family:Helvetica;
+     text-align: center; 
+    vertical-align: middle; 
+} 
+.GridviewScrollC2Pager A 
+{ 
+    color: #666666; 
+    font-family:Helvetica;
+} 
+.GridviewScrollC2Pager SPAN 
+{ 
+    font-size: 14px; 
+    font-weight: bold; 
+    font-family:Helvetica;
+     text-align: center; 
+    vertical-align: middle; 
+}

@@ -1,0 +1,12 @@
+INFO  2023-04-03 12:49:31,242 199609ms Home                   Page_Load          - Logged into Site at: 03-04-2023 12:49:31
+INFO  2023-04-03 13:08:37,127 237013ms Home                   Page_Load          - Logged into Site at: 03-04-2023 13:08:37
+INFO  2023-04-03 13:09:21,718 281604ms Design                 Page_Load          - Member Addition- at: 03/04/2023 13:09:21
+INFO  2023-04-03 13:10:27,855 347741ms Design                 Page_Load          - Member Addition- at: 03/04/2023 13:10:27
+INFO  2023-04-03 13:10:57,102 376988ms Design                 Page_Load          - Member Addition- at: 03/04/2023 13:10:57
+INFO  2023-04-03 13:11:10,792 390677ms Design                 Page_Load          - Member Addition- at: 03/04/2023 13:11:10
+INFO  2023-04-03 13:12:38,960 478845ms DeleteVoucher          btnyes_Click       - DeleteVoucher.aspx - btnYes_Click():  Completed: 03/04/2023 13:12:38 by: admin@svcf.com
+INFO  2023-04-03 13:36:00,287 1880172ms DeleteVocherEdit       insert             - DeleteVocherEdit.aspx - btnYes_Click():  Error: Column 'DualTransactionKey1' does not belong to table .: 03-04-2023 13:36:00 by: admin@svcf.com
+INFO  2023-04-03 13:38:16,902 2016787ms DeleteVocherEdit       insert             - DeleteVocherEdit.aspx - btnYes_Click():  Error: Column 'DualTransactionKey1' does not belong to table .: 03-04-2023 13:38:16 by: admin@svcf.com
+INFO  2023-04-03 13:54:37,871 178828ms Home                   Page_Load          - Logged into Site at: 03-04-2023 13:54:37
+INFO  2023-04-03 16:12:20,048 2119156ms Home                   Page_Load          - Logged into Site at: 03-04-2023 16:12:20
+INFO  2023-04-03 16:16:03,850 2342958ms DeleteVoucher          btnyes_Click       - DeleteVoucher.aspx - btnYes_Click():  Completed: 03/04/2023 16:16:03 by: admin@svcf.com

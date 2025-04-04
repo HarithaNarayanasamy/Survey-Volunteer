@@ -1,0 +1,1898 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="svcfModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+  <EntityType Name="arbitratinnotice">
+    <Key>
+      <PropertyRef Name="aid" />
+    </Key>
+    <Property Name="aid" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="Date" Type="DateTime" />
+    <Property Name="MemberName" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="MemberAddress" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+    <Property Name="AgreementNo" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="AgreementYear" Type="Int64" />
+    <Property Name="AgreementDate" Type="DateTime" />
+    <Property Name="ChitsNo" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="DateBeforePaid" Type="DateTime" />
+    <Property Name="ArrearsIntalmentFrom1" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="ArrearsIntalmentTo1" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="UnpaidInsatalmentFrom" Type="DateTime" />
+    <Property Name="UnpaidInsatalmentTo" Type="DateTime" />
+    <Property Name="ArrearsIntalmentFrom2" Type="Int64" />
+    <Property Name="ArrearsIntalmentTo2" Type="Int64" />
+    <Property Name="InterestFrom2" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="InterestTo2" Type="Int64" />
+    <Property Name="IneterstRs2" Type="Int64" />
+    <Property Name="Head_id" Type="Int64" />
+    <Property Name="Branchid" Type="Int64" />
+    <Property Name="SecurityDetails" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+  </EntityType>
+  <EntityType Name="assignreceiptbook">
+    <Key>
+      <PropertyRef Name="slNO" />
+    </Key>
+    <Property Name="slNO" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="BranchID" Type="Int64" Nullable="false" />
+    <Property Name="moneycollid" Type="Int64" Nullable="false" />
+    <Property Name="receiptseries" Type="String" MaxLength="5" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="receiptnofrom" Type="Int64" Nullable="false" />
+    <Property Name="receiptnoto" Type="Int64" Nullable="false" />
+    <Property Name="IsFinished" Type="Boolean" Nullable="false" />
+    <Property Name="alreadyusedReceipts" Type="Int64" Nullable="false" />
+    <Property Name="total" Type="Int64" Nullable="false" />
+    <Property Name="CreatedDate" Type="DateTime" />
+    <Property Name="ModifiedDate" Type="DateTime" />
+    <Property Name="ISActive" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+  </EntityType>
+  <EntityType Name="bankdetail">
+    <Key>
+      <PropertyRef Name="Head_Id" />
+      <PropertyRef Name="aid" />
+    </Key>
+    <Property Name="BankName" Type="String" MaxLength="45" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="IFCCode" Type="String" MaxLength="45" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="AccountNo" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="Address" Type="String" MaxLength="65535" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="DateOfAccount" Type="DateTime" Nullable="false" />
+    <Property Name="BranchID" Type="Int64" Nullable="false" />
+    <Property Name="TypeofBank" Type="String" MaxLength="45" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="BankLocation" Type="String" MaxLength="145" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="Head_Id" Type="Int64" Nullable="false" />
+    <Property Name="aid" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="CreatedDate" Type="String" MaxLength="1073741823" FixedLength="false" Unicode="false" />
+    <Property Name="ModifiedDate" Type="String" MaxLength="1073741823" FixedLength="false" Unicode="false" />
+    <Property Name="ISActive" Type="Boolean" Nullable="false" />
+  </EntityType>
+  <EntityType Name="beforeremovalnotice">
+    <Key>
+      <PropertyRef Name="aid" />
+    </Key>
+    <Property Name="aid" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="Date" Type="DateTime" />
+    <Property Name="SubscriberName" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="SubscriberAddress" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
+    <Property Name="AgreementNo" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="DeputyRegistrarChits" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="ChitNo" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="ArrearsInstalmentFrom" Type="Int32" />
+    <Property Name="ArrearsInstalmentTo" Type="Int32" />
+    <Property Name="InterestPAFrom" Type="Int32" />
+    <Property Name="InterestPATo" Type="Int32" />
+    <Property Name="InstalmentRs" Type="Decimal" />
+    <Property Name="InterestRs" Type="Decimal" />
+    <Property Name="Total" Type="Decimal" />
+    <Property Name="branchid" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="Head_id" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="AgreementDate" Type="DateTime" />
+    <Property Name="AgreementYear" Type="Int32" />
+  </EntityType>
+  <EntityType Name="branchdetail">
+    <Key>
+      <PropertyRef Name="Head_Id" />
+      <PropertyRef Name="aid" />
+    </Key>
+    <Property Name="B_Code" Type="Int64" Nullable="false" />
+    <Property Name="B_Name" Type="String" MaxLength="100" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="B_Head" Type="String" MaxLength="100" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="B_Address" Type="String" MaxLength="65535" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="B_PhoneNo" Type="String" MaxLength="30" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="B_EMail" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+    <Property Name="B_DOC" Type="DateTime" />
+    <Property Name="Head_Id" Type="Int64" Nullable="false" />
+    <Property Name="aid" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="Place" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+  </EntityType>
+  <EntityContainer Name="svcfEntities" annotation:LazyLoadingEnabled="true">
+    <EntitySet Name="arbitratinnotices" EntityType="Self.arbitratinnotice" />
+    <EntitySet Name="assignreceiptbooks" EntityType="Self.assignreceiptbook" />
+    <EntitySet Name="bankdetails" EntityType="Self.bankdetail" />
+    <EntitySet Name="beforeremovalnotices" EntityType="Self.beforeremovalnotice" />
+    <EntitySet Name="branchdetails" EntityType="Self.branchdetail" />
+    <EntitySet Name="afterremovalnotices" EntityType="svcfModel.afterremovalnotice" />
+    <EntitySet Name="appvouchers" EntityType="svcfModel.appvoucher" />
+    <EntitySet Name="branchpayments" EntityType="svcfModel.branchpayment" />
+    <EntitySet Name="branchsuboffices" EntityType="svcfModel.branchsuboffice" />
+    <EntitySet Name="cashcollections" EntityType="svcfModel.cashcollection" />
+    <EntitySet Name="chitheads" EntityType="svcfModel.chithead" />
+    <EntitySet Name="chitpaymentmasters" EntityType="svcfModel.chitpaymentmaster" />
+    <EntitySet Name="customerbanks" EntityType="svcfModel.customerbank" />
+    <EntitySet Name="dailyactivities" EntityType="svcfModel.dailyactivity" />
+    <EntitySet Name="dars" EntityType="svcfModel.dar" />
+    <EntitySet Name="darcheques" EntityType="svcfModel.darcheque" />
+    <EntitySet Name="depositpayments" EntityType="svcfModel.depositpayment" />
+    <EntitySet Name="documentdetails" EntityType="svcfModel.documentdetail" />
+    <EntitySet Name="employee_details" EntityType="svcfModel.employee_details" />
+    <EntitySet Name="employeedesignations" EntityType="svcfModel.employeedesignation" />
+    <EntitySet Name="empsalarydetails" EntityType="svcfModel.empsalarydetail" />
+    <EntitySet Name="fds" EntityType="svcfModel.fd" />
+    <EntitySet Name="filingfees" EntityType="svcfModel.filingfee" />
+    <EntitySet Name="guarantormasters" EntityType="svcfModel.guarantormaster" />
+    <EntitySet Name="heads" EntityType="svcfModel.head" />
+    <EntitySet Name="headstrees" EntityType="svcfModel.headstree" />
+    <EntitySet Name="jointpronotes" EntityType="svcfModel.jointpronote" />
+    <EntitySet Name="loanpronotes" EntityType="svcfModel.loanpronote" />
+    <EntitySet Name="logins" EntityType="svcfModel.login" />
+    <EntitySet Name="membermasters" EntityType="svcfModel.membermaster" />
+    <EntitySet Name="membersdocuments" EntityType="svcfModel.membersdocument" />
+    <EntitySet Name="appvoucherapprovals" EntityType="svcfModel.appvoucherapproval" />
+    <EntitySet Name="cashcollectionamounts" EntityType="svcfModel.cashcollectionamount" />
+    <EntitySet Name="commissionandservicetaxes" EntityType="svcfModel.commissionandservicetax" />
+    <EntitySet Name="commissiondetails" EntityType="svcfModel.commissiondetail" />
+    <EntitySet Name="membersuggestions" EntityType="svcfModel.membersuggestion" />
+    <EntitySet Name="membertogroupmasters" EntityType="svcfModel.membertogroupmaster" />
+    <EntitySet Name="mobileappvouchers" EntityType="svcfModel.mobileappvoucher" />
+    <EntitySet Name="moneycollectors" EntityType="svcfModel.moneycollector" />
+    <EntitySet Name="nomineetables" EntityType="svcfModel.nomineetable" />
+    <EntitySet Name="PasswordChangeHistories" EntityType="svcfModel.PasswordChangeHistory" />
+    <EntitySet Name="pdrrs" EntityType="svcfModel.pdrr" />
+    <EntitySet Name="petrolconsumptions" EntityType="svcfModel.petrolconsumption" />
+    <EntitySet Name="relisations" EntityType="svcfModel.relisation" />
+    <EntitySet Name="removal_approval" EntityType="svcfModel.removal_approval" />
+    <EntitySet Name="removedmasters" EntityType="svcfModel.removedmaster" />
+    <EntitySet Name="restrictionmasters" EntityType="svcfModel.restrictionmaster" />
+    <EntitySet Name="rights" EntityType="svcfModel.right" />
+    <EntitySet Name="roles" EntityType="svcfModel.role" />
+    <EntitySet Name="transfer_approval" EntityType="svcfModel.transfer_approval" />
+    <EntitySet Name="transfermasters" EntityType="svcfModel.transfermaster" />
+    <EntitySet Name="transloans" EntityType="svcfModel.transloan" />
+    <EntitySet Name="transprofitandlosses" EntityType="svcfModel.transprofitandloss" />
+    <EntitySet Name="VoucherSers" EntityType="svcfModel.VoucherSer" />
+    <EntitySet Name="voucherdeleteds" EntityType="svcfModel.voucherdeleted" />
+    <EntitySet Name="subscribers" EntityType="svcfModel.subscriber" />
+    <EntitySet Name="SubscriberDetails" EntityType="svcfModel.SubscriberDetail" />
+    <EntitySet Name="substitutedmasters" EntityType="svcfModel.substitutedmaster" />
+    <EntitySet Name="tablemasters" EntityType="svcfModel.tablemaster" />
+    <EntitySet Name="transadvances" EntityType="svcfModel.transadvance" />
+    <EntitySet Name="transcourts" EntityType="svcfModel.transcourt" />
+    <EntitySet Name="singlepronotes" EntityType="svcfModel.singlepronote" />
+    <EntitySet Name="receiptmasters" EntityType="svcfModel.receiptmaster" />
+    <EntitySet Name="rejectedmembers" EntityType="svcfModel.rejectedmember" />
+    <EntitySet Name="relations" EntityType="svcfModel.relation" />
+    <EntitySet Name="salarytransbanks" EntityType="svcfModel.salarytransbank" />
+    <EntitySet Name="reauctionparticulars" EntityType="svcfModel.reauctionparticular" />
+    <EntitySet Name="prospects" EntityType="svcfModel.prospect" />
+    <EntitySet Name="auctiondetails" EntityType="svcfModel.auctiondetail" />
+    <EntitySet Name="groupmasters" EntityType="svcfModel.groupmaster" />
+    <EntitySet Name="vouchers" EntityType="svcfModel.voucher" />
+    <EntitySet Name="trans_payment" EntityType="svcfModel.trans_payment" />
+    <EntitySet Name="transbanks" EntityType="svcfModel.transbank" />
+    <FunctionImport Name="BkBindAdvance" ReturnType="Collection(svcfModel.BkBindAdvance_Result)">
+      <Parameter Name="BranchId" Mode="In" Type="Int32" />
+      <Parameter Name="Rootid" Mode="In" Type="Int32" />
+      <Parameter Name="todte" Mode="In" Type="DateTime" />
+    </FunctionImport>
+    <FunctionImport Name="BkBindAdvancePart2" ReturnType="Collection(svcfModel.BkBindAdvancePart2_Result)">
+      <Parameter Name="ToDate" Mode="In" Type="DateTime" />
+      <Parameter Name="Branchid" Mode="In" Type="Int32" />
+    </FunctionImport>
+    <FunctionImport Name="BkBindBankFD" ReturnType="Collection(svcfModel.BkBindBankFD_Result)">
+      <Parameter Name="toDate" Mode="In" Type="DateTime" />
+      <Parameter Name="Branchid" Mode="In" Type="Int32" />
+    </FunctionImport>
+    <FunctionImport Name="BkBindBankSB" ReturnType="Collection(svcfModel.BkBindBankSB_Result)">
+      <Parameter Name="toDate" Mode="In" Type="DateTime" />
+      <Parameter Name="Branchid" Mode="In" Type="Int32" />
+    </FunctionImport>
+    <FunctionImport Name="BkBindDecree1" ReturnType="Collection(svcfModel.BkBindDecree1_Result)">
+      <Parameter Name="bid" Mode="In" Type="Int32" />
+      <Parameter Name="todate" Mode="In" Type="DateTime" />
+    </FunctionImport>
+    <FunctionImport Name="BkBindPandL" ReturnType="Collection(svcfModel.BkBindPandL_Result)">
+      <Parameter Name="branchid" Mode="In" Type="Int32" />
+      <Parameter Name="fromdate" Mode="In" Type="DateTime" />
+      <Parameter Name="todate" Mode="In" Type="DateTime" />
+    </FunctionImport>
+    <FunctionImport Name="ChitCredit" ReturnType="Collection(svcfModel.ChitCredit_Result)">
+      <Parameter Name="SBranchID" Mode="In" Type="Int32" />
+      <Parameter Name="SChoosenDate" Mode="In" Type="DateTime" />
+    </FunctionImport>
+    <FunctionImport Name="FortnightlyChits" ReturnType="Collection(svcfModel.FortnightlyChits_Result)">
+      <Parameter Name="Branchid" Mode="In" Type="Int32" />
+      <Parameter Name="SChoosenDate" Mode="In" Type="DateTime" />
+    </FunctionImport>
+    <FunctionImport Name="getbranches" ReturnType="Collection(svcfModel.getbranches_Result)">
+      <Parameter Name="bid" Mode="In" Type="Int32" />
+      <Parameter Name="fromdate" Mode="In" Type="DateTime" />
+      <Parameter Name="todate" Mode="In" Type="DateTime" />
+    </FunctionImport>
+    <FunctionImport Name="Investments_GroupHead" ReturnType="Collection(svcfModel.Investments_GroupHead_Result)">
+      <Parameter Name="bid" Mode="In" Type="Int32" />
+      <Parameter Name="fromdate" Mode="In" Type="DateTime" />
+      <Parameter Name="todate" Mode="In" Type="DateTime" />
+    </FunctionImport>
+    <FunctionImport Name="Loans" ReturnType="Collection(svcfModel.Loans_Result)">
+      <Parameter Name="SBranchID" Mode="In" Type="Int32" />
+      <Parameter Name="SChoosenDate" Mode="In" Type="DateTime" />
+    </FunctionImport>
+    <FunctionImport Name="MonthlyChit" ReturnType="Collection(svcfModel.MonthlyChit_Result)">
+      <Parameter Name="Branchid" Mode="In" Type="Int32" />
+      <Parameter Name="SChoosenDate" Mode="In" Type="DateTime" />
+    </FunctionImport>
+    <FunctionImport Name="OutStanding" ReturnType="Collection(svcfModel.OutStanding_Result)">
+      <Parameter Name="SBranchID" Mode="In" Type="Int32" />
+      <Parameter Name="SChoosenDate" Mode="In" Type="DateTime" />
+    </FunctionImport>
+    <FunctionImport Name="RCM1Credit" ReturnType="Collection(svcfModel.RCM1Credit_Result)">
+      <Parameter Name="SBranchID" Mode="In" Type="Int32" />
+      <Parameter Name="SChoosenDate" Mode="In" Type="DateTime" />
+    </FunctionImport>
+    <FunctionImport Name="RCM2Credit" ReturnType="Collection(svcfModel.RCM2Credit_Result)">
+      <Parameter Name="SBranchID" Mode="In" Type="Int32" />
+      <Parameter Name="SChoosenDate" Mode="In" Type="DateTime" />
+    </FunctionImport>
+    <FunctionImport Name="TrimonthlyChits" ReturnType="Collection(svcfModel.TrimonthlyChits_Result)">
+      <Parameter Name="SBranchID" Mode="In" Type="Int32" />
+      <Parameter Name="SChoosenDate" Mode="In" Type="DateTime" />
+    </FunctionImport>
+    <FunctionImport Name="UnpaidPrizeMoney" ReturnType="Collection(svcfModel.UnpaidPrizeMoney_Result)">
+      <Parameter Name="SBranchID" Mode="In" Type="Int32" />
+      <Parameter Name="SChoosenDate" Mode="In" Type="DateTime" />
+    </FunctionImport>
+    <FunctionImport Name="UnpaidPrizemoneypayable" ReturnType="Collection(svcfModel.UnpaidPrizemoneypayable_Result)">
+      <Parameter Name="SBranchID" Mode="In" Type="Int32" />
+      <Parameter Name="SChoosenDate" Mode="In" Type="DateTime" />
+    </FunctionImport>
+    <FunctionImport Name="TrialBalanceofOtherItems" ReturnType="Collection(svcfModel.TrialBalanceofOtherItems_Result)">
+      <Parameter Name="SBranchID" Mode="In" Type="Int32" />
+      <Parameter Name="SChoosenDate" Mode="In" Type="DateTime" />
+    </FunctionImport>
+  </EntityContainer>
+  <EntityType Name="afterremovalnotice">
+    <Key>
+      <PropertyRef Name="aid" />
+    </Key>
+    <Property Name="aid" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="Date" Type="DateTime" />
+    <Property Name="SubscriberName" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="SubscriberAddress" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="AgreementChitNo" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="DeputyRegistrarChits" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="ChitNo" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="RemovalNoticeDated1" Type="DateTime" />
+    <Property Name="RemovalNoticeDated2" Type="DateTime" />
+    <Property Name="ArrearRs" Type="Decimal" />
+    <Property Name="BranchId" Type="Int32" />
+    <Property Name="Head_id" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="AgreementYear" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="AgreementDate" Type="DateTime" />
+  </EntityType>
+  <EntityType Name="appvoucher">
+    <Key>
+      <PropertyRef Name="appvoucherid" />
+    </Key>
+    <Property Name="appvoucherid" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="TransactionKey" Type="Int32" Nullable="false" />
+    <Property Name="CreatedDate" Type="String" MaxLength="1073741823" FixedLength="false" Unicode="false" />
+    <Property Name="ModifiedDate" Type="String" MaxLength="1073741823" FixedLength="false" Unicode="false" />
+    <Property Name="ISActive" Type="String" MaxLength="1073741823" FixedLength="false" Unicode="false" />
+  </EntityType>
+  <EntityType Name="branchpayment">
+    <Key>
+      <PropertyRef Name="ID" />
+    </Key>
+    <Property Name="ID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="ChitNumber" Type="Int32" Nullable="false" />
+    <Property Name="GroupID" Type="Int32" Nullable="false" />
+    <Property Name="MemberID" Type="Int32" Nullable="false" />
+    <Property Name="IncidentialCharges" Type="Decimal" Nullable="false" />
+    <Property Name="DualTransactionKey" Type="Guid" Nullable="false" />
+    <Property Name="Status" Type="Int32" Nullable="false" />
+    <Property Name="Amount" Type="Decimal" Nullable="false" />
+    <Property Name="BranchID" Type="Int32" Nullable="false" />
+    <Property Name="GurantorName" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+    <Property Name="PaymentDate" Type="DateTime" Nullable="false" />
+    <Property Name="AppliedDate" Type="DateTime" Nullable="false" />
+    <Property Name="ApprovedDate" Type="DateTime" Nullable="false" />
+    <Property Name="AOsanction" Type="String" Nullable="false" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="GstCharges" Type="Decimal" />
+  </EntityType>
+  <EntityType Name="branchsuboffice">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="branchid" Type="Int32" />
+    <Property Name="officename" Type="String" MaxLength="150" FixedLength="false" Unicode="false" />
+    <Property Name="purpose" Type="String" MaxLength="150" FixedLength="false" Unicode="false" />
+    <Property Name="residentialaddress" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
+    <Property Name="officeaddress" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
+  </EntityType>
+  <EntityType Name="cashcollection">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="CountedAt" Type="Time" />
+    <Property Name="DayBook_CashBook" Type="Decimal" />
+    <Property Name="RoughCashBookBalance" Type="Decimal" />
+    <Property Name="TooLateCollections" Type="Decimal" />
+    <Property Name="CollectionAccDevAssit" Type="Decimal" />
+    <Property Name="CollectionTotal" Type="Decimal" />
+    <Property Name="C100" Type="Int32" />
+    <Property Name="C500" Type="Int32" />
+    <Property Name="C50" Type="Int32" />
+    <Property Name="C20" Type="Int32" />
+    <Property Name="C10" Type="Int32" />
+    <Property Name="C5" Type="Int32" />
+    <Property Name="C2" Type="Int32" />
+    <Property Name="C1" Type="Int32" />
+    <Property Name="Coins" Type="Int32" />
+    <Property Name="DenominatorTotal" Type="Decimal" />
+    <Property Name="VerifiedBy" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+    <Property Name="Designation" Type="String" MaxLength="145" FixedLength="false" Unicode="false" />
+    <Property Name="SignedDate" Type="DateTime" />
+    <Property Name="SpeCashChest" Type="Decimal" />
+    <Property Name="C1000" Type="Int32" />
+    <Property Name="C1000Total" Type="Int32" />
+    <Property Name="C500Total" Type="Int32" />
+    <Property Name="C100Total" Type="Int32" />
+    <Property Name="C20Total" Type="Int32" />
+    <Property Name="C10Total" Type="Int32" />
+    <Property Name="C5Total" Type="Int32" />
+    <Property Name="C2Total" Type="Int32" />
+    <Property Name="C1Total" Type="Int32" />
+    <Property Name="C50Total" Type="Int32" />
+    <Property Name="OnDate" Type="DateTime" />
+    <Property Name="SignedTime" Type="Time" />
+    <Property Name="C10000" Type="Int32" />
+    <Property Name="C10000Total" Type="Int32" />
+    <Property Name="GrandTotal" Type="Decimal" />
+    <Property Name="BranchId" Type="Int32" />
+  </EntityType>
+  <EntityType Name="chithead">
+    <Key>
+      <PropertyRef Name="idChitHeads" />
+    </Key>
+    <Property Name="idChitHeads" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="ChitName" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+    <Property Name="MemberID" Type="Int32" />
+    <Property Name="MemberName" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+    <Property Name="BranchID" Type="Int32" Nullable="false" />
+    <Property Name="ParentID" Type="Int32" Nullable="false" />
+    <Property Name="HeadId" Type="Int32" Nullable="false" />
+    <Property Name="ChitNumber" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+  </EntityType>
+  <EntityType Name="chitpaymentmaster">
+    <Key>
+      <PropertyRef Name="Sl_No" />
+    </Key>
+    <Property Name="Sl_No" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="BranchID" Type="Int64" Nullable="false" />
+    <Property Name="ChitNO" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
+    <Property Name="GrpMemberID" Type="String" Nullable="false" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="DrawNO" Type="Int32" />
+    <Property Name="Priced_amount" Type="Decimal" />
+    <Property Name="Priced_Date" Type="DateTime" />
+    <Property Name="Amount_given_Date" Type="DateTime" />
+    <Property Name="Guarentier_ID" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+    <Property Name="Surity_DocumentNO" Type="String" MaxLength="30" FixedLength="false" Unicode="false" />
+    <Property Name="Mode_of_payment" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="Amount" Type="Decimal" />
+    <Property Name="Cheque_DD_NO" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="Cheque_DD_Date" Type="DateTime" />
+    <Property Name="IFSC" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="Account_no" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="GuranteeAmount" Type="Decimal" />
+    <Property Name="IsDeleted" Type="Boolean" />
+  </EntityType>
+  <EntityType Name="customerbank">
+    <Key>
+      <PropertyRef Name="bankid" />
+    </Key>
+    <Property Name="bankid" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="bankname" Type="String" MaxLength="150" FixedLength="false" Unicode="false" />
+    <Property Name="bankkey" Type="String" MaxLength="150" FixedLength="false" Unicode="false" />
+    <Property Name="createdat" Type="DateTime" />
+  </EntityType>
+  <EntityType Name="dailyactivity">
+    <Key>
+      <PropertyRef Name="ano" />
+    </Key>
+    <Property Name="ano" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="date" Type="DateTime" Nullable="false" />
+    <Property Name="empid" Type="Int64" Nullable="false" />
+    <Property Name="vehiclenumber" Type="String" Nullable="false" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="repairdetails" Type="String" MaxLength="65535" FixedLength="false" Unicode="false" />
+    <Property Name="branchid" Type="Int64" Nullable="false" />
+    <Property Name="DualTransactionKey" Type="Guid" Nullable="false" />
+  </EntityType>
+  <EntityType Name="dar">
+    <Key>
+      <PropertyRef Name="aid" />
+    </Key>
+    <Property Name="aid" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="DualTransactionKey" Type="Guid" Nullable="false" />
+    <Property Name="mchitsfrom" Type="Int64" />
+    <Property Name="mchitsto" Type="Int64" />
+    <Property Name="chitsfrom" Type="Int64" />
+    <Property Name="chitsto" Type="Int64" />
+    <Property Name="interestpassbookfrom" Type="Int64" />
+    <Property Name="interestpassbookto" Type="Int64" />
+    <Property Name="otheritemsfrom" Type="Int64" />
+    <Property Name="otheritemsto" Type="Int64" />
+    <Property Name="otherbranchesfrom" Type="Int64" />
+    <Property Name="otherbranchesto" Type="Int64" />
+    <Property Name="total10000" Type="Int64" />
+    <Property Name="total1000" Type="Int64" />
+    <Property Name="total500" Type="Int64" />
+    <Property Name="total100" Type="Int64" />
+    <Property Name="total50" Type="Int64" />
+    <Property Name="total20" Type="Int64" />
+    <Property Name="total10" Type="Int64" />
+    <Property Name="total5" Type="Int64" />
+    <Property Name="total2" Type="Int64" />
+    <Property Name="total1" Type="Int64" />
+    <Property Name="branchid" Type="Int64" Nullable="false" />
+    <Property Name="date" Type="DateTime" Nullable="false" />
+    <Property Name="moneycollector" Type="Int64" Nullable="false" />
+  </EntityType>
+  <EntityType Name="darcheque">
+    <Key>
+      <PropertyRef Name="aid" />
+    </Key>
+    <Property Name="receiptno" Type="Int64" Nullable="false" />
+    <Property Name="chitno" Type="String" Nullable="false" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="name" Type="String" Nullable="false" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="draweebank" Type="String" Nullable="false" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="chequeno" Type="Int64" Nullable="false" />
+    <Property Name="dateofinstrument" Type="DateTime" Nullable="false" />
+    <Property Name="aid" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="branchid" Type="Int32" Nullable="false" />
+    <Property Name="DualTransactionKey" Type="Guid" Nullable="false" />
+    <Property Name="id" Type="Int32" Nullable="false" />
+    <Property Name="date" Type="DateTime" Nullable="false" />
+  </EntityType>
+  <EntityType Name="depositpayment">
+    <Key>
+      <PropertyRef Name="idDepositPayment" />
+    </Key>
+    <Property Name="idDepositPayment" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="DualTransactionKey" Type="Guid" Nullable="false" />
+    <Property Name="ChitAgreementNumber" Type="Int32" />
+    <Property Name="ChitNumber" Type="Int32" />
+    <Property Name="MemberName" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+    <Property Name="DrawNo" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="DrawDate" Type="DateTime" />
+    <Property Name="HeadId" Type="Int64" Nullable="false" />
+    <Property Name="DepositHeadId" Type="Int32" Nullable="false" />
+    <Property Name="ChequeNumber" Type="Int32" Nullable="false" />
+    <Property Name="TokenNumber" Type="Int32" />
+    <Property Name="DepositDate" Type="DateTime" Nullable="false" />
+    <Property Name="BranchID" Type="Int32" Nullable="false" />
+    <Property Name="ReleaseDate" Type="DateTime" />
+    <Property Name="Status" Type="Int32" Nullable="false" />
+  </EntityType>
+  <EntityType Name="documentdetail">
+    <Key>
+      <PropertyRef Name="documentid" />
+    </Key>
+    <Property Name="documentid" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="prizedmemberid" Type="Int32" />
+    <Property Name="groupid" Type="Int32" />
+    <Property Name="drawno" Type="Int32" />
+    <Property Name="choosendate" Type="DateTime" />
+    <Property Name="documentno" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+    <Property Name="infavourof" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+    <Property Name="propertyvalue" Type="Decimal" />
+    <Property Name="registration" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
+    <Property Name="guaranteer" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
+    <Property Name="persontype" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+  </EntityType>
+  <EntityType Name="employee_details">
+    <Key>
+      <PropertyRef Name="Emp_ID" />
+    </Key>
+    <Property Name="BranchID" Type="Int64" Nullable="false" />
+    <Property Name="Emp_ID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="Emp_Name" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+    <Property Name="Emp_Address" Type="String" Nullable="false" MaxLength="65535" FixedLength="false" Unicode="false" />
+    <Property Name="Emp_PhoneNo" Type="String" Nullable="false" MaxLength="13" FixedLength="false" Unicode="false" />
+    <Property Name="Emp_Designation" Type="String" Nullable="false" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="Emp_Email" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="employee_detailscol" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="IsDeleted" Type="Boolean" />
+    <Property Name="Emp_SrNumber" Type="Int32" />
+    <Property Name="Emp_DateOfJoining" Type="DateTime" />
+    <Property Name="Designation_ID" Type="Int32" />
+    <Property Name="emp_da" Type="Decimal" Nullable="false" />
+    <Property Name="emp_hra" Type="Decimal" Nullable="false" />
+    <Property Name="emp_pfno" Type="String" Nullable="false" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="emp_basicsalary" Type="Decimal" Nullable="false" />
+    <Property Name="emp_gender" Type="String" Nullable="false" MaxLength="45" FixedLength="false" Unicode="false" />
+  </EntityType>
+  <EntityType Name="employeedesignation">
+    <Key>
+      <PropertyRef Name="EmpDes_ID" />
+    </Key>
+    <Property Name="EmpDes_ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="Designationname" Type="String" MaxLength="25" FixedLength="false" Unicode="false" />
+  </EntityType>
+  <EntityType Name="empsalarydetail">
+    <Key>
+      <PropertyRef Name="EmployeeSalaryId" />
+    </Key>
+    <Property Name="EmployeeHeadId" Type="Int32" Nullable="false" />
+    <Property Name="EmployeeName" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+    <Property Name="ChoosenDate" Type="DateTime" />
+    <Property Name="CurrentDate" Type="DateTime" />
+    <Property Name="HeadId" Type="Int32" />
+    <Property Name="Amount" Type="Decimal" />
+    <Property Name="VoucherType" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="VoucherNo" Type="Int32" />
+    <Property Name="BranchId" Type="Int32" />
+    <Property Name="DualTransactionKey" Type="Guid" />
+    <Property Name="TransactionKey" Type="Int64" Nullable="false" />
+    <Property Name="ChequeNumber" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="EmployeeSalaryId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+  </EntityType>
+  <EntityType Name="fd">
+    <Key>
+      <PropertyRef Name="idFD" />
+    </Key>
+    <Property Name="idFD" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="ChitNumber" Type="Int32" Nullable="false" />
+    <Property Name="Date" Type="DateTime" Nullable="false" />
+    <Property Name="BranchID" Type="Int32" Nullable="false" />
+    <Property Name="DualTransactionKey" Type="Guid" />
+  </EntityType>
+  <EntityType Name="filingfee">
+    <Key>
+      <PropertyRef Name="idFilingFees" />
+    </Key>
+    <Property Name="idFilingFees" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="DualTransactionKey" Type="Guid" Nullable="false" />
+    <Property Name="ChitNumber" Type="Int32" Nullable="false" />
+    <Property Name="GroupNumber" Type="Int32" Nullable="false" />
+    <Property Name="MemberName" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+    <Property Name="ChoosenDate" Type="DateTime" Nullable="false" />
+    <Property Name="DrawDate" Type="DateTime" />
+    <Property Name="DrawNumber" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+    <Property Name="Amount" Type="Decimal" Nullable="false" />
+    <Property Name="Details" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+    <Property Name="HeadID" Type="Int32" Nullable="false" />
+    <Property Name="FilingID" Type="Int32" Nullable="false" />
+    <Property Name="MemberID" Type="Int32" Nullable="false" />
+    <Property Name="BranchID" Type="Int32" Nullable="false" />
+  </EntityType>
+  <EntityType Name="guarantormaster">
+    <Key>
+      <PropertyRef Name="GuarantorID" />
+    </Key>
+    <Property Name="BranchID" Type="Int64" Nullable="false" />
+    <Property Name="GuarantorID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="GuarantorName" Type="String" Nullable="false" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="Age" Type="Int64" />
+    <Property Name="DateofBirth" Type="DateTime" />
+    <Property Name="Fathers_HusbandName" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="NativeAddress" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="ResidentialAddress" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="Designation_OfficeAddress" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="TelephoneNo" Type="String" Nullable="false" MaxLength="13" FixedLength="false" Unicode="false" />
+    <Property Name="IncomefromBusiness" Type="Int64" />
+    <Property Name="MonthlyBasicPay" Type="Int64" />
+    <Property Name="DA" Type="Int64" />
+    <Property Name="OA" Type="Int64" />
+    <Property Name="OtherIncome" Type="Int64" />
+    <Property Name="AY" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+    <Property Name="AYAmount" Type="Int64" />
+    <Property Name="AYPANo" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+    <Property Name="AYOffice" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="B_H_District" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="B_H_Taluk" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="B_H_Village_Town" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="B_H_Street" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="B_H_WardNo" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="B_H_DoorNo" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="B_H_TownSurveyNo" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="B_H_RegistarOffice" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="B_H_SaleValue" Type="Int64" />
+    <Property Name="B_H_MarketValueDate" Type="DateTime" />
+    <Property Name="B_H_Tax" Type="Int64" />
+    <Property Name="B_H_TaxReceiptNo" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="B_H_TaxReceiptDate" Type="DateTime" />
+    <Property Name="B_H_TaxAmount" Type="Int64" />
+    <Property Name="B_H_RentalIncome" Type="Int64" />
+    <Property Name="B_H_EncumCertificate" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="B_H_PropertyRights" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="B_H_ConditionOnProperty" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
+    <Property Name="B_H_Boundary_East" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+    <Property Name="B_H_Boundary_West" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+    <Property Name="B_H_Boundary_South" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+    <Property Name="B_H_Boundary_North" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+    <Property Name="B_H_OtherDetails" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
+    <Property Name="B_H_DetailsofAssetsandValue" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
+    <Property Name="BusinessName" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="BusinessStartedYear" Type="Int16" />
+    <Property Name="NatureofBusiness" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="FirmRegnNo" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="Office" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="CentralSalesTaxRegnNo" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="TINRegno" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="AverageCommericalTax" Type="Int64" />
+    <Property Name="Share" Type="Int64" />
+    <Property Name="Capital" Type="Int64" />
+    <Property Name="Designation" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="PartnerDetails" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
+    <Property Name="NetworthofBusiness" Type="Int64" />
+    <Property Name="AveAnnualIncome" Type="Int64" />
+    <Property Name="IncomeTaxPANo" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="IncomeTaxOffice" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="IncomeTaxPaidYear1" Type="Int64" />
+    <Property Name="IncomeTaxPaidYear2" Type="Int64" />
+    <Property Name="ChitNo" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
+    <Property Name="ChitValue" Type="Int64" />
+    <Property Name="AmountRemitted_Installment" Type="Int64" />
+    <Property Name="AmountRemitted_Amount" Type="Int64" />
+    <Property Name="FutureInstalmentPayable" Type="Int64" />
+    <Property Name="SuretyChitNo" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
+    <Property Name="SuretyChitValue" Type="Int64" />
+    <Property Name="SuretyFutureInstalmentPayabel" Type="Int64" />
+    <Property Name="Relationship" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="Liabilities" Type="String" MaxLength="345" FixedLength="false" Unicode="false" />
+    <Property Name="Date" Type="DateTime" />
+    <Property Name="IsDeleted" Type="Boolean" />
+    <Property Name="Head_Id" Type="Int64" />
+  </EntityType>
+  <EntityType Name="head">
+    <Key>
+      <PropertyRef Name="idHead" />
+    </Key>
+    <Property Name="idHead" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="Particular" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="Type" Type="String" MaxLength="1" FixedLength="false" Unicode="false" />
+  </EntityType>
+  <EntityType Name="headstree">
+    <Key>
+      <PropertyRef Name="NodeID" />
+    </Key>
+    <Property Name="NodeID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="ParentID" Type="Int64" Nullable="false" />
+    <Property Name="Node" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
+    <Property Name="TreeHint" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+    <Property Name="Branchid" Type="Int64" />
+    <Property Name="App_Branchid" Type="Int64" />
+    <Property Name="CreatedDate" Type="DateTime" />
+    <Property Name="ModifiedDate" Type="DateTime" />
+    <Property Name="ISActive" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="Rootid" Type="Int32" />
+  </EntityType>
+  <EntityType Name="jointpronote">
+    <Key>
+      <PropertyRef Name="aid" />
+    </Key>
+    <Property Name="aid" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="promissorydate" Type="DateTime" Nullable="false" />
+    <Property Name="first" Type="String" Nullable="false" MaxLength="65535" FixedLength="false" Unicode="false" />
+    <Property Name="second" Type="String" MaxLength="65535" FixedLength="false" Unicode="false" />
+    <Property Name="at" Type="String" Nullable="false" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="chitno" Type="Int64" Nullable="false" />
+    <Property Name="chit" Type="Int64" />
+    <Property Name="registrarplace" Type="String" Nullable="false" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="registrardate" Type="DateTime" Nullable="false" />
+    <Property Name="registrarno" Type="String" Nullable="false" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="registrarryear" Type="Int64" Nullable="false" />
+    <Property Name="draw" Type="String" Nullable="false" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="drawdate" Type="DateTime" Nullable="false" />
+    <Property Name="no1from" Type="String" Nullable="false" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="no1to" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="no2from" Type="String" Nullable="false" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="no2to" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="chequeno" Type="Int64" />
+    <Property Name="bankorbranch" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+    <Property Name="bankorbranchid" Type="Int64" />
+    <Property Name="draw1" Type="Int64" />
+    <Property Name="branchid" Type="Int64" Nullable="false" />
+    <Property Name="date" Type="DateTime" Nullable="false" />
+  </EntityType>
+  <EntityType Name="loanpronote">
+    <Key>
+      <PropertyRef Name="aid" />
+    </Key>
+    <Property Name="aid" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="TotalAmount" Type="Decimal" Nullable="false" />
+    <Property Name="Office" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="Date" Type="DateTime" />
+    <Property Name="Amount" Type="Decimal" />
+    <Property Name="Interest" Type="Int32" />
+    <Property Name="Place" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+  </EntityType>
+  <EntityType Name="login">
+    <Key>
+      <PropertyRef Name="Sl_No" />
+    </Key>
+    <Property Name="Sl_No" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="BranchID" Type="Int64" Nullable="false" />
+    <Property Name="EmailID" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+    <Property Name="UserName" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+    <Property Name="Password" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="Inserted_Date" Type="DateTime" />
+    <Property Name="Edited_Date" Type="DateTime" />
+    <Property Name="Deleted_Date" Type="DateTime" />
+    <Property Name="IsDeleted" Type="Boolean" />
+    <Property Name="DualTransactionKey" Type="Guid" Nullable="false" />
+    <Property Name="CreatedDate" Type="DateTime" />
+    <Property Name="ModifiedDate" Type="DateTime" />
+    <Property Name="ISActive" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="Encryptpwd" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="Salt" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+    <Property Name="HashPassword" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+    <Property Name="Timeoflog" Type="DateTime" />
+    <Property Name="Countlog" Type="Int32" Nullable="false" />
+  </EntityType>
+  <EntityType Name="membermaster">
+    <Key>
+      <PropertyRef Name="MemberIDNew" />
+    </Key>
+    <Property Name="MemberIDNew" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="BranchId" Type="Int64" Nullable="false" />
+    <Property Name="CustomerName" Type="String" Nullable="false" MaxLength="1073741823" FixedLength="false" Unicode="false" />
+    <Property Name="TypeOfMember" Type="String" Nullable="false" MaxLength="1073741823" FixedLength="false" Unicode="false" />
+    <Property Name="Gender" Type="String" MaxLength="1073741823" FixedLength="false" Unicode="false" />
+    <Property Name="Age" Type="Int64" />
+    <Property Name="DOB" Type="DateTime" />
+    <Property Name="FatherHusbandName" Type="String" MaxLength="1073741823" FixedLength="false" Unicode="false" />
+    <Property Name="MotherWifeName" Type="String" MaxLength="1073741823" FixedLength="false" Unicode="false" />
+    <Property Name="ProprietorName" Type="String" MaxLength="1073741823" FixedLength="false" Unicode="false" />
+    <Property Name="PartnersName" Type="String" MaxLength="1073741823" FixedLength="false" Unicode="false" />
+    <Property Name="DateOfPartnershipWithAmendment" Type="DateTime" />
+    <Property Name="compxerox" Type="String" MaxLength="1073741823" FixedLength="false" Unicode="false" />
+    <Property Name="dateofResol" Type="DateTime" />
+    <Property Name="ProfessionBusiness" Type="String" Nullable="false" MaxLength="1073741823" FixedLength="false" Unicode="false" />
+    <Property Name="NatureofProfessionBusiness" Type="String" MaxLength="1073741823" FixedLength="false" Unicode="false" />
+    <Property Name="ResidentialAddress" Type="String" MaxLength="65535" FixedLength="false" Unicode="false" />
+    <Property Name="AddressForCommunication" Type="String" MaxLength="65535" FixedLength="false" Unicode="false" />
+    <Property Name="ProofofResidence" Type="String" MaxLength="1073741823" FixedLength="false" Unicode="false" />
+    <Property Name="AddressProfessionBusiness" Type="String" MaxLength="1073741823" FixedLength="false" Unicode="false" />
+    <Property Name="TelephoneNoProfessionBusiness" Type="String" MaxLength="1073741823" FixedLength="false" Unicode="false" />
+    <Property Name="TelephoneNoResidence" Type="String" MaxLength="1073741823" FixedLength="false" Unicode="false" />
+    <Property Name="MobileNo" Type="String" Nullable="false" MaxLength="1073741823" FixedLength="false" Unicode="false" />
+    <Property Name="SalesTaxRegistrationNoTNGST" Type="String" MaxLength="1073741823" FixedLength="false" Unicode="false" />
+    <Property Name="CSTRegistrationNumber" Type="String" MaxLength="1073741823" FixedLength="false" Unicode="false" />
+    <Property Name="IncomeTaxPANoWardandCircle" Type="String" MaxLength="1073741823" FixedLength="false" Unicode="false" />
+    <Property Name="BankName" Type="String" MaxLength="40" FixedLength="false" Unicode="false" />
+    <Property Name="BranchName" Type="String" MaxLength="40" FixedLength="false" Unicode="false" />
+    <Property Name="SavingsCurrentAccountNo" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+    <Property Name="ProspectID" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+    <Property Name="MemberID" Type="Int32" Nullable="false" />
+    <Property Name="Title" Type="String" MaxLength="5" FixedLength="false" Unicode="false" />
+    <Property Name="ApprovedStatus" Type="Int32" />
+    <Property Name="ReffererDetails" Type="String" MaxLength="65535" FixedLength="false" Unicode="false" />
+    <Property Name="ApprovedorRejectedDate" Type="DateTime" />
+    <Property Name="ProspectDate" Type="DateTime" />
+    <Property Name="IsDeleted" Type="Boolean" />
+    <Property Name="CreatedDate" Type="DateTime" />
+    <Property Name="ModifiedDate" Type="DateTime" />
+    <Property Name="ISActive" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="AadharNumber" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
+    <Property Name="username" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="password" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+  </EntityType>
+  <EntityType Name="membersdocument">
+    <Key>
+      <PropertyRef Name="MemberID" />
+    </Key>
+    <Property Name="MemberID" Type="Int64" Nullable="false" />
+    <Property Name="Photo" Type="Binary" MaxLength="Max" FixedLength="false" />
+    <Property Name="ImageTYpe" Type="String" MaxLength="15" FixedLength="false" Unicode="false" />
+    <Property Name="IsDeleted" Type="Boolean" />
+    <Property Name="ImageUrl" Type="String" MaxLength="5000" FixedLength="false" Unicode="false" />
+  </EntityType>
+  <EntityType Name="appvoucherapproval">
+    <Key>
+      <PropertyRef Name="DualTransactionKey" />
+      <PropertyRef Name="ChoosenDate" />
+      <PropertyRef Name="BranchID" />
+      <PropertyRef Name="ApprovedDate" />
+    </Key>
+    <Property Name="DualTransactionKey" Type="Guid" Nullable="false" />
+    <Property Name="ChoosenDate" Type="DateTime" Nullable="false" />
+    <Property Name="BranchID" Type="Int64" Nullable="false" />
+    <Property Name="ApprovedDate" Type="DateTime" Nullable="false" />
+    <Property Name="AppReceiptno" Type="String" MaxLength="1073741823" FixedLength="false" Unicode="false" />
+  </EntityType>
+  <EntityType Name="cashcollectionamount">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int32" Nullable="false" />
+    <Property Name="SusName" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="SusAcOn" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="SusAmount" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+  </EntityType>
+  <EntityType Name="commissionandservicetax">
+    <Key>
+      <PropertyRef Name="SI_No" />
+    </Key>
+    <Property Name="BranchID" Type="Int32" />
+    <Property Name="GroupId" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="SI_No" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="ChitValue" Type="Int32" />
+    <Property Name="Commission" Type="Int32" />
+    <Property Name="IncidentalCharges" Type="Int32" />
+    <Property Name="Total" Type="Int32" />
+    <Property Name="ValueOfTheTaxbleService_70__" Type="Int32" />
+    <Property Name="ServiceTax_12_36_" Type="Int32" />
+    <Property Name="IsDeleted" Type="Boolean" />
+  </EntityType>
+  <EntityType Name="commissiondetail">
+    <Key>
+      <PropertyRef Name="SINo" />
+    </Key>
+    <Property Name="SINo" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="GstAmount" Type="Decimal" />
+    <Property Name="CgstAmount" Type="Decimal" />
+    <Property Name="SgstAmount" Type="Decimal" />
+    <Property Name="IgstAmount" Type="Decimal" />
+  </EntityType>
+  <EntityType Name="membersuggestion">
+    <Key>
+      <PropertyRef Name="slno" />
+    </Key>
+    <Property Name="slno" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="BranchID" Type="Int64" Nullable="false" />
+    <Property Name="GroupNo" Type="Int64" Nullable="false" />
+    <Property Name="MemberID" Type="Int64" Nullable="false" />
+    <Property Name="PoolNo" Type="String" Nullable="false" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="EstSuretyDocument" Type="String" Nullable="false" MaxLength="65535" FixedLength="false" Unicode="false" />
+    <Property Name="EstCallNoOfAuction" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+    <Property Name="M_ID" Type="Int64" Nullable="false" />
+    <Property Name="Comments" Type="String" Nullable="false" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="NoofTokens" Type="Int64" Nullable="false" />
+    <Property Name="SuggestedDate" Type="DateTime" />
+    <Property Name="ApprovedDate" Type="DateTime" />
+    <Property Name="RejectedDate" Type="DateTime" />
+    <Property Name="Reason" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
+    <Property Name="NoofTokensApproved" Type="Int64" />
+    <Property Name="SuggestedBranchId" Type="Int64" Nullable="false" />
+    <Property Name="NoofRemainingTokens" Type="Int64" />
+    <Property Name="IsDeleted" Type="Boolean" />
+    <Property Name="NoOfAssignedToken" Type="Int64" Nullable="false" />
+    <Property Name="Suggessionifany" Type="String" MaxLength="65535" FixedLength="false" Unicode="false" />
+    <Property Name="assigneddate" Type="DateTime" />
+    <Property Name="receiptdate" Type="DateTime" />
+  </EntityType>
+  <EntityType Name="membertogroupmaster">
+    <Key>
+      <PropertyRef Name="Head_Id" />
+      <PropertyRef Name="GrpMemberID" />
+    </Key>
+    <Property Name="BranchID" Type="Int64" Nullable="false" />
+    <Property Name="MemberName" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+    <Property Name="MemberID" Type="Int64" Nullable="false" />
+    <Property Name="MemberAddress" Type="String" Nullable="false" MaxLength="65535" FixedLength="false" Unicode="false" />
+    <Property Name="Head_Id" Type="Int64" Nullable="false" />
+    <Property Name="GroupID" Type="Int64" Nullable="false" />
+    <Property Name="GrpMemberID" Type="String" Nullable="false" MaxLength="13" FixedLength="false" Unicode="false" />
+    <Property Name="NomineeName" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+    <Property Name="NomineeAddress" Type="String" MaxLength="65535" FixedLength="false" Unicode="false" />
+    <Property Name="card" Type="Boolean" Nullable="false" />
+    <Property Name="Isremoved" Type="Byte" Nullable="false" />
+    <Property Name="B_Id" Type="Int64" Nullable="false" />
+    <Property Name="M_Id" Type="Int64" Nullable="false" />
+    <Property Name="EstCallNoOfAuction" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+    <Property Name="EstSuretyDocument" Type="String" MaxLength="65535" FixedLength="false" Unicode="false" />
+    <Property Name="PoolNo" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="Flag" Type="Boolean" />
+    <Property Name="headofficesuggession" Type="String" MaxLength="65535" FixedLength="false" Unicode="false" />
+    <Property Name="aid" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="SuggestDate" Type="DateTime" />
+    <Property Name="CreatedDate" Type="DateTime" />
+    <Property Name="ModifiedDate" Type="DateTime" />
+    <Property Name="ISActive" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+  </EntityType>
+  <EntityType Name="mobileappvoucher">
+    <Key>
+      <PropertyRef Name="TransactionKey" />
+    </Key>
+    <Property Name="TransactionKey" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="DualTransactionKey" Type="Guid" Nullable="false" />
+    <Property Name="BranchID" Type="Int64" Nullable="false" />
+    <Property Name="CurrDate" Type="DateTime" />
+    <Property Name="Voucher_No" Type="Int32" Nullable="false" />
+    <Property Name="Voucher_Type" Type="String" Nullable="false" MaxLength="65532" FixedLength="false" Unicode="false" />
+    <Property Name="Head_Id" Type="Int64" Nullable="false" />
+    <Property Name="ChoosenDate" Type="DateTime" Nullable="false" />
+    <Property Name="Narration" Type="String" Nullable="false" MaxLength="1500" FixedLength="false" Unicode="false" />
+    <Property Name="Series" Type="String" Nullable="false" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="ReceievedBy" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="Trans_Type" Type="Boolean" Nullable="false" />
+    <Property Name="T_Day" Type="Int64" Nullable="false" />
+    <Property Name="T_Month" Type="Int64" Nullable="false" />
+    <Property Name="T_Year" Type="Int64" Nullable="false" />
+    <Property Name="MemberID" Type="Int64" />
+    <Property Name="Trans_Medium" Type="Boolean" Nullable="false" />
+    <Property Name="RootID" Type="Int64" Nullable="false" />
+    <Property Name="ChitGroupId" Type="Int64" />
+    <Property Name="Other_Trans_Type" Type="Int64" Nullable="false" />
+    <Property Name="IsDeleted" Type="Int32" Nullable="false" />
+    <Property Name="IsAccepted" Type="Boolean" Nullable="false" />
+    <Property Name="CreatedDate" Type="DateTime" />
+    <Property Name="ModifiedDate" Type="DateTime" />
+    <Property Name="ISActive" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="AppReceiptno" Type="String" MaxLength="1073741823" FixedLength="false" Unicode="false" />
+    <Property Name="M_Id" Type="Int32" />
+    <Property Name="LoginIP" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+  </EntityType>
+  <EntityType Name="moneycollector">
+    <Key>
+      <PropertyRef Name="moneycollid" />
+    </Key>
+    <Property Name="BranchID" Type="Int64" Nullable="false" />
+    <Property Name="moneycollid" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="moneycollname" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+    <Property Name="moneycolladdress" Type="String" Nullable="false" MaxLength="65535" FixedLength="false" Unicode="false" />
+    <Property Name="moneycollphno" Type="String" Nullable="false" MaxLength="30" FixedLength="false" Unicode="false" />
+    <Property Name="employeeid" Type="Int64" Nullable="false" />
+    <Property Name="username" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="password" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="CreatedDate" Type="DateTime" />
+    <Property Name="ModifiedDate" Type="DateTime" />
+    <Property Name="ISActive" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="Flag" Type="Boolean" />
+  </EntityType>
+  <EntityType Name="nomineetable">
+    <Key>
+      <PropertyRef Name="sLno" />
+    </Key>
+    <Property Name="MemberID" Type="Int64" Nullable="false" />
+    <Property Name="NomineeName" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
+    <Property Name="NomineeAge" Type="Int64" />
+    <Property Name="Relation" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
+    <Property Name="NomineeAddress" Type="String" Nullable="false" MaxLength="200" FixedLength="false" Unicode="false" />
+    <Property Name="NomineeTelephoneNo" Type="String" MaxLength="15" FixedLength="false" Unicode="false" />
+    <Property Name="NomineeMobileNo" Type="String" MaxLength="13" FixedLength="false" Unicode="false" />
+    <Property Name="GrpMemberID" Type="Int64" Nullable="false" />
+    <Property Name="sLno" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="Flag" Type="Int64" Nullable="false" />
+  </EntityType>
+  <EntityType Name="PasswordChangeHistory">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="Sl_No" Type="Int32" />
+    <Property Name="BranchId" Type="Int32" />
+    <Property Name="Username" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+    <Property Name="OldPassword" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+    <Property Name="NewPassword" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+    <Property Name="ChangedDate" Type="DateTime" />
+    <Property Name="LoginIP" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+  </EntityType>
+  <EntityType Name="pdrr">
+    <Key>
+      <PropertyRef Name="aid" />
+    </Key>
+    <Property Name="aid" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="dualtransactionkey" Type="Guid" Nullable="false" />
+    <Property Name="chitnumbers" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+    <Property Name="membername" Type="String" Nullable="false" MaxLength="65535" FixedLength="false" Unicode="false" />
+    <Property Name="property" Type="String" Nullable="false" MaxLength="65535" FixedLength="false" Unicode="false" />
+    <Property Name="mortagers" Type="String" Nullable="false" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="encumberance" Type="String" Nullable="false" MaxLength="65535" FixedLength="false" Unicode="false" />
+    <Property Name="valueon" Type="DateTime" Nullable="false" />
+    <Property Name="branchid" Type="Int64" Nullable="false" />
+    <Property Name="date" Type="DateTime" Nullable="false" />
+    <Property Name="office" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="chitno" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+  </EntityType>
+  <EntityType Name="petrolconsumption">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="PersonName" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="VechicleNo" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="PetrolConsumptioncol" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="Date" Type="DateTime" />
+    <Property Name="Description" Type="String" MaxLength="65535" FixedLength="false" Unicode="false" />
+    <Property Name="PetrolInLitre" Type="Decimal" />
+    <Property Name="Oil" Type="Decimal" />
+    <Property Name="BillAmount" Type="Decimal" />
+    <Property Name="TotalExpenses" Type="Decimal" />
+  </EntityType>
+  <EntityType Name="relisation">
+    <Key>
+      <PropertyRef Name="id" />
+      <PropertyRef Name="TransactionKey" />
+    </Key>
+    <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="TransactionKey" Type="String" Nullable="false" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="DateChkDeposit" Type="Boolean" />
+    <Property Name="DateDeposit" Type="DateTime" />
+    <Property Name="DateChkRelisation" Type="Boolean" />
+    <Property Name="DateRelisation" Type="DateTime" />
+    <Property Name="ReasonForReturnCheck" Type="String" MaxLength="65535" FixedLength="false" Unicode="false" />
+    <Property Name="Relisationcol" Type="String" MaxLength="65535" FixedLength="false" Unicode="false" />
+    <Property Name="DualTransactionKey" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="Bounced" Type="Boolean" />
+  </EntityType>
+  <EntityType Name="removal_approval">
+    <Key>
+      <PropertyRef Name="SNo" />
+    </Key>
+    <Property Name="SNo" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="BranchId" Type="Int64" Nullable="false" />
+    <Property Name="ChitNO" Type="Int64" Nullable="false" />
+    <Property Name="OldMemberID" Type="Int64" Nullable="false" />
+    <Property Name="GroupMemberID" Type="Int64" Nullable="false" />
+    <Property Name="NewMemberID" Type="Int64" Nullable="false" />
+    <Property Name="DateOfRemoval" Type="DateTime" />
+    <Property Name="ReasonForRemoval" Type="String" MaxLength="65535" FixedLength="false" Unicode="false" />
+    <Property Name="C1stNoticeDate" Type="DateTime" />
+    <Property Name="C2ndNoticeDate" Type="DateTime" />
+    <Property Name="CurrentDrawNumber" Type="Int64" Nullable="false" />
+    <Property Name="EstimatedDrawNumber" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
+    <Property Name="EstimatedSurityDetails" Type="String" Nullable="false" MaxLength="65535" FixedLength="false" Unicode="false" />
+    <Property Name="SubstitutedDate" Type="DateTime" />
+    <Property Name="RejectionDate" Type="DateTime" />
+    <Property Name="M_ID" Type="Int64" Nullable="false" />
+    <Property Name="B_ID" Type="Int64" Nullable="false" />
+    <Property Name="RejectionReason" Type="String" MaxLength="65535" FixedLength="false" Unicode="false" />
+    <Property Name="card" Type="Boolean" Nullable="false" />
+    <Property Name="Flag" Type="Int64" Nullable="false" />
+    <Property Name="profession" Type="String" Nullable="false" MaxLength="65535" FixedLength="false" Unicode="false" />
+    <Property Name="suggesionifany" Type="String" MaxLength="65535" FixedLength="false" Unicode="false" />
+    <Property Name="istransfered" Type="Int64" />
+    <Property Name="intimationdate" Type="DateTime" />
+    <Property Name="substitutedate" Type="DateTime" />
+  </EntityType>
+  <EntityType Name="removedmaster">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="GroupmemberID" Type="Int32" />
+    <Property Name="foremansubstitutedchitprized" Type="Int32" />
+    <Property Name="foremansubstitutedchitcall" Type="Int32" />
+    <Property Name="fromdate" Type="DateTime" />
+    <Property Name="todate" Type="DateTime" />
+  </EntityType>
+  <EntityType Name="restrictionmaster">
+    <Key>
+      <PropertyRef Name="idRestrictionMaster" />
+    </Key>
+    <Property Name="idRestrictionMaster" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="BranchID" Type="Int32" Nullable="false" />
+    <Property Name="MinimumDate" Type="DateTime" Nullable="false" />
+  </EntityType>
+  <EntityType Name="right">
+    <Key>
+      <PropertyRef Name="aid" />
+    </Key>
+    <Property Name="aid" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="DualTransactionKey" Type="Guid" Nullable="false" />
+    <Property Name="roleid" Type="Int64" Nullable="false" />
+    <Property Name="memberid" Type="Int64" Nullable="false" />
+  </EntityType>
+  <EntityType Name="role">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="Int64" Nullable="false" />
+    <Property Name="name" Type="String" Nullable="false" MaxLength="40" FixedLength="false" Unicode="false" />
+  </EntityType>
+  <EntityType Name="transfer_approval">
+    <Key>
+      <PropertyRef Name="SlNo" />
+    </Key>
+    <Property Name="SlNo" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="BranchID" Type="Int64" Nullable="false" />
+    <Property Name="ChitGroup" Type="Int64" Nullable="false" />
+    <Property Name="CurrentDrawNO" Type="Int64" Nullable="false" />
+    <Property Name="Old_Member" Type="Int64" Nullable="false" />
+    <Property Name="New_Member" Type="Int64" Nullable="false" />
+    <Property Name="EstimatedDrawNoForAuction" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+    <Property Name="EstimatedSuretyDetails" Type="String" Nullable="false" MaxLength="65535" FixedLength="false" Unicode="false" />
+    <Property Name="M_ID" Type="Int64" Nullable="false" />
+    <Property Name="B_ID" Type="Int64" Nullable="false" />
+    <Property Name="SuggestedDate" Type="DateTime" Nullable="false" />
+    <Property Name="ApprovedDate" Type="DateTime" />
+    <Property Name="RejectedDate" Type="DateTime" />
+    <Property Name="Reason" Type="String" MaxLength="65535" FixedLength="false" Unicode="false" />
+    <Property Name="TransferredDate" Type="DateTime" />
+    <Property Name="IsTranasfered" Type="Boolean" Nullable="false" />
+    <Property Name="GrpMemberID" Type="Int64" Nullable="false" />
+    <Property Name="Flag" Type="Int64" Nullable="false" />
+    <Property Name="ReasonforRejection" Type="String" MaxLength="65535" FixedLength="false" Unicode="false" />
+    <Property Name="card" Type="Boolean" Nullable="false" />
+    <Property Name="ProfessionBusiness" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="Suggessionifany" Type="String" MaxLength="65535" FixedLength="false" Unicode="false" />
+    <Property Name="assigndate" Type="DateTime" />
+    <Property Name="foremandate" Type="DateTime" />
+  </EntityType>
+  <EntityType Name="transfermaster">
+    <Key>
+      <PropertyRef Name="slno" />
+    </Key>
+    <Property Name="slno" Type="Int32" Nullable="false" />
+    <Property Name="ChitNO" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+    <Property Name="OldMemberID" Type="Int32" Nullable="false" />
+    <Property Name="NewMemberID" Type="Int32" Nullable="false" />
+    <Property Name="ReasonForTransfer" Type="String" MaxLength="300" FixedLength="false" Unicode="false" />
+    <Property Name="TransferDate" Type="DateTime" Nullable="false" />
+    <Property Name="TransferDateWEF" Type="DateTime" Nullable="false" />
+    <Property Name="grpMemberID" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
+    <Property Name="IFlag" Type="String" MaxLength="1" FixedLength="false" Unicode="false" />
+    <Property Name="CreatedDate" Type="DateTime" />
+    <Property Name="ModifiedDate" Type="DateTime" />
+    <Property Name="ISActive" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+  </EntityType>
+  <EntityType Name="transloan">
+    <Key>
+      <PropertyRef Name="aid" />
+    </Key>
+    <Property Name="DualTransactionKey" Type="Guid" Nullable="false" />
+    <Property Name="TransactionKey" Type="Int64" />
+    <Property Name="GroupID" Type="Int64" />
+    <Property Name="GroupMemberID" Type="Int64" />
+    <Property Name="EmployeeID" Type="Int64" />
+    <Property Name="MemberID" Type="Int64" />
+    <Property Name="LoanHeadID" Type="Int64" Nullable="false" />
+    <Property Name="ApplyedOn" Type="DateTime" Nullable="false" />
+    <Property Name="ApprovedOn" Type="DateTime" />
+    <Property Name="ChoosenDate" Type="DateTime" />
+    <Property Name="AdminSanctionNo" Type="Int64" Nullable="false" />
+    <Property Name="Narration" Type="String" MaxLength="65535" FixedLength="false" Unicode="false" />
+    <Property Name="Trans_Medium" Type="Int64" Nullable="false" />
+    <Property Name="ReasonforRejection" Type="String" MaxLength="65535" FixedLength="false" Unicode="false" />
+    <Property Name="BranchID" Type="Int64" Nullable="false" />
+    <Property Name="loantype" Type="Int64" Nullable="false" />
+    <Property Name="Flag" Type="Int64" Nullable="false" />
+    <Property Name="loannumber" Type="Int64" />
+    <Property Name="aid" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="BankHeadId" Type="Int64" />
+    <Property Name="isTransfered" Type="Int64" Nullable="false" />
+  </EntityType>
+  <EntityType Name="transprofitandloss">
+    <Key>
+      <PropertyRef Name="ano" />
+    </Key>
+    <Property Name="ano" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="BranchID" Type="Int64" Nullable="false" />
+    <Property Name="DualTransactionKey" Type="Guid" Nullable="false" />
+    <Property Name="TransactionKey" Type="Int64" Nullable="false" />
+    <Property Name="HeadID" Type="Int64" Nullable="false" />
+    <Property Name="Narration" Type="String" MaxLength="65535" FixedLength="false" Unicode="false" />
+    <Property Name="aosanction" Type="String" Nullable="false" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="OppositeHeadId" Type="Int64" />
+    <Property Name="ChequeNo" Type="Int64" />
+    <Property Name="ApplyedOn" Type="DateTime" Nullable="false" />
+    <Property Name="AcceptNumber" Type="Int64" />
+    <Property Name="Flag" Type="Int64" Nullable="false" />
+  </EntityType>
+  <EntityType Name="VoucherSer">
+    <Key>
+      <PropertyRef Name="voucherid" />
+    </Key>
+    <Property Name="voucherid" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="VoucherNo" Type="Int32" Nullable="false" />
+    <Property Name="isFinished" Type="Int32" Nullable="false" />
+    <Property Name="Branchid" Type="Int32" Nullable="false" />
+  </EntityType>
+  <EntityType Name="voucherdeleted">
+    <Key>
+      <PropertyRef Name="TransactionKey" />
+      <PropertyRef Name="DualTransactionKey" />
+      <PropertyRef Name="BranchID" />
+      <PropertyRef Name="CurrDate" />
+      <PropertyRef Name="Voucher_No" />
+      <PropertyRef Name="Voucher_Type" />
+      <PropertyRef Name="Head_Id" />
+      <PropertyRef Name="ChoosenDate" />
+      <PropertyRef Name="Narration" />
+      <PropertyRef Name="Amount" />
+      <PropertyRef Name="Series" />
+      <PropertyRef Name="ReceievedBy" />
+      <PropertyRef Name="Trans_Type" />
+      <PropertyRef Name="T_Day" />
+      <PropertyRef Name="T_Month" />
+      <PropertyRef Name="T_Year" />
+      <PropertyRef Name="Trans_Medium" />
+      <PropertyRef Name="RootID" />
+      <PropertyRef Name="Other_Trans_Type" />
+      <PropertyRef Name="IsDeleted" />
+      <PropertyRef Name="IsAccepted" />
+    </Key>
+    <Property Name="TransactionKey" Type="Int64" Nullable="false" />
+    <Property Name="DualTransactionKey" Type="Guid" Nullable="false" />
+    <Property Name="BranchID" Type="Int64" Nullable="false" />
+    <Property Name="CurrDate" Type="DateTime" Nullable="false" />
+    <Property Name="Voucher_No" Type="Int32" Nullable="false" />
+    <Property Name="Voucher_Type" Type="String" Nullable="false" MaxLength="65532" FixedLength="false" Unicode="false" />
+    <Property Name="Head_Id" Type="Int64" Nullable="false" />
+    <Property Name="ChoosenDate" Type="DateTime" Nullable="false" />
+    <Property Name="Narration" Type="String" Nullable="false" MaxLength="65535" FixedLength="false" Unicode="false" />
+    <Property Name="Amount" Type="Decimal" Nullable="false" />
+    <Property Name="Series" Type="String" Nullable="false" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="ReceievedBy" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="Trans_Type" Type="Boolean" Nullable="false" />
+    <Property Name="T_Day" Type="Int32" Nullable="false" />
+    <Property Name="T_Month" Type="Int32" Nullable="false" />
+    <Property Name="T_Year" Type="Int32" Nullable="false" />
+    <Property Name="MemberID" Type="Int32" />
+    <Property Name="Trans_Medium" Type="Boolean" Nullable="false" />
+    <Property Name="RootID" Type="Int32" Nullable="false" />
+    <Property Name="ChitGroupId" Type="Int32" />
+    <Property Name="Other_Trans_Type" Type="Int32" Nullable="false" />
+    <Property Name="IsDeleted" Type="Int32" Nullable="false" />
+    <Property Name="IsAccepted" Type="Int32" Nullable="false" />
+    <Property Name="ApprovedDate" Type="DateTime" />
+    <Property Name="CreatedDate" Type="DateTime" />
+    <Property Name="ModifiedDate" Type="DateTime" />
+    <Property Name="ISActive" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="AppReceiptno" Type="String" MaxLength="1073741823" FixedLength="false" Unicode="false" />
+    <Property Name="removedDt" Type="DateTime" />
+    <Property Name="sysip" Type="String" MaxLength="75" FixedLength="false" Unicode="false" />
+  </EntityType>
+  <EntityType Name="subscriber">
+    <Key>
+      <PropertyRef Name="aid" />
+    </Key>
+    <Property Name="BranchID" Type="Int64" Nullable="false" />
+    <Property Name="SubscriberID" Type="Int32" />
+    <Property Name="SubscriberName" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="Age" Type="Int32" />
+    <Property Name="DateofBirth" Type="DateTime" />
+    <Property Name="Fathers_HusbandName" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="NativeAddress" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="ResidentialAddress" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="Designation_OfficeAddress" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="TelephoneNo" Type="String" MaxLength="13" FixedLength="false" Unicode="false" />
+    <Property Name="IncomefromBusiness" Type="Int32" />
+    <Property Name="MonthlyBasicPay" Type="Int32" />
+    <Property Name="DA" Type="Int32" />
+    <Property Name="OA" Type="Int32" />
+    <Property Name="OtherIncome" Type="Int32" />
+    <Property Name="AY" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+    <Property Name="AYAmount" Type="Int32" />
+    <Property Name="AYPANo" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+    <Property Name="AYOffice" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="B_H_District" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="B_H_Taluk" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="B_H_Village_Town" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="B_H_Street" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="B_H_WardNo" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="B_H_DoorNo" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="B_H_TownSurveyNo" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="B_H_RegistarOffice" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="B_H_SaleValue" Type="Int32" />
+    <Property Name="B_H_MarketValueDate" Type="DateTime" />
+    <Property Name="B_H_MarketValueRs" Type="Decimal" />
+    <Property Name="B_H_Tax" Type="Int32" />
+    <Property Name="B_H_TaxReceiptNo" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="B_H_TaxReceiptDate" Type="DateTime" />
+    <Property Name="B_H_TaxAmount" Type="Int32" />
+    <Property Name="B_H_RentalIncome" Type="Int32" />
+    <Property Name="B_H_EncumCertificate" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="B_H_PropertyRights" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="B_H_ConditionOnProperty" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
+    <Property Name="B_H_Boundary_East" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+    <Property Name="B_H_Boundary_West" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+    <Property Name="B_H_Boundary_South" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+    <Property Name="B_H_Boundary_North" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+    <Property Name="B_H_OtherDetails" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
+    <Property Name="B_H_DetailsofAssetsandValue" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
+    <Property Name="BusinessName" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="BusinessStartedYear" Type="Int16" />
+    <Property Name="NatureofBusiness" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="FirmRegnNo" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="Office" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="CentralSalesTaxRegnNo" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="TINRegno" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="AverageCommericalTax" Type="Int32" />
+    <Property Name="Share" Type="Int32" />
+    <Property Name="Capital" Type="Int32" />
+    <Property Name="Designation" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="PartnerDetails" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
+    <Property Name="NetworthofBusiness" Type="Int32" />
+    <Property Name="AveAnnualIncome" Type="Int32" />
+    <Property Name="IncomeTaxPANo" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="IncomeTaxOffice" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="IncomeTaxPaidYear1" Type="Int32" />
+    <Property Name="IncomeTaxPaidYear2" Type="Int32" />
+    <Property Name="ChitNo" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
+    <Property Name="ChitValue" Type="Int32" />
+    <Property Name="AmountRemitted_Installment" Type="Int32" />
+    <Property Name="AmountRemitted_Amount" Type="Int32" />
+    <Property Name="FutureInstalmentPayable" Type="Int32" />
+    <Property Name="SuretyChitNo" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
+    <Property Name="SuretyChitValue" Type="Int32" />
+    <Property Name="SuretyFutureInstalmentPayabel" Type="Int32" />
+    <Property Name="BusinessPlace_Address" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="Liabilities" Type="String" MaxLength="345" FixedLength="false" Unicode="false" />
+    <Property Name="Date" Type="DateTime" />
+    <Property Name="IsDeleted" Type="Boolean" />
+    <Property Name="Head_Id" Type="Int32" />
+    <Property Name="ChitAgrrementNumber" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="ChitAggreementDate" Type="DateTime" />
+    <Property Name="DateofCommencement" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="ChitNumber1" Type="String" MaxLength="15" FixedLength="false" Unicode="false" />
+    <Property Name="Registraroffice" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="prizedInstalmentNo" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="DateofAuction" Type="DateTime" />
+    <Property Name="PrizeMoney" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="PhoneNoBusinessplace" Type="String" MaxLength="13" FixedLength="false" Unicode="false" />
+    <Property Name="PhoneNoResidence" Type="String" MaxLength="13" FixedLength="false" Unicode="false" />
+    <Property Name="aid" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+  </EntityType>
+  <EntityType Name="SubscriberDetail">
+    <Key>
+      <PropertyRef Name="SNo" />
+    </Key>
+    <Property Name="SNo" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="ICM" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
+    <Property Name="BranchID" Type="Int32" Nullable="false" />
+    <Property Name="ChitGroupId" Type="Int32" Nullable="false" />
+    <Property Name="Ticket_NO" Type="String" Nullable="false" MaxLength="40" FixedLength="false" Unicode="false" />
+    <Property Name="SubscriberName" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+    <Property Name="Mobile" Type="String" MaxLength="40" FixedLength="false" Unicode="false" />
+    <Property Name="Address" Type="String" MaxLength="150" FixedLength="false" Unicode="false" />
+    <Property Name="InstallmentNo" Type="String" MaxLength="40" FixedLength="false" Unicode="false" />
+    <Property Name="ChitAgreementNo" Type="String" MaxLength="40" FixedLength="false" Unicode="false" />
+    <Property Name="DueAmount" Type="Decimal" />
+    <Property Name="DefaultInterest" Type="Decimal" />
+  </EntityType>
+  <EntityType Name="substitutedmaster">
+    <Key>
+      <PropertyRef Name="SNo" />
+    </Key>
+    <Property Name="SNo" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="BranchId" Type="Int64" Nullable="false" />
+    <Property Name="ChitNO" Type="Int64" />
+    <Property Name="OldMemberID" Type="Int64" />
+    <Property Name="GroupMemberID" Type="Int64" Nullable="false" />
+    <Property Name="NewMemberID" Type="Int64" />
+    <Property Name="DateOfRemoval" Type="DateTime" />
+    <Property Name="ReasonForRemoval" Type="String" MaxLength="65535" FixedLength="false" Unicode="false" />
+    <Property Name="C1stNoticeDate" Type="DateTime" />
+    <Property Name="C2ndNoticeDate" Type="DateTime" />
+    <Property Name="SubstitutedDate" Type="DateTime" />
+    <Property Name="IFlag" Type="String" MaxLength="1" FixedLength="false" Unicode="false" />
+    <Property Name="CurrentDrawNumber" Type="Int64" />
+    <Property Name="EstimatedDrawNumber" Type="Int64" />
+    <Property Name="EstimatedSurityDetails" Type="String" MaxLength="65535" FixedLength="false" Unicode="false" />
+    <Property Name="MoneyCollectorID" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+    <Property Name="DescriptionFromSuggestor" Type="String" MaxLength="65535" FixedLength="false" Unicode="false" />
+  </EntityType>
+  <EntityType Name="tablemaster">
+    <Key>
+      <PropertyRef Name="aid" />
+    </Key>
+    <Property Name="aid" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="Tablename" Type="String" MaxLength="1073741823" FixedLength="false" Unicode="false" />
+    <Property Name="ModifiedDate" Type="String" MaxLength="1073741823" FixedLength="false" Unicode="false" />
+  </EntityType>
+  <EntityType Name="transadvance">
+    <Key>
+      <PropertyRef Name="sno" />
+      <PropertyRef Name="DualTransactionKey" />
+    </Key>
+    <Property Name="sno" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="DualTransactionKey" Type="Guid" Nullable="false" />
+    <Property Name="TransactionKey" Type="Int64" />
+    <Property Name="HeadID" Type="Int32" Nullable="false" />
+    <Property Name="Amount" Type="Decimal" />
+    <Property Name="ApplyedOn" Type="DateTime" />
+    <Property Name="ApprovedOn" Type="DateTime" />
+    <Property Name="Choosendate" Type="DateTime" />
+    <Property Name="AdminSanctionNo" Type="Int32" />
+    <Property Name="Narration" Type="String" MaxLength="65535" FixedLength="false" Unicode="false" />
+    <Property Name="BranchID" Type="Int32" />
+    <Property Name="AdvanceNumber" Type="Int32" />
+    <Property Name="Transmedium" Type="Int32" Nullable="false" />
+    <Property Name="Parentid" Type="Int32" Nullable="false" />
+    <Property Name="Flag" Type="Int64" Nullable="false" />
+    <Property Name="BankHeadId" Type="Int64" />
+    <Property Name="isTransfered" Type="Int64" Nullable="false" />
+    <Property Name="employeeid" Type="Int64" />
+  </EntityType>
+  <EntityType Name="transcourt">
+    <Key>
+      <PropertyRef Name="ano" />
+    </Key>
+    <Property Name="ano" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="DualTransactionKey" Type="Guid" Nullable="false" />
+    <Property Name="TransactionKey" Type="Int64" Nullable="false" />
+    <Property Name="HeadID" Type="Int64" Nullable="false" />
+    <Property Name="CC" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+    <Property Name="Number" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+    <Property Name="ChoosenDate" Type="DateTime" Nullable="false" />
+    <Property Name="Narration" Type="String" MaxLength="65535" FixedLength="false" Unicode="false" />
+    <Property Name="BranchID" Type="Int64" Nullable="false" />
+    <Property Name="VoucherType" Type="String" Nullable="false" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="Flag" Type="Boolean" Nullable="false" />
+    <Property Name="istransfered" Type="Boolean" Nullable="false" />
+    <Property Name="ReHeadId" Type="Int32" Nullable="false" />
+    <Property Name="ApplyedOn" Type="DateTime" Nullable="false" />
+    <Property Name="AdminSanctionNo" Type="Int32" Nullable="false" />
+  </EntityType>
+  <EntityType Name="singlepronote">
+    <Key>
+      <PropertyRef Name="aid" />
+    </Key>
+    <Property Name="aid" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="promissorydate" Type="DateTime" Nullable="false" />
+    <Property Name="firstname" Type="String" MaxLength="65535" FixedLength="false" Unicode="false" />
+    <Property Name="at" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="chitno" Type="Int64" />
+    <Property Name="chit" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="registerplace" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="registerdate" Type="DateTime" />
+    <Property Name="registerno" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="registeryear" Type="Int64" />
+    <Property Name="draw" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="drawdate" Type="DateTime" />
+    <Property Name="chequeno" Type="Int64" />
+    <Property Name="bankorbranch" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+    <Property Name="bankorbranchid" Type="Int64" />
+    <Property Name="drawone" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="branchid" Type="Int64" />
+    <Property Name="date" Type="DateTime" Nullable="false" />
+  </EntityType>
+  <EntityType Name="receiptmaster">
+    <Key>
+      <PropertyRef Name="slNo" />
+    </Key>
+    <Property Name="slNo" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="BranchID" Type="Int64" Nullable="false" />
+    <Property Name="ReceivedBranchID" Type="Int64" Nullable="false" />
+    <Property Name="ReceiptNO" Type="Int64" Nullable="false" />
+    <Property Name="ReceiptDate" Type="DateTime" />
+    <Property Name="GroupID" Type="String" MaxLength="25" FixedLength="false" Unicode="false" />
+    <Property Name="GrpMemberID" Type="String" MaxLength="25" FixedLength="false" Unicode="false" />
+    <Property Name="DrawNo" Type="Int32" />
+    <Property Name="DueAmount" Type="Decimal" />
+    <Property Name="ExcessAmount" Type="Decimal" />
+    <Property Name="ArrearAmount" Type="Decimal" />
+    <Property Name="PenaltyAmount" Type="Decimal" />
+    <Property Name="GivenAmount" Type="Decimal" />
+    <Property Name="ModeOFPayment" Type="String" MaxLength="15" FixedLength="false" Unicode="false" />
+    <Property Name="IsValid" Type="Boolean" Nullable="false" />
+    <Property Name="Series" Type="String" MaxLength="3" FixedLength="false" Unicode="false" />
+    <Property Name="TotalChequeDDAmount" Type="Decimal" />
+    <Property Name="ChequeDDNo" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="ReasonForRejection" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="ModeOfPenality" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="CollectedBy" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="RecievedBy" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="BankName" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="BankLocation" Type="String" MaxLength="300" FixedLength="false" Unicode="false" />
+    <Property Name="ChequeDDDate" Type="DateTime" />
+    <Property Name="IFSC" Type="String" MaxLength="25" FixedLength="false" Unicode="false" />
+    <Property Name="OldReceiptDate" Type="DateTime" />
+    <Property Name="ChequeRealizationDate" Type="DateTime" />
+    <Property Name="IsAdviseAccepted" Type="Int32" />
+    <Property Name="receiptmastercol" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="IsDeleted" Type="Boolean" />
+  </EntityType>
+  <EntityType Name="rejectedmember">
+    <Key>
+      <PropertyRef Name="slno" />
+    </Key>
+    <Property Name="slno" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="GrpMemberID" Type="String" Nullable="false" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="GroupID" Type="String" Nullable="false" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="MemberID" Type="String" Nullable="false" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="RejectedDate" Type="DateTime" />
+  </EntityType>
+  <EntityType Name="relation">
+    <Key>
+      <PropertyRef Name="aid" />
+    </Key>
+    <Property Name="aid" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="poolno" Type="String" Nullable="false" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="branchid" Type="Int64" Nullable="false" />
+  </EntityType>
+  <EntityType Name="salarytransbank">
+    <Key>
+      <PropertyRef Name="SalaryTransBankId" />
+    </Key>
+    <Property Name="SalaryTransBankId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="BranchID" Type="Int64" />
+    <Property Name="TransactionKey" Type="Int64" Nullable="false" />
+    <Property Name="DualTransactionKey" Type="Guid" Nullable="false" />
+    <Property Name="T_Day" Type="Int64" Nullable="false" />
+    <Property Name="T_Month" Type="Int64" Nullable="false" />
+    <Property Name="T_Year" Type="Int64" Nullable="false" />
+    <Property Name="BankHeadID" Type="Int64" Nullable="false" />
+    <Property Name="Head_Id" Type="Int64" Nullable="false" />
+    <Property Name="MemberID" Type="Int64" />
+    <Property Name="CustomersBankName" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+    <Property Name="DateInCheque" Type="DateTime" Nullable="false" />
+    <Property Name="ChequeDDNO" Type="Int64" Nullable="false" />
+    <Property Name="IsBounced" Type="Boolean" Nullable="false" />
+    <Property Name="Trans_Type" Type="Int64" Nullable="false" />
+    <Property Name="IsDeleted" Type="Int64" Nullable="false" />
+    <Property Name="cardnumber" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="cardtype" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="isDeposit" Type="Int64" Nullable="false" />
+    <Property Name="isRelised" Type="Int64" Nullable="false" />
+    <Property Name="DateDeposit" Type="DateTime" />
+    <Property Name="DateRelisation" Type="DateTime" />
+    <Property Name="ReasonForReturnCheck" Type="String" MaxLength="65535" FixedLength="false" Unicode="false" />
+    <Property Name="remarks" Type="String" MaxLength="65535" FixedLength="false" Unicode="false" />
+    <Property Name="blockcheque" Type="Int64" Nullable="false" />
+    <Property Name="bankofdeposit" Type="String" MaxLength="65535" FixedLength="false" Unicode="false" />
+    <Property Name="dateofinstrument" Type="DateTime" />
+    <Property Name="place" Type="String" MaxLength="65535" FixedLength="false" Unicode="false" />
+    <Property Name="idofdepositbank" Type="Int32" />
+    <Property Name="IsChequeAvailable" Type="Boolean" Nullable="false" />
+    <Property Name="CreatedDate" Type="DateTime" />
+    <Property Name="ModifiedDate" Type="DateTime" />
+    <Property Name="ISActive" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+  </EntityType>
+  <EntityType Name="reauctionparticular">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="RefNo" Type="Int64" />
+    <Property Name="OldAuctionDate" Type="DateTime" />
+    <Property Name="OldPrizedToken" Type="Int64" />
+    <Property Name="OldPrizedMember" Type="Int64" />
+    <Property Name="GroupID" Type="Int64" Nullable="false" />
+    <Property Name="BranchId" Type="Int64" Nullable="false" />
+    <Property Name="id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+  </EntityType>
+  <EntityType Name="prospect">
+    <Key>
+      <PropertyRef Name="slNo" />
+    </Key>
+    <Property Name="slNo" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="BranchId" Type="Int64" />
+    <Property Name="CustomerName" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+    <Property Name="TypeOfMember" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+    <Property Name="Gender" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+    <Property Name="Age" Type="Int32" />
+    <Property Name="ProfessionBusiness" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+    <Property Name="ResidentialAddress" Type="String" MaxLength="65535" FixedLength="false" Unicode="false" />
+    <Property Name="AddressForCommunication" Type="String" Nullable="false" MaxLength="65535" FixedLength="false" Unicode="false" />
+    <Property Name="MobileNo" Type="String" MaxLength="30" FixedLength="false" Unicode="false" />
+    <Property Name="MonthlyIncome" Type="Double" />
+    <Property Name="ProspectID" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+    <Property Name="Title" Type="String" MaxLength="6" FixedLength="false" Unicode="false" />
+    <Property Name="ApprovedStatus" Type="Boolean" />
+    <Property Name="ReffererDetails" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+    <Property Name="isDeleted" Type="Boolean" />
+    <Property Name="JoinedDate" Type="DateTime" />
+    <Property Name="DOB" Type="DateTime" />
+  </EntityType>
+  <EntityType Name="auctiondetail">
+    <Key>
+      <PropertyRef Name="inccolumn" />
+    </Key>
+    <Property Name="inccolumn" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="BranchID" Type="Int64" Nullable="false" />
+    <Property Name="GroupID" Type="Int64" Nullable="false" />
+    <Property Name="AuctionDate" Type="DateTime" />
+    <Property Name="ReBidNO" Type="Int32" />
+    <Property Name="DrawNO" Type="Int32" />
+    <Property Name="PrizedMemberID" Type="Int32" />
+    <Property Name="MemberID" Type="Int64" />
+    <Property Name="PrizedAmount" Type="Decimal" />
+    <Property Name="TotalCommission" Type="Decimal" />
+    <Property Name="DefaultInterest" Type="Decimal" />
+    <Property Name="Dividend" Type="Decimal" />
+    <Property Name="KasarAmount" Type="Decimal" />
+    <Property Name="CurrentDueAmount" Type="Decimal" />
+    <Property Name="NextDueAmount" Type="Decimal" />
+    <Property Name="AdditionalKasarAmount" Type="Decimal" />
+    <Property Name="IsPrized" Type="String" MaxLength="1" FixedLength="false" Unicode="false" />
+    <Property Name="IsReAuction" Type="Boolean" />
+    <Property Name="CreatedDate" Type="DateTime" />
+    <Property Name="ModifiedDate" Type="DateTime" />
+    <Property Name="ISActive" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="Rebiddate1" Type="DateTime" />
+    <Property Name="Rebiddate2" Type="DateTime" />
+  </EntityType>
+  <EntityType Name="groupmaster">
+    <Key>
+      <PropertyRef Name="aid" />
+      <PropertyRef Name="Head_Id" />
+      <PropertyRef Name="GROUPNO" />
+    </Key>
+    <Property Name="aid" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="Head_Id" Type="Int64" Nullable="false" />
+    <Property Name="BranchID" Type="Int64" Nullable="false" />
+    <Property Name="GROUPNO" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="PSOOrderNo" Type="String" Nullable="false" MaxLength="13" FixedLength="false" Unicode="false" />
+    <Property Name="PSOOrderDate" Type="DateTime" Nullable="false" />
+    <Property Name="PSODROffice" Type="String" Nullable="false" MaxLength="30" FixedLength="false" Unicode="false" />
+    <Property Name="ChitAgreementNo" Type="String" Nullable="false" MaxLength="13" FixedLength="false" Unicode="false" />
+    <Property Name="ChitAgreementYear" Type="Int32" Nullable="false" />
+    <Property Name="AgreementDate" Type="DateTime" Nullable="false" />
+    <Property Name="ChitValue" Type="Decimal" Nullable="false" />
+    <Property Name="ChitPeriod" Type="Int32" Nullable="false" />
+    <Property Name="ChitCategory" Type="String" Nullable="false" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="ChitStartDate" Type="DateTime" Nullable="false" />
+    <Property Name="ChitEndDate" Type="DateTime" Nullable="false" />
+    <Property Name="NoofMembers" Type="Int32" Nullable="false" />
+    <Property Name="AuctionDate" Type="DateTime" />
+    <Property Name="AuctionTime" Type="Time" Nullable="false" />
+    <Property Name="AuctionEndTime" Type="String" Nullable="false" MaxLength="30" FixedLength="false" Unicode="false" />
+    <Property Name="DueDate" Type="DateTime" />
+    <Property Name="PriorIntimationDate" Type="DateTime" />
+    <Property Name="SDP_FDRNO" Type="String" Nullable="false" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="SDP_Bank" Type="String" Nullable="false" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="SDP_BankPlace" Type="String" Nullable="false" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="SDP_Commencement" Type="DateTime" Nullable="false" />
+    <Property Name="SDP_Maturity" Type="DateTime" Nullable="false" />
+    <Property Name="SDP_RateofInterest" Type="Decimal" Nullable="false" />
+    <Property Name="SDP_PeriodinMonths" Type="Int32" Nullable="false" />
+    <Property Name="SDP_Amount" Type="Decimal" Nullable="false" />
+    <Property Name="IsFinished" Type="SByte" Nullable="false" />
+    <Property Name="IsDeleted" Type="Boolean" />
+    <Property Name="CreatedDate" Type="DateTime" />
+    <Property Name="ModifiedDate" Type="DateTime" />
+    <Property Name="ISActive" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+  </EntityType>
+  <EntityType Name="voucher">
+    <Key>
+      <PropertyRef Name="TransactionKey" />
+    </Key>
+    <Property Name="TransactionKey" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="DualTransactionKey" Type="Guid" Nullable="false" />
+    <Property Name="BranchID" Type="Int64" Nullable="false" />
+    <Property Name="CurrDate" Type="DateTime" />
+    <Property Name="Voucher_No" Type="Int32" Nullable="false" />
+    <Property Name="Voucher_Type" Type="String" Nullable="false" MaxLength="65532" FixedLength="false" Unicode="false" />
+    <Property Name="Head_Id" Type="Int64" Nullable="false" />
+    <Property Name="ChoosenDate" Type="DateTime" Nullable="false" />
+    <Property Name="Narration" Type="String" Nullable="false" MaxLength="1500" FixedLength="false" Unicode="false" />
+    <Property Name="Amount" Type="Decimal" Nullable="false" />
+    <Property Name="Series" Type="String" Nullable="false" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="ReceievedBy" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="Trans_Type" Type="Boolean" Nullable="false" />
+    <Property Name="T_Day" Type="Int32" Nullable="false" />
+    <Property Name="T_Month" Type="Int32" Nullable="false" />
+    <Property Name="T_Year" Type="Int64" Nullable="false" />
+    <Property Name="MemberID" Type="Int64" />
+    <Property Name="Trans_Medium" Type="Boolean" Nullable="false" />
+    <Property Name="RootID" Type="Int64" Nullable="false" />
+    <Property Name="ChitGroupId" Type="Int64" />
+    <Property Name="Other_Trans_Type" Type="Int64" Nullable="false" />
+    <Property Name="IsDeleted" Type="Int32" Nullable="false" />
+    <Property Name="IsAccepted" Type="Boolean" Nullable="false" />
+    <Property Name="CreatedDate" Type="DateTime" />
+    <Property Name="ModifiedDate" Type="DateTime" />
+    <Property Name="ISActive" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="AppReceiptno" Type="String" MaxLength="1073741823" FixedLength="false" Unicode="false" />
+    <Property Name="M_Id" Type="Int32" />
+    <Property Name="LoginIP" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+  </EntityType>
+  <EntityType Name="trans_payment">
+    <Key>
+      <PropertyRef Name="autoid" />
+    </Key>
+    <Property Name="TransactionKey_Bank" Type="Int64" />
+    <Property Name="TransactionKey" Type="Int64" Nullable="false" />
+    <Property Name="DualTransactionKey" Type="Guid" Nullable="false" />
+    <Property Name="BranchID" Type="Int64" Nullable="false" />
+    <Property Name="ChitGroupID" Type="Int32" Nullable="false" />
+    <Property Name="TokenNumber" Type="Int64" Nullable="false" />
+    <Property Name="DrawNo" Type="Int32" Nullable="false" />
+    <Property Name="NextDrawNo" Type="Int32" />
+    <Property Name="PaymentApplyedOn" Type="DateTime" Nullable="false" />
+    <Property Name="ApprovedOn" Type="DateTime" Nullable="false" />
+    <Property Name="PaymentDate" Type="DateTime" Nullable="false" />
+    <Property Name="GuarantorID" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="Description" Type="String" Nullable="false" MaxLength="65535" FixedLength="false" Unicode="false" />
+    <Property Name="ChitAmount" Type="Decimal" Nullable="false" />
+    <Property Name="PrizedAmount" Type="Decimal" Nullable="false" />
+    <Property Name="AuctionDate" Type="DateTime" />
+    <Property Name="NextDueAmount" Type="Decimal" />
+    <Property Name="AOSanctionNo" Type="Int32" Nullable="false" />
+    <Property Name="GuarantorName" Type="String" Nullable="false" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="CurrentDueAmount" Type="Decimal" Nullable="false" />
+    <Property Name="autoid" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="Flags" Type="Int32" Nullable="false" />
+    <Property Name="IsDeleted" Type="Int32" Nullable="false" />
+    <Property Name="CreatedDate" Type="DateTime" />
+    <Property Name="ModifiedDate" Type="DateTime" />
+    <Property Name="ISActive" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+  </EntityType>
+  <EntityType Name="transbank">
+    <Key>
+      <PropertyRef Name="TransactionKey" />
+    </Key>
+    <Property Name="BranchID" Type="Int64" />
+    <Property Name="TransactionKey" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="DualTransactionKey" Type="Guid" Nullable="false" />
+    <Property Name="T_Day" Type="Int64" Nullable="false" />
+    <Property Name="T_Month" Type="Int64" Nullable="false" />
+    <Property Name="T_Year" Type="Int64" Nullable="false" />
+    <Property Name="BankHeadID" Type="Int64" Nullable="false" />
+    <Property Name="Head_Id" Type="Int64" Nullable="false" />
+    <Property Name="MemberID" Type="Int64" />
+    <Property Name="CustomersBankName" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+    <Property Name="DateInCheque" Type="DateTime" Nullable="false" />
+    <Property Name="ChequeDDNO" Type="Int64" Nullable="false" />
+    <Property Name="GivenAmount" Type="Decimal" Nullable="false" />
+    <Property Name="TotalChequeDDAmount" Type="Decimal" Nullable="false" />
+    <Property Name="IsBounced" Type="Boolean" Nullable="false" />
+    <Property Name="Trans_Type" Type="Int64" Nullable="false" />
+    <Property Name="IsDeleted" Type="Int64" Nullable="false" />
+    <Property Name="cardnumber" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="cardtype" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+    <Property Name="isDeposit" Type="Int64" Nullable="false" />
+    <Property Name="isRelised" Type="Int64" Nullable="false" />
+    <Property Name="DateDeposit" Type="DateTime" />
+    <Property Name="DateRelisation" Type="DateTime" />
+    <Property Name="ReasonForReturnCheck" Type="String" MaxLength="65535" FixedLength="false" Unicode="false" />
+    <Property Name="remarks" Type="String" MaxLength="65535" FixedLength="false" Unicode="false" />
+    <Property Name="blockcheque" Type="Int64" Nullable="false" />
+    <Property Name="bankofdeposit" Type="String" MaxLength="65535" FixedLength="false" Unicode="false" />
+    <Property Name="dateofinstrument" Type="DateTime" />
+    <Property Name="place" Type="String" MaxLength="65535" FixedLength="false" Unicode="false" />
+    <Property Name="idofdepositbank" Type="Int32" />
+    <Property Name="IsChequeAvailable" Type="Boolean" Nullable="false" />
+    <Property Name="CreatedDate" Type="DateTime" />
+    <Property Name="ModifiedDate" Type="DateTime" />
+    <Property Name="ISActive" Type="String" MaxLength="45" FixedLength="false" Unicode="false" />
+  </EntityType>
+  <ComplexType Name="BkBindAdvance_Result">
+    <Property Type="String" Name="Heads" Nullable="false" />
+    <Property Type="Int64" Name="NodeID" Nullable="false" />
+    <Property Type="Int64" Name="ParentID" Nullable="false" />
+    <Property Type="String" Name="Narration" Nullable="false" />
+    <Property Type="Decimal" Name="EB_Credit" Nullable="false" />
+    <Property Type="Decimal" Name="EB_Debit" Nullable="false" />
+    <Property Type="Decimal" Name="TD_Credit" Nullable="false" />
+    <Property Type="Decimal" Name="TD_Debit" Nullable="false" />
+    <Property Type="Decimal" Name="RA_Credit" Nullable="false" />
+    <Property Type="Decimal" Name="RA_Debit" Nullable="false" />
+    <Property Type="Decimal" Name="S_Credit" Nullable="false" />
+    <Property Type="Decimal" Name="S_Debit" Nullable="false" />
+    <Property Type="Decimal" Name="PPA_Credit" Nullable="false" />
+    <Property Type="Decimal" Name="PPA_Debit" Nullable="false" />
+    <Property Type="Decimal" Name="VRA_Credit" Nullable="false" />
+    <Property Type="Decimal" Name="VRA_Debit" Nullable="false" />
+    <Property Type="Decimal" Name="SC_Credit" Nullable="false" />
+    <Property Type="Decimal" Name="SDeb_Debit" Nullable="false" />
+    <Property Type="Decimal" Name="SC_Debit" Nullable="false" />
+    <Property Type="Decimal" Name="SDeb_Credit" Nullable="false" />
+  </ComplexType>
+  <ComplexType Name="BkBindAdvancePart2_Result">
+    <Property Type="String" Name="Heads" Nullable="false" />
+    <Property Type="Int64" Name="NodeID" Nullable="false" />
+    <Property Type="Int64" Name="ParentID" Nullable="false" />
+    <Property Type="String" Name="Narration" Nullable="false" />
+    <Property Type="Decimal" Name="Degree_Credit" Nullable="false" />
+    <Property Type="Decimal" Name="Degree_Debit" Nullable="false" />
+    <Property Type="Decimal" Name="Advocate_Credit" Nullable="false" />
+    <Property Type="Decimal" Name="Advocate_Debit" Nullable="false" />
+    <Property Type="Decimal" Name="ACA_Credit" Nullable="false" />
+    <Property Type="Decimal" Name="ACA_Debit" Nullable="false" />
+    <Property Type="Decimal" Name="Cort_Credit" Nullable="false" />
+    <Property Type="Decimal" Name="Cort_Debit" Nullable="false" />
+    <Property Type="Decimal" Name="VA_Credit" Nullable="false" />
+    <Property Type="Decimal" Name="VA_Debit" Nullable="false" />
+    <Property Type="Decimal" Name="PA_Credit" Nullable="false" />
+    <Property Type="Decimal" Name="PA_Debit" Nullable="false" />
+    <Property Type="Decimal" Name="CAL_Credit" Nullable="false" />
+    <Property Type="Decimal" Name="CAL_Debit" Nullable="false" />
+    <Property Type="Decimal" Name="STMISS_Credit" Nullable="false" />
+    <Property Type="Decimal" Name="STMISS_Debit" Nullable="false" />
+  </ComplexType>
+  <ComplexType Name="BkBindBankFD_Result">
+    <Property Type="String" Name="BankName" Nullable="false" />
+    <Property Type="String" Name="BankLocation" Nullable="false" />
+    <Property Type="String" Name="AccountNo" Nullable="false" />
+    <Property Type="Decimal" Name="Credit" Nullable="false" />
+    <Property Type="Decimal" Name="Debit" Nullable="false" />
+  </ComplexType>
+  <ComplexType Name="BkBindBankSB_Result">
+    <Property Type="String" Name="BankName" Nullable="false" />
+    <Property Type="String" Name="BankLocation" Nullable="false" />
+    <Property Type="String" Name="AccountNo" Nullable="false" />
+    <Property Type="Decimal" Name="Credit" Nullable="false" />
+    <Property Type="Decimal" Name="Debit" Nullable="false" />
+  </ComplexType>
+  <ComplexType Name="BkBindDecree1_Result">
+    <Property Type="Int32" Name="TransactionKey" Nullable="false" />
+    <Property Type="Int32" Name="NodeID" Nullable="false" />
+    <Property Type="String" Name="Head" Nullable="false" />
+    <Property Type="Decimal" Name="Crtotal" Nullable="false" />
+    <Property Type="Decimal" Name="BalCredit" Nullable="false" />
+    <Property Type="Decimal" Name="BalDebit" Nullable="false" />
+    <Property Type="Decimal" Name="CourtCredit" Nullable="false" />
+    <Property Type="Decimal" Name="CourtDebit" Nullable="false" />
+    <Property Type="Decimal" Name="AdvocateCredit" Nullable="false" />
+    <Property Type="Decimal" Name="AdvocateDebit" Nullable="false" />
+  </ComplexType>
+  <ComplexType Name="BkBindPandL_Result">
+    <Property Type="DateTime" Name="Date" Nullable="false" />
+    <Property Type="String" Name="Heads" Nullable="false" />
+    <Property Type="Decimal" Name="Credit" Nullable="false" />
+    <Property Type="Decimal" Name="Debit" Nullable="false" />
+  </ComplexType>
+  <ComplexType Name="ChitCredit_Result">
+    <Property Type="String" Name="Heads" Nullable="false" />
+    <Property Type="Decimal" Name="ChitCredit" Nullable="false" />
+    <Property Type="Decimal" Name="ChitDebit" Nullable="false" />
+  </ComplexType>
+  <ComplexType Name="FortnightlyChits_Result">
+    <Property Type="String" Name="Heads" Nullable="false" />
+    <Property Type="Decimal" Name="FortnightlyCredit" Nullable="false" />
+    <Property Type="Decimal" Name="FortnightlyDebit" Nullable="false" />
+  </ComplexType>
+  <ComplexType Name="getbranches_Result">
+    <Property Type="DateTime" Name="Date" Nullable="false" />
+    <Property Type="String" Name="Branch" Nullable="false" />
+    <Property Type="Decimal" Name="Credit" Nullable="false" />
+    <Property Type="Decimal" Name="Debit" Nullable="false" />
+  </ComplexType>
+  <ComplexType Name="Investments_GroupHead_Result">
+    <Property Type="String" Name="Heads" Nullable="false" />
+    <Property Type="String" Name="Narration" Nullable="false" />
+    <Property Type="Decimal" Name="Credit" Nullable="false" />
+    <Property Type="Decimal" Name="Debit" Nullable="false" />
+  </ComplexType>
+  <ComplexType Name="Loans_Result">
+    <Property Type="DateTime" Name="ChoosenDate" Nullable="false" />
+    <Property Type="String" Name="Name" Nullable="false" />
+    <Property Type="Int64" Name="NodeID" Nullable="false" />
+    <Property Type="Int64" Name="ParentID" Nullable="false" />
+    <Property Type="Decimal" Name="Credit" Nullable="false" />
+    <Property Type="Decimal" Name="Debit" Nullable="false" />
+  </ComplexType>
+  <ComplexType Name="MonthlyChit_Result">
+    <Property Type="String" Name="Heads" Nullable="false" />
+    <Property Type="Decimal" Name="MothlyCredit" Nullable="false" />
+    <Property Type="Decimal" Name="MonthlyDebit" Nullable="false" />
+  </ComplexType>
+  <ComplexType Name="OutStanding_Result">
+    <Property Type="String" Name="Heads" Nullable="false" />
+    <Property Type="Decimal" Name="OutCredit" Nullable="false" />
+    <Property Type="Decimal" Name="OutDebit" Nullable="false" />
+  </ComplexType>
+  <ComplexType Name="RCM1Credit_Result">
+    <Property Type="String" Name="Heads" Nullable="false" />
+    <Property Type="Decimal" Name="RCM1Credit" Nullable="false" />
+    <Property Type="Decimal" Name="RCM1Debit" Nullable="false" />
+  </ComplexType>
+  <ComplexType Name="RCM2Credit_Result">
+    <Property Type="String" Name="Heads" Nullable="false" />
+    <Property Type="Decimal" Name="RCM2Credit" Nullable="false" />
+    <Property Type="Decimal" Name="RCM2Debit" Nullable="false" />
+  </ComplexType>
+  <ComplexType Name="TrimonthlyChits_Result">
+    <Property Type="String" Name="Heads" Nullable="false" />
+    <Property Type="Decimal" Name="TrimonthlyChits" Nullable="false" />
+    <Property Type="Decimal" Name="TrimonthlyChitsdebit" Nullable="false" />
+  </ComplexType>
+  <ComplexType Name="UnpaidPrizeMoney_Result">
+    <Property Type="String" Name="Heads" Nullable="false" />
+    <Property Type="Decimal" Name="UnCredit" Nullable="false" />
+    <Property Type="Decimal" Name="UnDebit" Nullable="false" />
+  </ComplexType>
+  <ComplexType Name="UnpaidPrizemoneypayable_Result">
+    <Property Type="String" Name="Heads" Nullable="false" />
+    <Property Type="Decimal" Name="OutCredit" Nullable="false" />
+    <Property Type="Decimal" Name="OutDebit" Nullable="false" />
+  </ComplexType>
+  <ComplexType Name="TrialBalanceofOtherItems_Result">
+    <Property Type="Int64" Name="NodeID" Nullable="false" />
+    <Property Type="String" Name="Heads" Nullable="false" />
+    <Property Type="Decimal" Name="Credit" Nullable="false" />
+    <Property Type="Decimal" Name="Debit" Nullable="false" />
+  </ComplexType>
+</Schema>

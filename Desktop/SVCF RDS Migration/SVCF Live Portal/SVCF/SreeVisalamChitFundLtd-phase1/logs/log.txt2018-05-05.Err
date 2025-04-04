@@ -1,0 +1,6 @@
+INFO  2018-05-05 10:19:18,338 86886ms Home                   Page_Load          - Logged into Site at: 05/05/18 10:19:18 AM
+INFO  2018-05-05 10:19:43,880 112428ms VoucherMultiple        Page_Load          - Voucher Multiple: 05/05/2018 10:19:43 by: admin@svcf.com
+INFO  2018-05-05 10:21:04,807 193355ms VoucherMultiple        Page_Load          - Voucher Multiple: 05/05/2018 10:21:04 by: admin@svcf.com
+INFO  2018-05-05 10:21:14,760 203309ms VoucherMultiple        Page_Load          - Voucher Multiple: 05/05/2018 10:21:14 by: admin@svcf.com
+INFO  2018-05-05 10:21:17,375 205924ms VoucherMultiple        btnYes_Click       - VoucherMultiple.aspx - btnYes_Click():  Completed: 05/05/2018 10:21:17 by: admin@svcf.com
+INFO  2018-05-05 10:21:19,688 208236ms VoucherMultiple        btnYes_Click       - VoucherMultiple.aspx - btnYes_Click():  Completed: 05/05/2018 10:21:19 by: admin@svcf.com

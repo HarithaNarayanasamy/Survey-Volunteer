@@ -1,0 +1,29 @@
+INFO  2018-03-30 10:38:20,947 86512ms Home                   Page_Load          - Logged into Site at: 30/03/18 10:38:20 AM
+INFO  2018-03-30 10:48:49,370 37421ms Home                   Page_Load          - Logged into Site at: 30/03/18 10:48:49 AM
+INFO  2018-03-30 10:49:16,675 64727ms Terminate              Page_Load          - Trial and Arrear - at: 30/03/2018 10:49:16 by: admin@svcf.com
+INFO  2018-03-30 10:49:27,657 75709ms Terminate              Page_Load          - Trial and Arrear - at: 30/03/2018 10:49:27 by: admin@svcf.com
+INFO  2018-03-30 10:57:04,430 39665ms Home                   Page_Load          - Logged into Site at: 30/03/18 10:57:04 AM
+INFO  2018-03-30 10:57:16,242 51477ms Terminate              Page_Load          - Trial and Arrear - at: 30/03/2018 10:57:16 by: admin@svcf.com
+INFO  2018-03-30 10:57:22,928 58163ms Terminate              Page_Load          - Trial and Arrear - at: 30/03/2018 10:57:22 by: admin@svcf.com
+INFO  2018-03-30 10:58:47,780 143014ms Terminate              Page_Load          - Trial and Arrear - at: 30/03/2018 10:58:47 by: admin@svcf.com
+INFO  2018-03-30 11:24:40,824 33977ms Home                   Page_Load          - Logged into Site at: 30/03/18 11:24:40 AM
+INFO  2018-03-30 11:25:09,755 62908ms Terminate              Page_Load          - Trial and Arrear - at: 30/03/2018 11:25:09 by: admin@svcf.com
+INFO  2018-03-30 11:25:23,116 76270ms Terminate              Page_Load          - Trial and Arrear - at: 30/03/2018 11:25:23 by: admin@svcf.com
+INFO  2018-03-30 11:27:16,981 190134ms Terminate              Page_Load          - Trial and Arrear - at: 30/03/2018 11:27:16 by: admin@svcf.com
+INFO  2018-03-30 11:34:56,092 52548ms Home                   Page_Load          - Logged into Site at: 30/03/18 11:34:56 AM
+INFO  2018-03-30 11:35:46,194 102649ms Terminate              Page_Load          - Trial and Arrear - at: 30/03/2018 11:35:46 by: admin@svcf.com
+INFO  2018-03-30 11:35:53,910 110365ms Terminate              Page_Load          - Trial and Arrear - at: 30/03/2018 11:35:53 by: admin@svcf.com
+INFO  2018-03-30 11:37:10,997 187452ms Terminate              Page_Load          - Trial and Arrear - at: 30/03/2018 11:37:10 by: admin@svcf.com
+INFO  2018-03-30 11:43:12,616 59944ms Home                   Page_Load          - Logged into Site at: 30/03/18 11:43:12 AM
+INFO  2018-03-30 11:43:46,622 93951ms Terminate              Page_Load          - Trial and Arrear - at: 30/03/2018 11:43:46 by: admin@svcf.com
+INFO  2018-03-30 11:44:23,049 130377ms Terminate              Page_Load          - Trial and Arrear - at: 30/03/2018 11:44:23 by: admin@svcf.com
+INFO  2018-03-30 11:45:27,784 195113ms Terminate              Page_Load          - Trial and Arrear - at: 30/03/2018 11:45:27 by: admin@svcf.com
+INFO  2018-03-30 11:46:31,353 258681ms Terminate              Page_Load          - Trial and Arrear - at: 30/03/2018 11:46:31 by: admin@svcf.com
+INFO  2018-03-30 12:05:54,546 23089ms Home                   Page_Load          - Logged into Site at: 30/03/18 12:05:54 PM
+INFO  2018-03-30 12:07:56,585 145128ms Home                   Page_Load          - Logged into Site at: 30/03/18 12:07:56 PM
+INFO  2018-03-30 12:44:33,678 71053ms Home                   Page_Load          - Logged into Site at: 30/03/18 12:44:33 PM
+INFO  2018-03-30 12:44:48,458 85834ms TrialAndArrear         Page_Load          - Trial and Arrear - at: 30/03/2018 12:44:48 by: admin@svcf.com
+INFO  2018-03-30 12:45:00,143 97519ms TrialAndArrear         Page_Load          - Trial and Arrear - at: 30/03/2018 12:45:00 by: admin@svcf.com
+INFO  2018-03-30 13:04:09,971 56562ms Home                   Page_Load          - Logged into Site at: 30/03/18 1:04:09 PM
+INFO  2018-03-30 13:04:39,980 86572ms TrialAndArrear         Page_Load          - Trial and Arrear - at: 30/03/2018 13:04:39 by: admin@svcf.com
+INFO  2018-03-30 13:04:48,537 95129ms TrialAndArrear         Page_Load          - Trial and Arrear - at: 30/03/2018 13:04:48 by: admin@svcf.com

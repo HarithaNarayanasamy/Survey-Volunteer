@@ -1,0 +1,222 @@
+﻿using SVCF_BusinessAccessLayer;
+using SVCF_TransactionLayer;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using System.Web;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+using log4net;
+using log4net.Config;
+using System.Globalization;
+using System.Configuration;
+
+namespace SreeVisalamChitFundLtd_phase1
+{
+    public partial class DeleteVocherEdit : System.Web.UI.Page
+    {
+        DataTable dsGridBrnach = new DataTable();
+        BusinessLayer balayer = new BusinessLayer();
+        TransactionLayer tranlayer = new TransactionLayer();
+        //   Datatable gg = new Datatable();
+        List<string> data = new List<string>();
+        string transcationkey = "";
+        ILog logger = log4net.LogManager.GetLogger(typeof(DeleteVocherEdit));
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            if (!IsPostBack)
+            {
+                var userinfo = HttpContext.Current.User.Identity.Name;
+                var qry = "select rs.name from roles as rs inner join rights as rt on (rt.roleid=rs.id) where memberid=" + userinfo + "";
+                var usrRole = balayer.GetSingleValue(qry);
+                if (usrRole == "Administrator")
+                {
+                    fillgrid();
+                }
+                else if(usrRole=="Report")
+                {
+                    fillgrid();
+                }
+                else
+                {
+                    Response.Redirect("Home.aspx", false);
+                }
+
+               
+            }
+
+        }
+        protected void gridBranch_RowDataBound(object sender, GridViewRowEventArgs e)
+        {
+            if(e.Row.RowType==DataControlRowType.DataRow)
+            {
+                Label lblH = (Label)e.Row.FindControl("lblHead");
+                DropDownList ddlHeads = (DropDownList)e.Row.FindControl("ddlHeads");
+                if(e.Row.RowIndex>0)
+                {
+                    DataTable dtAllHeads = (DataTable)((DropDownList)gridBranch.Rows[0].FindControl("ddlHeads")).DataSource;
+                    ddlHeads.DataSource = dtAllHeads;
+                    ddlHeads.DataTextField = "TREE";
+                    ddlHeads.DataValueField = "ID";
+                    ddlHeads.DataBind();
+                }
+                else
+                {
+                    bindHeads(ddlHeads);
+                }
+                Label lblLocationLabel = ((Label)e.Row.FindControl("lblHead"));
+                DataRowView drview = (DataRowView)e.Row.DataItem;
+                //lblLocationLabel.Text = Convert.ToString(drview.Row.ItemArray[2]);//By Bala08-08-2020
+                lblLocationLabel.Text = Convert.ToString(drview.Row.ItemArray[3]);
+                ddlHeads.Items.FindByText(((Label)e.Row.FindControl("lblHead")).Text).Selected = true;
+            }
+
+        }
+        protected void bindHeads(DropDownList ddlHeads)
+        {
+            string DualTransactionKey = Request.Cookies["mylist"].Value;
+            //string headid = balayer.GetSingleValue("select v1.Head_Id FROM voucher as v1 left Join headstree as ht1 on (v1.Head_Id=ht1.NodeID) where v1. DualTransactionKey=" + DualTransactionKey + " and  v1.Series<>'A' and v1.BranchID=" + Session["Branchid"] + " and v1.Voucher_Type='C'   and ( v1.Trans_Type=0  or v1.Trans_Type=1 or v1.Trans_Type=2) and if(ChitGroupId<>0,ChitGroupId,`Other_Trans_Type`<>5)");
+            DataTable dtAllHeads = balayer.GetDataTable("SELECT concat(cast(  v1.`RootID` as char),',',cast(v1.`TreeID` as char)) as ID,v1.`TREE` FROM `svcf`.`view_parent` as v1 where v1.BranchID is null or v1.BranchID=" + Session["Branchid"] + " ");
+            DataRow dr = dtAllHeads.NewRow();
+            dr[0] = "--Select--";
+            dr[1] = "--Select--";
+            dtAllHeads.Rows.InsertAt(dr, 0);
+            ddlHeads.DataSource = dtAllHeads;
+            ddlHeads.DataTextField = "TREE";
+            ddlHeads.DataValueField = "ID";
+            ddlHeads.DataBind();
+        }
+        protected void fillgrid()
+        {        
+            string DualTransactionKey = Request.Cookies["mylist"].Value;
+            string query = "";
+            //query = "select DATE_FORMAT( v1.`ChoosenDate`, '%d/%m/%Y') as ChoosenDate,v1.TransactionKey,uuid_from_bin(v1.DualTransactionKey) as key1, ht1.Node as Head, v1.Amount , v1. Voucher_No,v1.Series ,v1.Narration ,(case when v1.`Voucher_Type`='C' then 'Credit' else 'Debit' end) as Voucher_Type ,(case when v1.`Trans_Type`=0 then 'Voucher' else 'Receipt' end) as TransationType FROM voucher as v1 left Join headstree as ht1 on (v1.Head_Id=ht1.NodeID) where v1. DualTransactionKey=" + DualTransactionKey + " and  v1.Series<>'A' and v1.BranchID=" + Session["Branchid"] + "   and ( v1.Trans_Type=0  or v1.Trans_Type=1 or v1.Trans_Type=2) and if(ChitGroupId<>0,ChitGroupId,`Other_Trans_Type`<>5)";
+            query = "select DATE_FORMAT( v1.`ChoosenDate`, '%d/%m/%Y') as ChoosenDate,v1.TransactionKey,uuid_from_bin(v1.DualTransactionKey) as key1, vp1.TREE as Head, v1.Amount , v1. Voucher_No,v1.Series ,v1.Narration ,(case when v1.`Voucher_Type`='C' then 'Credit' else 'Debit' end) as Voucher_Type ,(case when v1.`Trans_Type`=0 then 'Voucher' else 'Receipt' end) as TransationType FROM voucher as v1 left Join headstree as ht1 on (v1.Head_Id=ht1.NodeID) join view_parent as vp1 on (v1.Head_ID=vp1.TreeID) where v1. DualTransactionKey=" + DualTransactionKey + " and  v1.Series<>'A' and v1.BranchID=" + Session["Branchid"] + "   and ( v1.Trans_Type=0  or v1.Trans_Type=1 or v1.Trans_Type=2) and if(ChitGroupId<>0,ChitGroupId,`Other_Trans_Type`<>5)";
+            dsGridBrnach = balayer.GetDataTable(query);
+            gridBranch.DataSource = dsGridBrnach;
+            gridBranch.DataBind();           
+        }
+        protected void insert()
+        {   
+            TransactionLayer trn = new TransactionLayer();
+            string DualTransactionKey = Request.Cookies["mylist"].Value;
+            string currdate = "", chosendt = "";
+            try
+            {
+
+                DataTable vcdt = new DataTable();
+                var qry = "select * FROM voucher as v1 left Join headstree as ht1 on (v1.Head_Id=ht1.NodeID) where v1. DualTransactionKey=" + DualTransactionKey + " and  v1.Series<>'A' and v1.BranchID=" + Session["Branchid"] + "   and ( v1.Trans_Type=0  or v1.Trans_Type=1 or v1.Trans_Type=2) and if(ChitGroupId<>0,ChitGroupId,`Other_Trans_Type`<>5)";
+                vcdt = balayer.GetDataTable(qry);
+
+                DateTime presentdt = DateTime.UtcNow;
+                string ipaddress;
+                string narr = "";
+                ipaddress = Request.ServerVariables["HTTP_X_FORWARDED_FOR"];
+                if (ipaddress == "" || ipaddress == null)
+                    ipaddress = Request.ServerVariables["REMOTE_ADDR"];
+                string hostname = Request.UserHostName;
+                hostname = hostname + ":" + ipaddress;
+                var voucher_no = string.Empty;
+                for (int i = 0; i <= vcdt.Rows.Count - 1; i++)
+                {
+                    narr = vcdt.Rows[i][8].ToString();
+                    narr = narr.Replace("'", "");
+                    currdate = vcdt.Rows[i][3].ToString();
+                    chosendt = vcdt.Rows[i][7].ToString();
+                    voucher_no = vcdt.Rows[i][4].ToString();
+                    qry = "insert into voucherdeleted(TransactionKey, DualTransactionKey, BranchID, CurrDate, Voucher_No, Voucher_Type, Head_Id, ChoosenDate, Narration, " +
+                        "Amount, Series, ReceievedBy,Trans_Type, T_Day, T_Month, T_Year, MemberID, Trans_Medium, RootID, ChitGroupId,Other_Trans_Type, IsDeleted," +
+                        "ApprovedDate,CreatedDate, ModifiedDate, ISActive, AppReceiptno,removedDt,sysip) values(" + vcdt.Rows[i][0].ToString() + ",'" + vcdt.Rows[i][1].ToString() + "'," +
+                        "" + vcdt.Rows[i][2].ToString() + ",'" + balayer.changedateformat(Convert.ToDateTime(currdate), 1) + "'," + vcdt.Rows[i][4].ToString() + ",'" + vcdt.Rows[i][5].ToString() + "'," +
+                        "'" + vcdt.Rows[i][6].ToString() + "','" + balayer.changedateformat(Convert.ToDateTime(chosendt), 2) + "','" + narr + "'," + vcdt.Rows[i][9].ToString() + "," +
+                        "'" + vcdt.Rows[i][10].ToString() + "','" + vcdt.Rows[i][11].ToString() + "'," + vcdt.Rows[i][12].ToString() + "," + vcdt.Rows[i][13].ToString() + "," +
+                        "" + vcdt.Rows[i][14].ToString() + "," + vcdt.Rows[i][15].ToString() + "," + vcdt.Rows[i][16].ToString() + "," + vcdt.Rows[i][17].ToString() + "," +
+                        "" + vcdt.Rows[i][18].ToString() + "," + vcdt.Rows[i][19].ToString() + "," + vcdt.Rows[i][20].ToString() + ",'" + vcdt.Rows[i][21].ToString() + "'," +
+                        "'" + vcdt.Rows[i][22].ToString() + "','" + vcdt.Rows[i][23].ToString() + "','" + vcdt.Rows[i][24].ToString() + "','" + vcdt.Rows[i][25].ToString() + "'," +
+                        "'" + vcdt.Rows[i][26].ToString() + "','" + balayer.changedateformat(presentdt, 1) + "','" + hostname + "')";
+                    balayer.GetInsertItem(qry);
+                }             
+              
+            }
+            catch (Exception ex)
+            {
+                try
+                {
+                    trn.RollbackTrn();
+                    LogCls.LogError(ex, "DeleteVoucher : Btnyes_click()");
+                    logger.Info("DeleteVocherEdit.aspx - btnYes_Click():  Error: " + ex.Message + ": " + DateTime.Now + " by: " + Convert.ToString(Session["UserName"]) + "");
+                    lblHintConfirmation.Text = "Nothing";
+                }
+                catch
+                {
+                    lblHintConfirmation.Text = "Nothing";
+                }
+                finally { }
+            }
+            finally
+            {
+                trn.DisposeTrn();
+
+            }
+        }
+        protected void btnno_Click(object sender, EventArgs e)
+        {
+            if (lblHintConfirmation.Text == "Nothing")
+            {
+                lblHintConfirmation.Text = "";            
+                Response.Redirect(Request.Url.AbsolutePath.ToString() + "?&to=" + txtDate.Text, false);
+            }
+        }
+        protected void BtnBack_Click(object sender, EventArgs e)
+        {
+          //  deChoosenDate.Text = Request.QueryString["from"].ToString();
+           // txtToDate.Text = Request.QueryString["to"].ToString();
+            Response.Redirect("DeleteVoucher.aspx?from=" + Request.QueryString["from"].ToString() + "&to=" + Request.QueryString["to"].ToString());
+        }
+        protected void BtnUpdate_Click(object sender, EventArgs e)
+        {
+           //string data = txtDate.Text;
+         //  DateTime VcDate;
+         //  VcDate = DateTime.TryParseExact(txtDate.Text, "yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out VcDate);
+            string format = ConfigurationManager.AppSettings["dtFormat"].ToString();
+            //if (txtDate.Text != "")
+            //{
+            //    DateTime dt = DateTime.ParseExact(txtDate.Text, format, CultureInfo.InvariantCulture);
+            //}
+       
+            insert();
+            for (int i = 0; i < gridBranch.Rows.Count; i++)
+            {
+                if (txtDate.Text == "")
+                {
+                    String tx1 = ((TextBox)gridBranch.Rows[i].FindControl("TextBox3")).Text;
+                    String transcationkey = ((TextBox)gridBranch.Rows[i].FindControl("TextBox7")).Text;
+                    string series = ((Label)gridBranch.Rows[i].FindControl("lblSeries")).Text;
+                    String amt = ((TextBox)gridBranch.Rows[i].FindControl("txtAmount")).Text;
+                    
+                        // trans_medium = "0";
+                        DropDownList ddlSubsHeads = (DropDownList)gridBranch.Rows[i].FindControl("ddlHeads");
+                        string headValue = ddlSubsHeads.SelectedValue.Split(',')[1].ToString().Trim();
+                    int UpdateIndidual = balayer.GetInsertItem("update voucher set  Narration='" + tx1 + "',Amount=" + amt + ",Head_Id='"+headValue+"' where TransactionKey='" + transcationkey + "'");
+                    
+                }
+                else
+                {
+                    String tx1 = ((TextBox)gridBranch.Rows[i].FindControl("TextBox3")).Text;
+                    String transcationkey = ((TextBox)gridBranch.Rows[i].FindControl("TextBox7")).Text;
+                    string series = ((Label)gridBranch.Rows[i].FindControl("lblSeries")).Text;
+                    String amt = ((TextBox)gridBranch.Rows[i].FindControl("txtAmount")).Text;
+                    DropDownList ddlSubsHeads = (DropDownList)gridBranch.Rows[i].FindControl("ddlHeads");
+                    string headValue = ddlSubsHeads.SelectedValue.Split(',')[1].ToString().Trim();
+                    int UpdateIndidual = balayer.GetInsertItem("update voucher set ChoosenDate='" + balayer.changedateformat(Convert.ToDateTime(txtDate.Text), 2) + "', Narration='" + tx1 + "' and Amount=" + amt +",Head_Id='" + headValue + "' where TransactionKey='" + transcationkey + "'");
+                }
+
+            }
+          
+
+        }
+
+        
+    }
+}

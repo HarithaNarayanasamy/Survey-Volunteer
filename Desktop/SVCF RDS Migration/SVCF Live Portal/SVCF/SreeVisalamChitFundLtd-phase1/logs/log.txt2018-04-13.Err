@@ -1,0 +1,22 @@
+INFO  2018-04-13 16:35:44,861 597412ms Home                   Page_Load          - Logged into Site at: 13/04/18 4:35:44 PM
+INFO  2018-04-13 16:36:02,317 614868ms crrnew                 Page_Load          - CRR - current page- at: 13/04/2018 16:36:02
+INFO  2018-04-13 16:37:38,291 710842ms crrnew                 Page_Load          - CRR - current page- at: 13/04/2018 16:37:38
+INFO  2018-04-13 16:37:46,482 719033ms crrnew                 Page_Load          - CRR - current page- at: 13/04/2018 16:37:46
+INFO  2018-04-13 16:37:51,226 723777ms crrnew                 Page_Load          - CRR - current page- at: 13/04/2018 16:37:51
+INFO  2018-04-13 16:37:54,187 726738ms crrnew                 firmationYes_Click - crrnew.aspx - btnConfirmationYes_click() - Completed: 13/04/2018 16:37:54 by: admin@svcf.com
+INFO  2018-04-13 16:40:06,908 859459ms crrnew                 Page_Load          - CRR - current page- at: 13/04/2018 16:40:06
+INFO  2018-04-13 16:40:53,850 906401ms crrnew                 Page_Load          - CRR - current page- at: 13/04/2018 16:40:53
+INFO  2018-04-13 16:42:02,548 975099ms crrnew                 Page_Load          - CRR - current page- at: 13/04/2018 16:42:02
+INFO  2018-04-13 16:42:43,904 1016455ms crrnew                 firmationYes_Click - crrnew.aspx - btnConfirmationYes_click() - Completed: 13/04/2018 16:42:43 by: admin@svcf.com
+INFO  2018-04-13 16:44:30,733 44351ms Home                   Page_Load          - Logged into Site at: 13/04/18 4:44:30 PM
+INFO  2018-04-13 16:45:10,581 84199ms crrnew                 Page_Load          - CRR - current page- at: 13/04/2018 16:45:10
+INFO  2018-04-13 16:45:48,863 122482ms crrnew                 Page_Load          - CRR - current page- at: 13/04/2018 16:45:48
+INFO  2018-04-13 16:46:19,682 153300ms crrnew                 Page_Load          - CRR - current page- at: 13/04/2018 16:46:19
+INFO  2018-04-13 16:46:23,376 156994ms crrnew                 Page_Load          - CRR - current page- at: 13/04/2018 16:46:23
+INFO  2018-04-13 16:46:29,672 163290ms crrnew                 Page_Load          - CRR - current page- at: 13/04/2018 16:46:29
+INFO  2018-04-13 16:46:58,879 192497ms crrnew                 firmationYes_Click - crrnew.aspx - btnConfirmationYes_click() - Completed: 13/04/2018 16:46:58 by: admin@svcf.com
+INFO  2018-04-13 16:48:36,862 290480ms crrnew                 Page_Load          - CRR - current page- at: 13/04/2018 16:48:36
+INFO  2018-04-13 16:48:51,513 305131ms crrnew                 Page_Load          - CRR - current page- at: 13/04/2018 16:48:51
+INFO  2018-04-13 16:48:55,026 308644ms crrnew                 Page_Load          - CRR - current page- at: 13/04/2018 16:48:55
+INFO  2018-04-13 16:48:59,584 313203ms crrnew                 firmationYes_Click - crrnew.aspx - btnConfirmationYes_click() - Completed: 13/04/2018 16:48:59 by: admin@svcf.com
+INFO  2018-04-13 17:17:13,061 43038ms Home                   Page_Load          - Logged into Site at: 13/04/18 5:17:13 PM

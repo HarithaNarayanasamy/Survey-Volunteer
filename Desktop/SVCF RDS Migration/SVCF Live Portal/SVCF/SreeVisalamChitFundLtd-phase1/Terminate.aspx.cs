@@ -1,0 +1,962 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Data;
+using System.IO;
+using System.Linq;
+using System.Web;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+using System.Web.UI.WebControls.WebParts;
+using System.Web.UI.HtmlControls;
+using System.Drawing;
+using System.Text;
+using System.Xml.Linq;
+using iTextSharp.text;
+using iTextSharp.text.html.simpleparser;
+using iTextSharp.text.pdf;
+using System.Drawing.Printing;
+using log4net;
+using SVCF_BusinessAccessLayer;
+using SVCF_DataAccessLayer;
+using SVCF_TransactionLayer;
+
+namespace SreeVisalamChitFundLtd_phase1
+{
+    public partial class Terminate : System.Web.UI.Page
+    {
+        #region Object
+
+        BusinessLayer balayer = new BusinessLayer();
+        TransactionLayer trn = new TransactionLayer();
+        CommonVariables objCOM = new CommonVariables();
+
+        #endregion
+        ILog logger = log4net.LogManager.GetLogger(typeof(Terminate));
+
+     // private System.Drawing.Image headerImage;
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            if (!IsPostBack)
+            {
+                GetGroupMember();
+                //ddlChit.SelectedItem.Value = "0";
+                txtFromDate.Text = DateTime.Now.ToString("dd/MM/yyyy");
+            }
+            // select();
+            logger.Info("Trial and Arrear - at: " + DateTime.Now + " by: " + Convert.ToString(Session["UserName"]) + "");
+        }
+        public string UpperFirst(string source)
+        {
+            return source.ToLower().Remove(0, 1)
+                    .Insert(0, source.Substring(0, 1).ToUpper());
+        }
+        public void GetGroupMember()
+        {
+            ddlChit.DataSource = null;
+            ddlChit.DataBind();
+            objCOM.DtChitGrp = null;
+            objCOM.Data = "SELECT `GROUPNO`,`Head_Id` FROM `svcf`.`groupmaster` where `IsFinished`=0 and `BranchID`=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + "";
+            objCOM.DtChitGrp = balayer.GetDataTable(objCOM.Data);
+            ddlChit.DataSource = objCOM.DtChitGrp;
+            objCOM.Dr = objCOM.DtChitGrp.NewRow();
+            objCOM.Dr[0] = "--select--";
+            objCOM.Dr[1] = "0";
+            ddlChit.DataTextField = "GROUPNO";
+            ddlChit.DataValueField = "Head_Id";
+            objCOM.DtChitGrp.Rows.InsertAt(objCOM.Dr, 0);
+            ddlChit.DataBind();
+        }
+
+        protected void BtnStatisticsGo_Click(object sender, EventArgs e)
+        {
+            try
+            {
+
+                lblsummary_NPkasar.Text = "";
+                lblsummary_PKasar.Text = "";
+                //lblsummary_GrandTotal.Text = "";
+                //lblsummary_BalanceDR.Text = "";
+
+                //lblsummary_BalanceCR.Text = "";
+                select();
+            }
+            catch (Exception err) { }
+            
+        }
+        //protected void select()
+        //{
+        //    decimal strB = 0.00M;
+        //    try
+        //    {
+
+
+
+        //        objCOM.DtBind.Columns.Add("ChitNo1", typeof(int));
+        //        objCOM.DtBind.Columns.Add("MemberName");
+        //        objCOM.DtBind.Columns.Add("TCredit", typeof(decimal));
+        //       objCOM.DtBind.Columns.Add("Debit", typeof(decimal));
+        //        objCOM.DtBind.Columns.Add("ExcessRemittance", typeof(decimal));
+        //        objCOM.DtBind.Columns.Add("NPArrier", typeof(decimal));
+        //        objCOM.DtBind.Columns.Add("PArrier", typeof(decimal));
+        //        objCOM.DtBind.Columns.Add("NPKasar", typeof(decimal));
+        //        objCOM.DtBind.Columns.Add("PKasar", typeof(decimal));
+        //        objCOM.DtBind.Columns.Add("Branches");
+        //        objCOM.DtBind.Columns.Add("MobileNumber");
+        //        objCOM.DrBind = objCOM.DtBind.NewRow();
+        //        string TotaldueAmount = "";
+        //        balayer.GetInsertItem("CREATE OR REPLACE VIEW `unpaidprizedmoney` AS select `voucher`.`Head_Id` AS `Head_Id`, `membertogroupmaster`.`GrpMemberID` AS `GrpMemberID`, (case when (`voucher`.`Voucher_Type` = 'C') then sum(`voucher`.`Amount`) else 0.00 end) AS `Credit`, (case when (`voucher`.`Voucher_Type` = 'D') then sum(`voucher`.`Amount`) else 0.00 end) AS `Debit`, ((case when (`voucher`.`Voucher_Type` = 'C') then sum(`voucher`.`Amount`) else 0.00 end) - (case when (`voucher`.`Voucher_Type` = 'D') then sum(`voucher`.`Amount`) else 0.00 end)) AS `AmountActuallyremittedbytheParty` from (`voucher` join `membertogroupmaster` ON ((`voucher`.`Head_Id` = `membertogroupmaster`.`Head_Id`))) group by `voucher`.`Head_Id`");
+        //        balayer.GetInsertItem("create or replace view `view_groupwisedue` as select `groupmaster`.`GROUPNO` AS `GroupIDOriginal`,`groupmaster`.`IsFinished`, `auctiondetails`.`GroupID` AS `GroupId`, sum(`auctiondetails`.`CurrentDueAmount`) AS `TotaldueAmount` from (`auctiondetails` join `groupmaster` ON ((`auctiondetails`.`GroupID` = `groupmaster`.`Head_Id`))) where (`auctiondetails`.`AuctionDate` <= '" + balayer.indiandateToMysqlDate(txtFromDate.Text) + "') group by `auctiondetails`.`GroupID`");
+
+        //        if (ddlChit.SelectedItem.Text == "--select--")
+        //        {
+        //        }
+        //        else
+        //        {
+        //            objCOM.RowCount = balayer.GetScalarDataInt("select * from auctiondetails where IsPrized='Y' and AuctionDate<='" + balayer.indiandateToMysqlDate(txtFromDate.Text) + "' and GroupID=" + ddlChit.SelectedItem.Value);
+        //            if (objCOM.RowCount > 0)
+        //            {
+        //                objCOM.DtHeads = balayer.GetDataTable(" select NodeID from headstree where ParentID=" + ddlChit.SelectedItem.Value);
+        //                for (int j = 0; j < objCOM.DtHeads.Rows.Count; j++)
+        //                {
+        //                    decimal strA = 0.00M;
+        //                    decimal strE = 0.00M;
+        //                //    decimal strB = 0.00M;
+        //                    decimal strC = 0.00M;
+        //                    decimal strD = 0.00M;
+        //                    objCOM.Sss = balayer.GetSingleValue(@"select cast(digits(mg1.GrpMemberID) as unsigned) as ChitNo1 from membertogroupmaster as mg1 join voucher as v1 on v1.Head_Id=mg1.Head_Id join view_groupwisedue as vgwd1 on vgwd1.`GroupId`=" + ddlChit.SelectedItem.Value + " left join trans_payment as tp1 on v1.Head_Id =tp1.TokenNumber join membermaster as mm on (mg1.MemberID=mm.MemberIDNew) where mg1.BranchID=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and mg1.GroupID=" + ddlChit.SelectedItem.Value + " and v1.Head_Id=" + objCOM.DtHeads.Rows[j]["NodeID"] + " and v1.ChoosenDate<= '" + balayer.indiandateToMysqlDate(txtFromDate.Text) + "' group by v1.Head_Id order by cast(digits(mg1.GrpMemberID) as unsigned),v1.Voucher_Type DESC ;");
+
+
+        //                    if (string.IsNullOrEmpty(objCOM.Sss))
+        //                    {
+        //                        objCOM.DrBind["ChitNo1"] = balayer.GetSingleValue("select cast(digits(GrpMemberID) as unsigned) as ChitNo1 from membertogroupmaster where Head_Id=" + objCOM.DtHeads.Rows[j]["NodeID"]);
+        //                    }
+        //                    else
+        //                    {
+        //                        objCOM.DrBind["ChitNo1"] = objCOM.Sss;
+        //                    }
+        //                   // objCOM.StrName = balayer.GetSingleValue(@"select (case when(r.DateOfRemoval>'" + balayer.indiandateToMysqlDate(txtFromDate.Text) + "') then concat(m1.CustomerName) else concat(mg1.MemberName) end) as `MemberName` from membertogroupmaster as mg1 left join removal_approval r on mg1.Head_Id=r.GroupMemberID join membermaster m1 on m1.MemberIDNew=r.OldMemberID join voucher as v1 on v1.Head_Id=mg1.Head_Id join groupmaster as vgwd1 on vgwd1.`Head_Id`=" + ddlChit.SelectedItem.Value + " left join trans_payment as tp1 on v1.Head_Id =tp1.TokenNumber join membermaster as mm on (mg1.MemberID=mm.MemberIDNew) where mg1.BranchID=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and mg1.GroupID=" + ddlChit.SelectedItem.Value + " and v1.Head_Id=" + objCOM.DtHeads.Rows[j]["NodeID"] + " and v1.ChoosenDate<= '" + balayer.indiandateToMysqlDate(txtFromDate.Text) + "' group by v1.Head_Id order by v1.ChoosenDate DESC ;");
+        //                    objCOM.StrName = balayer.GetSingleValue(@"select concat(mg1.MemberName) as `MemberName` from membertogroupmaster as mg1 join voucher as v1 on v1.Head_Id=mg1.Head_Id join view_groupwisedue as vgwd1 on vgwd1.`GroupId`=" + ddlChit.SelectedItem.Value + " left join trans_payment as tp1 on v1.Head_Id =tp1.TokenNumber join membermaster as mm on (mg1.MemberID=mm.MemberIDNew) where mg1.BranchID=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and mg1.GroupID=" + ddlChit.SelectedItem.Value + " and v1.Head_Id=" + objCOM.DtHeads.Rows[j]["NodeID"] + " and v1.ChoosenDate<= '" + balayer.indiandateToMysqlDate(txtFromDate.Text) + "' group by v1.Head_Id order by v1.ChoosenDate DESC ;");
+        //                    if (string.IsNullOrEmpty(objCOM.StrName))
+        //                    {
+        //                        objCOM.StrMemID = balayer.GetSingleValue("SELECT MemberID FROM svcf.membertogroupmaster where Head_id=" + objCOM.DtHeads.Rows[j]["NodeID"]);
+        //                        objCOM.MemberName = balayer.GetSingleValue("SELECT CustomerName FROM svcf.membermaster where MemberIDNew=" + objCOM.StrMemID);
+                               
+        //                        objCOM.DrBind["MemberName"] = objCOM.MemberName;
+        //                    }
+        //                    else
+        //                    {
+                              
+        //                        objCOM.DrBind["MemberName"] = objCOM.StrName;
+        //                    }
+
+        //                    //objCOM.Credit = balayer.GetSingleValue(@"select (case when( tp1.PaymentDate is null or tp1.PaymentDate >'2017/10/23') then sum(case when (v1.Voucher_Type='C' and v1.trans_Type<>2 and v1.Other_Trans_Type<>5 ) then v1.Amount else 0.00 end) -sum(case when (v1.Voucher_Type='D' and v1.trans_Type<>2 and v1.Other_Trans_Type<>5 ) then v1.Amount else 0.00 end) else 0.00 end ) as Credit from membertogroupmaster as mg1 join voucher as v1 on v1.Head_Id=mg1.Head_Id join view_groupwisedue as vgwd1 on vgwd1.`GroupId`=" + ddlChit.SelectedItem.Value + " left join trans_payment as tp1 on v1.Head_Id =tp1.TokenNumber join membermaster as mm on (mg1.MemberID=mm.MemberIDNew) where mg1.BranchID=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and mg1.GroupID=" + ddlChit.SelectedItem.Value + " and v1.Head_Id=" + objCOM.DtHeads.Rows[j]["NodeID"] + " and v1.ChoosenDate<='" + balayer.indiandateToMysqlDate(txtFromDate.Text) + "' group by v1.Head_Id order by cast(digits(mg1.GrpMemberID) as unsigned) ;");
+        //                    objCOM.Credit = balayer.GetSingleValue(@"select (case when( tp1.PaymentDate is null or tp1.PaymentDate >'" + balayer.indiandateToMysqlDate(txtFromDate.Text) + "') then sum(case when (v1.Voucher_Type='C' and v1.trans_Type<>2 and v1.Other_Trans_Type<>5 ) then v1.Amount else 0.00 end) -sum(case when (v1.Voucher_Type='D' and v1.trans_Type<>2 and v1.Other_Trans_Type<>5 ) then v1.Amount else 0.00 end) else 0.00 end ) as Credit from membertogroupmaster as mg1 join voucher as v1 on v1.Head_Id=mg1.Head_Id join view_groupwisedue as vgwd1 on vgwd1.`GroupId`=" + ddlChit.SelectedItem.Value + " left join trans_payment as tp1 on v1.Head_Id =tp1.TokenNumber join membermaster as mm on (mg1.MemberID=mm.MemberIDNew) where mg1.BranchID=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and mg1.GroupID=" + ddlChit.SelectedItem.Value + " and v1.Head_Id=" + objCOM.DtHeads.Rows[j]["NodeID"] + " and v1.ChoosenDate<='" + balayer.indiandateToMysqlDate(txtFromDate.Text) + "' group by v1.Head_Id order by cast(digits(mg1.GrpMemberID) as unsigned) ;");
+        //                    if (string.IsNullOrEmpty(objCOM.Credit))
+        //                    {
+        //                        strB = 0.00M;
+        //                        objCOM.DrBind["TCredit"] = "0.00";
+        //                    }
+        //                    else
+        //                    {
+        //                        strB = Convert.ToDecimal(objCOM.Credit);
+        //                        objCOM.DrBind["TCredit"] = objCOM.Credit;
+        //                    }
+
+
+        //                    objCOM.Excess = balayer.GetSingleValue(@"select  (case when( (sum(case when (v1.Voucher_Type='C' and v1.trans_Type<>2 and v1.Other_Trans_Type<>5 ) then v1.Amount else 0.00 end) -sum(case when (v1.Voucher_Type='D' and v1.trans_Type<>2 and v1.Other_Trans_Type<>5 ) then v1.Amount else 0.00 end) -vgwd1.TotaldueAmount)>0.00) then (sum(case when (v1.Voucher_Type='C' and v1.trans_Type<>2 and v1.Other_Trans_Type<>5 ) then v1.Amount else 0.00 end) -sum(case when (v1.Voucher_Type='D' and v1.trans_Type<>2 and v1.Other_Trans_Type<>5 ) then v1.Amount else 0.00 end) -vgwd1.TotaldueAmount) else 0.00 end) as ExcessRemittance from membertogroupmaster as mg1 join voucher as v1 on v1.Head_Id=mg1.Head_Id join view_groupwisedue as vgwd1 on vgwd1.`GroupId`=" + ddlChit.SelectedItem.Value + " left join trans_payment as tp1 on v1.Head_Id =tp1.TokenNumber join membermaster as mm on (mg1.MemberID=mm.MemberIDNew) where mg1.BranchID=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and mg1.GroupID=" + ddlChit.SelectedItem.Value + " and v1.Head_Id=" + objCOM.DtHeads.Rows[j]["NodeID"] + " and v1.ChoosenDate<= '" + balayer.indiandateToMysqlDate(txtFromDate.Text) + "' group by v1.Head_Id order by cast(digits(mg1.GrpMemberID) as unsigned),v1.Voucher_Type DESC ;");
+        //                    if (string.IsNullOrEmpty(objCOM.Excess))
+        //                    {
+        //                        strE = 0.00M;
+        //                        objCOM.DrBind["ExcessRemittance"] = "0.00";
+        //                    }
+        //                    else
+        //                    {
+        //                        strE = Convert.ToDecimal(objCOM.Excess);
+        //                        objCOM.DrBind["ExcessRemittance"] = objCOM.Excess;
+        //                    }
+
+                       
+
+                           
+
+
+
+        //                    objCOM.Parr = balayer.GetSingleValue(@"select (case when( tp1.PaymentDate<='" + balayer.indiandateToMysqlDate(txtFromDate.Text) + "' ) then (case when( (vgwd1.TotaldueAmount-sum(case when (v1.Voucher_Type='C' and v1.trans_Type<>2 and v1.Other_Trans_Type<>5 ) then v1.Amount else 0.00 end) +sum(case when (v1.Voucher_Type='D' and v1.trans_Type<>2 and v1.Other_Trans_Type<>5 ) then v1.Amount else 0.00 end) )>0.00) then (vgwd1.TotaldueAmount-sum(case when (v1.Voucher_Type='C' and v1.trans_Type<>2 and v1.Other_Trans_Type<>5 ) then v1.Amount else 0.00 end) +sum(case when (v1.Voucher_Type='D' and v1.trans_Type<>2 and v1.Other_Trans_Type<>5 ) then v1.Amount else 0.00 end) ) else 0.00 end) else 0.00 end ) as PArrier from membertogroupmaster as mg1 join voucher as v1 on v1.Head_Id=mg1.Head_Id join view_groupwisedue as vgwd1 on vgwd1.`GroupId`=" + ddlChit.SelectedItem.Value + " left join trans_payment as tp1 on v1.Head_Id =tp1.TokenNumber join membermaster as mm on (mg1.MemberID=mm.MemberIDNew) where mg1.BranchID=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and mg1.GroupID=" + ddlChit.SelectedItem.Value + " and v1.Head_Id=" + objCOM.DtHeads.Rows[j]["NodeID"] + " and v1.ChoosenDate<= '" + balayer.indiandateToMysqlDate(txtFromDate.Text) + "' group by v1.Head_Id order by cast(digits(mg1.GrpMemberID) as unsigned),v1.Voucher_Type DESC ;");
+        //                    if (string.IsNullOrEmpty(objCOM.Excess))
+        //                    {
+        //                        strA = 0.00M;
+        //                        objCOM.DrBind["PArrier"] = "0.00";
+        //                    }
+        //                    else
+        //                    {
+        //                        strA = Convert.ToDecimal(objCOM.Parr);
+        //                        objCOM.DrBind["PArrier"] = objCOM.Parr;
+        //                    }
+        //                    objCOM.Npkas = balayer.GetSingleValue(@"select (case when( tp1.PaymentDate is null  or tp1.PaymentDate >'" + balayer.indiandateToMysqlDate(txtFromDate.Text) + "') then sum((case when (v1.Voucher_Type='C' and v1.Other_Trans_Type=5 ) then v1.Amount else 0.00 end)) else 0.00 end ) as NPKasar from membertogroupmaster as mg1 join voucher as v1 on v1.Head_Id=mg1.Head_Id join groupmaster as vgwd1 on vgwd1.`Head_Id`=" + ddlChit.SelectedItem.Value + " left join trans_payment as tp1 on v1.Head_Id =tp1.TokenNumber join membermaster as mm on (mg1.MemberID=mm.MemberIDNew) where mg1.BranchID=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and mg1.GroupID=" + ddlChit.SelectedItem.Value + " and v1.Head_Id=" + objCOM.DtHeads.Rows[j]["NodeID"] + " and v1.ChoosenDate<='" + balayer.indiandateToMysqlDate(txtFromDate.Text) + "' group by v1.Head_Id order by cast(digits(mg1.GrpMemberID) as unsigned),v1.Voucher_Type DESC ;");
+        //                    if (string.IsNullOrEmpty(objCOM.Npkas))
+        //                    {
+        //                        strC = Convert.ToDecimal(objCOM.Npkas);
+        //                        objCOM.DrBind["NPKasar"] = "0.00";
+        //                    }
+        //                    else
+        //                    {
+        //                        objCOM.DrBind["NPKasar"] = objCOM.Npkas;
+        //                    }
+        //                    objCOM.Pkas = balayer.GetSingleValue(@"select (case when( tp1.PaymentDate<='" + balayer.indiandateToMysqlDate(txtFromDate.Text) + "' ) then sum((case when (v1.Voucher_Type='C' and v1.Other_Trans_Type=5 ) then v1.Amount else 0.00 end)) else 0.00 end ) as PKasar from membertogroupmaster as mg1 join voucher as v1 on v1.Head_Id=mg1.Head_Id join groupmaster as vgwd1 on vgwd1.`Head_Id`=" + ddlChit.SelectedItem.Value + " left join trans_payment as tp1 on v1.Head_Id =tp1.TokenNumber join membermaster as mm on (mg1.MemberID=mm.MemberIDNew) where mg1.BranchID=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and mg1.GroupID=" + ddlChit.SelectedItem.Value + " and v1.Head_Id=" + objCOM.DtHeads.Rows[j]["NodeID"] + " and v1.ChoosenDate<='" + balayer.indiandateToMysqlDate(txtFromDate.Text) + "' group by v1.Head_Id order by cast(digits(mg1.GrpMemberID) as unsigned),v1.Voucher_Type DESC ;");
+        //                    if (string.IsNullOrEmpty(objCOM.Excess))
+        //                    {
+        //                        strD = Convert.ToDecimal(objCOM.Pkas);
+        //                        objCOM.DrBind["PKasar"] = "0.00";
+        //                    }
+        //                    else
+        //                    {
+        //                        objCOM.DrBind["PKasar"] = objCOM.Pkas;
+        //                    }
+
+
+
+        //                    objCOM.StrMember = balayer.GetSingleValue("SELECT MemberID FROM svcf.voucher where Head_id=" + objCOM.DtHeads.Rows[j]["NodeID"] + " and ChoosenDate<='" + balayer.indiandateToMysqlDate(txtFromDate.Text) + "' order by ChoosenDate desc");
+
+        //                    if (string.IsNullOrEmpty(objCOM.StrMember))
+        //                    {
+        //                        objCOM.StrMember = "0";
+        //                    }
+        //                    objCOM.StrBranches = balayer.GetSingleValue("SELECT b1.Place FROM svcf.membermaster as m1 join branchdetails as b1 on (m1.BranchID=b1.Head_Id) where m1.MemberIDNew=" + objCOM.StrMember);
+
+
+        //                    if (string.IsNullOrEmpty(objCOM.StrBranches))
+        //                    {
+        //                        objCOM.DrBind["Branches"] = balayer.GetSingleValue("SELECT b1.Place FROM svcf.membertogroupmaster as m1 join branchdetails as b1 on (m1.B_Id=b1.Head_Id) where m1.Head_id=" + objCOM.DtHeads.Rows[j]["NodeID"]);
+        //                    }
+        //                    else
+        //                    {
+        //                        objCOM.DrBind["Branches"] = objCOM.StrBranches;
+        //                    }
+
+
+        //                    objCOM.Debit = balayer.GetSingleValue(@"select (case when( tp1.PaymentDate<='" + balayer.indiandateToMysqlDate(txtFromDate.Text) + "' ) then sum((case when (v1.Voucher_Type='D' and v1.Other_Trans_Type<>5 ) then v1.Amount else 0.00 end) -case when (v1.Voucher_Type='C' and v1.Other_Trans_Type<>5 ) then v1.Amount else 0.00 end) else 0.00 end ) as Debit from membertogroupmaster as mg1 join voucher as v1 on v1.Head_Id=mg1.Head_Id join groupmaster as vgwd1 on vgwd1.`Head_Id`=" + ddlChit.SelectedItem.Value + " left join trans_payment as tp1 on v1.Head_Id =tp1.TokenNumber join membermaster as mm on (mg1.MemberID=mm.MemberIDNew) where mg1.BranchID=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and mg1.GroupID=" + ddlChit.SelectedItem.Value + " and v1.Head_Id=" + objCOM.DtHeads.Rows[j]["NodeID"] + " and v1.ChoosenDate<= '" + balayer.indiandateToMysqlDate(txtFromDate.Text) + "' group by v1.Head_Id order by cast(digits(mg1.GrpMemberID) as unsigned),v1.Voucher_Type DESC ;");
+        //                    if (string.IsNullOrEmpty(objCOM.Debit))
+        //                    {
+        //                        objCOM.DrBind["Debit"] = "0.00";
+        //                    }
+        //                    else
+        //                    {
+        //                        objCOM.DrBind["Debit"] = objCOM.Debit;
+        //                    }
+
+        //                    objCOM.Nparr = balayer.GetSingleValue(@"select (case when( tp1.PaymentDate is null  or tp1.PaymentDate >'" + balayer.indiandateToMysqlDate(txtFromDate.Text) + "') then (case when( (" + TotaldueAmount + "-sum(case when (v1.Voucher_Type='C' and v1.trans_Type<>2 and v1.Other_Trans_Type<>5 ) then v1.Amount else 0.00 end) +sum(case when (v1.Voucher_Type='D' and v1.trans_Type<>2 and v1.Other_Trans_Type<>5 ) then v1.Amount else 0.00 end) )>0.00) then (" + TotaldueAmount + "-sum(case when (v1.Voucher_Type='C' and v1.trans_Type<>2 and v1.Other_Trans_Type<>5 ) then v1.Amount else 0.00 end) +sum(case when (v1.Voucher_Type='D' and v1.trans_Type<>2 and v1.Other_Trans_Type<>5 ) then v1.Amount else 0.00 end) ) else 0.00 end) else 0.00 end) as NPArrier from membertogroupmaster as mg1 join voucher as v1 on v1.Head_Id=mg1.Head_Id join groupmaster as vgwd1 on vgwd1.`Head_Id`=" + ddlChit.SelectedItem.Value + " left join trans_payment as tp1 on v1.Head_Id =tp1.TokenNumber join membermaster as mm on (mg1.MemberID=mm.MemberIDNew) where mg1.BranchID=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and mg1.GroupID=" + ddlChit.SelectedItem.Value + " and v1.Head_Id=" + objCOM.DtHeads.Rows[j]["NodeID"] + " and v1.ChoosenDate<= '" + balayer.indiandateToMysqlDate(txtFromDate.Text) + "' group by v1.Head_Id order by cast(digits(mg1.GrpMemberID) as unsigned),v1.Voucher_Type DESC ;");
+
+        //                    //objCOM.Nparr =( objCOM.Nparr == "0.00" ? null : objCOM.Nparr);
+
+        //                    objCOM.MobileNumber = balayer.GetSingleValue("SELECT m1.MobileNo FROM svcf.membermaster as m1 join svcf.branchdetails as b1 on (m1.BranchID=b1.Head_Id) join svcf.membertogroupmaster as mg1 on mg1.MemberID=m1.MemberIDNew where mg1.Head_Id=" + objCOM.StrMember);
+        //                    if (string.IsNullOrEmpty(objCOM.MobileNumber))
+        //                    {
+        //                        string strMemID = balayer.GetSingleValue("SELECT MemberID FROM svcf.membertogroupmaster where Head_id=" + objCOM.DtHeads.Rows[j]["NodeID"]);
+        //                        objCOM.DrBind["MobileNumber"] = balayer.GetSingleValue("SELECT MobileNo FROM svcf.membermaster where MemberIDNew=" + strMemID);
+
+        //                    }
+        //                    else
+        //                    {
+        //                        objCOM.DrBind["MobileNumber"] = objCOM.MobileNumber;
+        //                    }
+                           
+        //                    if (strA != 0.00M || strE != 0.00M || strB != 0.00M)
+        //                    {
+        //                        objCOM.DtBind.Rows.Add(objCOM.DrBind.ItemArray);
+        //                    }
+
+        //                   // objCOM.DtBind.Rows.Add(objCOM.DrBind.ItemArray);
+        //                }
+        //                ViewState["ExcessRemittance"] = objCOM.DtBind.Compute("Sum(ExcessRemittance)", "");
+        //                ViewState["PArrier"] = objCOM.DtBind.Compute("Sum(PArrier)", "");
+        //                ViewState["TCredit"] = objCOM.DtBind.Compute("Sum(TCredit)", "");
+        //                ViewState["NPKasar"] = objCOM.DtBind.Compute("Sum(NPKasar)", "");
+        //                ViewState["PKasar"] = objCOM.DtBind.Compute("Sum(PKasar)", "");
+        //            }
+                   
+        //            objCOM.Sssssssss = balayer.GetDataTable("SELECT `groupmaster`.`NoofMembers`,`groupmaster`.`GROUPNO`,`branchdetails`.`B_Name`,max(`auctiondetails`.`DrawNO`) as `RunningCall`,`groupmaster`.`ChitValue` FROM svcf.groupmaster join auctiondetails on (`groupmaster`.`Head_Id`=`auctiondetails`.`GroupID`) join `branchdetails` on (`groupmaster`.`BranchID`=`branchdetails`.`Head_Id`) where `groupmaster`.`Head_Id`=" + ddlChit.SelectedValue + " and `auctiondetails`.`AuctionDate`<='" + balayer.indiandateToMysqlDate(txtFromDate.Text) + "'  and `auctiondetails`.`BranchID`=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + ";");
+        //            objCOM.Str = Convert.ToString(objCOM.Sssssssss.Rows[0]["RunningCall"]) == "" ? "0" : Convert.ToString(objCOM.Sssssssss.Rows[0]["RunningCall"]);
+        //            objCOM.Dv = objCOM.DtBind.DefaultView;
+        //            objCOM.Dv.Sort = "ChitNo1 asc";
+        //            objCOM.SortedDT = objCOM.Dv.ToTable();
+
+        //            //lblCaption.Text = "Sree Visalam Chit Fund Limited.,<br/>Trial And Arrear <br/> Branch Name : " + objCOM.Sssssssss.Rows[0]["B_Name"].ToString() + "; \t Running Call : " + objCOM.Str + " <br/> Group No : " + objCOM.Sssssssss.Rows[0]["GROUPNO"].ToString() + "; \t Chit Amount : " + objCOM.Sssssssss.Rows[0]["ChitValue"].ToString() + "; \t for the month of " + Convert.ToDateTime(txtFromDate.Text).ToString("MMMM yyyy");
+        //            lblCaption.Text = "Sree Visalam Chit Fund Limited.,<br/>Terminated And Arrear <br/> Branch Name : " + objCOM.Sssssssss.Rows[0]["B_Name"].ToString() + "; \t Running Call : " + objCOM.Str + " <br/> Group No : " + objCOM.Sssssssss.Rows[0]["GROUPNO"].ToString() + "; \t Chit Amount : " + objCOM.Sssssssss.Rows[0]["ChitValue"].ToString() + "; \t for the month of " + Convert.ToDateTime(txtFromDate.Text).ToString("MMMM yyyy");
+        //            gridTA.DataSource = objCOM.SortedDT;
+        //            lblsummary_NPkasar.Text = Convert.ToString(ViewState["NPKasar"]);
+        //            //objCOM.Credit = balayer.GetSingleValue(@"select (case when( tp1.PaymentDate is null or tp1.PaymentDate >'" + balayer.indiandateToMysqlDate(txtFromDate.Text) + "') then sum(case when (v1.Voucher_Type='C' and v1.trans_Type<>2 and v1.Other_Trans_Type<>5 ) then v1.Amount else 0.00 end) -sum(case when (v1.Voucher_Type='D' and v1.trans_Type<>2 and v1.Other_Trans_Type<>5 ) then v1.Amount else 0.00 end) else 0.00 end ) as Credit from membertogroupmaster as mg1 join voucher as v1 on v1.Head_Id=mg1.Head_Id join view_groupwisedue as vgwd1 on vgwd1.`GroupId`=" + ddlChit.SelectedItem.Value + " left join trans_payment as tp1 on v1.Head_Id =tp1.TokenNumber join membermaster as mm on (mg1.MemberID=mm.MemberIDNew) where mg1.BranchID=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and mg1.GroupID=" + ddlChit.SelectedItem.Value + " and v1.Head_Id=" + objCOM.DtHeads.Rows[j]["NodeID"] + " and v1.ChoosenDate<='" + balayer.indiandateToMysqlDate(txtFromDate.Text) + "' group by v1.Head_Id order by cast(digits(mg1.GrpMemberID) as unsigned) ;");
+        //            //if (string.IsNullOrEmpty(objCOM.Credit))
+        //            //{
+        //            //    lblsummary_PKasar.Text = Convert.ToString(ViewState["ExcessRemittance"]);
+        //            //}
+        //            lblsummary_PKasar.Text = Convert.ToString(ViewState["ExcessRemittance"]);
+        //            lblsummary_Arrear.Text = Convert.ToString(ViewState["PArrier"]);
+
+        //            lblsummary_GrandTotal.Text = Convert.ToString((Convert.ToDecimal(ViewState["TCredit"]) + Convert.ToDecimal(ViewState["NPKasar"]) + Convert.ToDecimal(ViewState["ExcessRemittance"])));
+        //            BalanceDR.Text = Math.Abs((Convert.ToDecimal(ViewState["TCredit"]) + Convert.ToDecimal(ViewState["NPKasar"]) + Convert.ToDecimal(ViewState["ExcessRemittance"])) - Convert.ToDecimal(ViewState["PArrier"])).ToString();
+        //            decimal dddd = (Convert.ToDecimal(ViewState["TCredit"]) + Convert.ToDecimal(ViewState["NPKasar"]) + Convert.ToDecimal(ViewState["ExcessRemittance"])) - Convert.ToDecimal(ViewState["PArrier"]);
+        //            if (Convert.ToDecimal(dddd) < 0)
+        //            {
+        //                lblsummary_CR.Visible = false;
+
+        //                lblsummary_BalanceDR.Text = "" + BalanceDR.Text;
+
+        //            }
+        //            else if (Convert.ToDecimal(dddd) > 0)
+        //            {
+        //                lblsummary_DR.Visible = false;
+
+        //                lblsummary_BalanceCR.Text = "" + BalanceDR.Text;
+
+        //            }
+                    
+
+
+        //        }
+
+        //        Hiddentcap.Text = gridTA.Caption;
+        //        ViewState["CurrentData"] = objCOM.SortedDT;
+        //        gridTA.DataBind();
+
+        //    }
+        //    catch (Exception) { }
+
+        //}
+
+        protected void select()
+        {
+            try
+            {
+                ViewState["ExcessWithoutCredit"] = 0;
+                ViewState["ExcessRemittance"] = 0;
+                ViewState["PArrier"] = 0;
+                ViewState["TCredit"] = 0;
+                ViewState["NPKasar"] = 0;
+                ViewState["PKasar"] = 0;
+
+                objCOM.DtBind.Columns.Add("ChitNo1", typeof(int));
+                objCOM.DtBind.Columns.Add("MemberName");
+                objCOM.DtBind.Columns.Add("TCredit", typeof(decimal));
+                objCOM.DtBind.Columns.Add("Debit", typeof(decimal));
+                objCOM.DtBind.Columns.Add("ExcessRemittance", typeof(decimal));
+                objCOM.DtBind.Columns.Add("NPArrier", typeof(decimal));
+                objCOM.DtBind.Columns.Add("PArrier", typeof(decimal));
+                objCOM.DtBind.Columns.Add("NPKasar", typeof(decimal));
+                objCOM.DtBind.Columns.Add("PKasar", typeof(decimal));
+                objCOM.DtBind.Columns.Add("Branches");
+                objCOM.DtBind.Columns.Add("MobileNumber");
+                objCOM.DrBind = objCOM.DtBind.NewRow();
+                string TotaldueAmount = "";
+                balayer.GetInsertItem("CREATE OR REPLACE VIEW `unpaidprizedmoney` AS select `voucher`.`Head_Id` AS `Head_Id`, `membertogroupmaster`.`GrpMemberID` AS `GrpMemberID`, (case when (`voucher`.`Voucher_Type` = 'C') then sum(`voucher`.`Amount`) else 0.00 end) AS `Credit`, (case when (`voucher`.`Voucher_Type` = 'D') then sum(`voucher`.`Amount`) else 0.00 end) AS `Debit`, ((case when (`voucher`.`Voucher_Type` = 'C') then sum(`voucher`.`Amount`) else 0.00 end) - (case when (`voucher`.`Voucher_Type` = 'D') then sum(`voucher`.`Amount`) else 0.00 end)) AS `AmountActuallyremittedbytheParty` from (`voucher` join `membertogroupmaster` ON ((`voucher`.`Head_Id` = `membertogroupmaster`.`Head_Id`))) group by `voucher`.`Head_Id`");
+                balayer.GetInsertItem("create or replace view `view_groupwisedue` as select `groupmaster`.`GROUPNO` AS `GroupIDOriginal`,`groupmaster`.`IsFinished`, `auctiondetails`.`GroupID` AS `GroupId`, sum(`auctiondetails`.`CurrentDueAmount`) AS `TotaldueAmount` from (`auctiondetails` join `groupmaster` ON ((`auctiondetails`.`GroupID` = `groupmaster`.`Head_Id`))) where (`auctiondetails`.`AuctionDate` <= '" + balayer.indiandateToMysqlDate(txtFromDate.Text) + "') group by `auctiondetails`.`GroupID`");
+
+                if (ddlChit.SelectedItem.Text == "--select--")
+                {
+                }
+                else
+                {
+                    objCOM.RowCount = balayer.GetScalarDataInt("select * from auctiondetails where IsPrized='Y' and AuctionDate<='" + balayer.indiandateToMysqlDate(txtFromDate.Text) + "' and GroupID=" + ddlChit.SelectedItem.Value);
+                    if (objCOM.RowCount > 0)
+                    {
+                        var DtHeads = balayer.GetDataTable(" select NodeID from headstree where ParentID=" + ddlChit.SelectedItem.Value);
+                        for (int j = 0; j < DtHeads.Rows.Count; j++)
+                        {
+                            decimal strA = 0.00M;
+                            decimal strE = 0.00M;
+                            decimal strB = 0.00M;
+                            decimal strC = 0.00M;
+                            decimal strD = 0.00M;
+                            var qry = @"select cast(digits(mg1.GrpMemberID) as unsigned) as ChitNo1 from membertogroupmaster as mg1 join voucher as v1 on v1.Head_Id=mg1.Head_Id join view_groupwisedue as vgwd1 on vgwd1.`GroupId`=" + ddlChit.SelectedItem.Value + " left join trans_payment as tp1 on v1.Head_Id =tp1.TokenNumber join membermaster as mm on (mg1.MemberID=mm.MemberIDNew) where mg1.BranchID=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and mg1.GroupID=" + ddlChit.SelectedItem.Value + " and v1.Head_Id=" + DtHeads.Rows[j]["NodeID"] + " and v1.ChoosenDate<= '" + balayer.indiandateToMysqlDate(txtFromDate.Text) + "' group by v1.Head_Id order by cast(digits(mg1.GrpMemberID) as unsigned),v1.Voucher_Type DESC ;";
+                            objCOM.Sss = balayer.GetSingleValue(qry);
+
+
+                            if (string.IsNullOrEmpty(objCOM.Sss))
+                            {
+                                //objCOM.DrBind["ChitNo1"] = balayer.GetSingleValue("select cast(digits(GrpMemberID) as unsigned) as ChitNo1 from membertogroupmaster where Head_Id=" + DtHeads.Rows[j]["NodeID"]);
+                                var chitExists= balayer.GetSingleValue("select cast(digits(GrpMemberID) as unsigned) as ChitNo1 from membertogroupmaster where Head_Id=" + DtHeads.Rows[j]["NodeID"]);
+                                if (chitExists == "")
+                                    continue;
+                                else
+                                    objCOM.DrBind["ChitNo1"] = chitExists;
+                            }
+                            else
+                            {
+                                objCOM.DrBind["ChitNo1"] = objCOM.Sss;
+                            }
+                            // objCOM.StrName = balayer.GetSingleValue(@"select (case when(r.DateOfRemoval>'" + balayer.indiandateToMysqlDate(txtFromDate.Text) + "') then concat(m1.CustomerName) else concat(mg1.MemberName) end) as `MemberName` from membertogroupmaster as mg1 left join removal_approval r on mg1.Head_Id=r.GroupMemberID join membermaster m1 on m1.MemberIDNew=r.OldMemberID join voucher as v1 on v1.Head_Id=mg1.Head_Id join groupmaster as vgwd1 on vgwd1.`Head_Id`=" + ddlChit.SelectedItem.Value + " left join trans_payment as tp1 on v1.Head_Id =tp1.TokenNumber join membermaster as mm on (mg1.MemberID=mm.MemberIDNew) where mg1.BranchID=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and mg1.GroupID=" + ddlChit.SelectedItem.Value + " and v1.Head_Id=" + DtHeads.Rows[j]["NodeID"] + " and v1.ChoosenDate<= '" + balayer.indiandateToMysqlDate(txtFromDate.Text) + "' group by v1.Head_Id order by v1.ChoosenDate DESC ;");
+                            objCOM.StrName = balayer.GetSingleValue(@"select concat(mg1.MemberName) as `MemberName` from membertogroupmaster as mg1 join voucher as v1 on v1.Head_Id=mg1.Head_Id join view_groupwisedue as vgwd1 on vgwd1.`GroupId`=" + ddlChit.SelectedItem.Value + " left join trans_payment as tp1 on v1.Head_Id =tp1.TokenNumber join membermaster as mm on (mg1.MemberID=mm.MemberIDNew) where mg1.BranchID=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and mg1.GroupID=" + ddlChit.SelectedItem.Value + " and v1.Head_Id=" + DtHeads.Rows[j]["NodeID"] + " and v1.ChoosenDate<= '" + balayer.indiandateToMysqlDate(txtFromDate.Text) + "' group by v1.Head_Id order by v1.ChoosenDate DESC ;");
+                            if (string.IsNullOrEmpty(objCOM.StrName))
+                            {
+                                objCOM.StrMemID = balayer.GetSingleValue("SELECT MemberID FROM svcf.membertogroupmaster where Head_id=" + DtHeads.Rows[j]["NodeID"]);
+                                objCOM.MemberName = balayer.GetSingleValue("SELECT CustomerName FROM svcf.membermaster where MemberIDNew=" + objCOM.StrMemID);
+
+                                objCOM.DrBind["MemberName"] = objCOM.MemberName;
+                            }
+                            else
+                            {
+
+                                objCOM.DrBind["MemberName"] = objCOM.StrName;
+                            }
+
+                            // objCOM.Credit = balayer.GetSingleValue(@"select (case when( tp1.PaymentDate is null or tp1.PaymentDate >'2017/10/23') then sum(case when (v1.Voucher_Type='C' and v1.trans_Type<>2 and v1.Other_Trans_Type<>5 ) then v1.Amount else 0.00 end) -sum(case when (v1.Voucher_Type='D' and v1.trans_Type<>2 and v1.Other_Trans_Type<>5 ) then v1.Amount else 0.00 end) else 0.00 end ) as Credit from membertogroupmaster as mg1 join voucher as v1 on v1.Head_Id=mg1.Head_Id join view_groupwisedue as vgwd1 on vgwd1.`GroupId`=" + ddlChit.SelectedItem.Value + " left join trans_payment as tp1 on v1.Head_Id =tp1.TokenNumber join membermaster as mm on (mg1.MemberID=mm.MemberIDNew) where mg1.BranchID=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and mg1.GroupID=" + ddlChit.SelectedItem.Value + " and v1.Head_Id=" + DtHeads.Rows[j]["NodeID"] + " and v1.ChoosenDate<='" + balayer.indiandateToMysqlDate(txtFromDate.Text) + "' group by v1.Head_Id order by cast(digits(mg1.GrpMemberID) as unsigned) ;");
+                            objCOM.Credit = balayer.GetSingleValue(@"select (case when( tp1.PaymentDate is null or tp1.PaymentDate >'" + balayer.indiandateToMysqlDate(txtFromDate.Text) + "') then sum(case when (v1.Voucher_Type='C' and v1.trans_Type<>2 and v1.Other_Trans_Type<>5 ) then v1.Amount else 0.00 end) -sum(case when (v1.Voucher_Type='D' and v1.trans_Type<>2 and v1.Other_Trans_Type<>5 ) then v1.Amount else 0.00 end) else 0.00 end ) as Credit from membertogroupmaster as mg1 join voucher as v1 on v1.Head_Id=mg1.Head_Id join view_groupwisedue as vgwd1 on vgwd1.`GroupId`=" + ddlChit.SelectedItem.Value + " left join trans_payment as tp1 on v1.Head_Id =tp1.TokenNumber join membermaster as mm on (mg1.MemberID=mm.MemberIDNew) where mg1.BranchID=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and mg1.GroupID=" + ddlChit.SelectedItem.Value + " and v1.Head_Id=" + DtHeads.Rows[j]["NodeID"] + " and v1.ChoosenDate<='" + balayer.indiandateToMysqlDate(txtFromDate.Text) + "' group by v1.Head_Id order by cast(digits(mg1.GrpMemberID) as unsigned) ;");
+                            if (string.IsNullOrEmpty(objCOM.Credit))
+                            {
+                                strB = 0.00M;
+                                objCOM.DrBind["TCredit"] = "0.00";
+                            }
+                            else
+                            {
+                                strB = Convert.ToDecimal(objCOM.Credit);
+                                objCOM.DrBind["TCredit"] = strB;
+                            }
+
+
+                            objCOM.Excess = balayer.GetSingleValue(@"select  (case when( (sum(case when (v1.Voucher_Type='C' and v1.trans_Type<>2 and v1.Other_Trans_Type<>5 ) then v1.Amount else 0.00 end) -sum(case when (v1.Voucher_Type='D' and v1.trans_Type<>2 and v1.Other_Trans_Type<>5 ) then v1.Amount else 0.00 end) -vgwd1.TotaldueAmount)>0.00) then (sum(case when (v1.Voucher_Type='C' and v1.trans_Type<>2 and v1.Other_Trans_Type<>5 ) then v1.Amount else 0.00 end) -sum(case when (v1.Voucher_Type='D' and v1.trans_Type<>2 and v1.Other_Trans_Type<>5 ) then v1.Amount else 0.00 end) -vgwd1.TotaldueAmount) else 0.00 end) as ExcessRemittance from membertogroupmaster as mg1 join voucher as v1 on v1.Head_Id=mg1.Head_Id join view_groupwisedue as vgwd1 on vgwd1.`GroupId`=" + ddlChit.SelectedItem.Value + " left join trans_payment as tp1 on v1.Head_Id =tp1.TokenNumber join membermaster as mm on (mg1.MemberID=mm.MemberIDNew) where mg1.BranchID=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and mg1.GroupID=" + ddlChit.SelectedItem.Value + " and v1.Head_Id=" + DtHeads.Rows[j]["NodeID"] + " and v1.ChoosenDate<= '" + balayer.indiandateToMysqlDate(txtFromDate.Text) + "' group by v1.Head_Id order by cast(digits(mg1.GrpMemberID) as unsigned),v1.Voucher_Type DESC ;");
+                            if (string.IsNullOrEmpty(objCOM.Excess))
+                            {
+                                strE = 0.00M;
+                                objCOM.DrBind["ExcessRemittance"] = "0.00";
+                            }
+                            else
+                            {
+                                strE = Convert.ToDecimal(objCOM.Excess);
+                                objCOM.DrBind["ExcessRemittance"] = strE;
+                            }
+
+                            objCOM.Parr = balayer.GetSingleValue(@"select (case when( tp1.PaymentDate<='" + balayer.indiandateToMysqlDate(txtFromDate.Text) + "' ) then (case when( (vgwd1.TotaldueAmount-sum(case when (v1.Voucher_Type='C' and v1.trans_Type<>2 and v1.Other_Trans_Type<>5 ) then v1.Amount else 0.00 end) +sum(case when (v1.Voucher_Type='D' and v1.trans_Type<>2 and v1.Other_Trans_Type<>5 ) then v1.Amount else 0.00 end) )>0.00) then (vgwd1.TotaldueAmount-sum(case when (v1.Voucher_Type='C' and v1.trans_Type<>2 and v1.Other_Trans_Type<>5 ) then v1.Amount else 0.00 end) +sum(case when (v1.Voucher_Type='D' and v1.trans_Type<>2 and v1.Other_Trans_Type<>5 ) then v1.Amount else 0.00 end) ) else 0.00 end) else 0.00 end ) as PArrier from membertogroupmaster as mg1 join voucher as v1 on v1.Head_Id=mg1.Head_Id join view_groupwisedue as vgwd1 on vgwd1.`GroupId`=" + ddlChit.SelectedItem.Value + " left join trans_payment as tp1 on v1.Head_Id =tp1.TokenNumber join membermaster as mm on (mg1.MemberID=mm.MemberIDNew) where mg1.BranchID=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and mg1.GroupID=" + ddlChit.SelectedItem.Value + " and v1.Head_Id=" + DtHeads.Rows[j]["NodeID"] + " and v1.ChoosenDate<= '" + balayer.indiandateToMysqlDate(txtFromDate.Text) + "' group by v1.Head_Id order by cast(digits(mg1.GrpMemberID) as unsigned),v1.Voucher_Type DESC ;");
+                            if (string.IsNullOrEmpty(objCOM.Excess))
+                            {
+                                strA = 0.00M;
+                                objCOM.DrBind["PArrier"] = "0.00";
+                            }
+                            else
+                            {
+                                strA = Convert.ToDecimal(objCOM.Parr);
+                                objCOM.DrBind["PArrier"] = strA;
+                            }
+                            objCOM.Npkas = balayer.GetSingleValue(@"select (case when( tp1.PaymentDate is null  or tp1.PaymentDate >'" + balayer.indiandateToMysqlDate(txtFromDate.Text) + "') then sum((case when (v1.Voucher_Type='C' and v1.Other_Trans_Type=5 ) then v1.Amount else 0.00 end)) else 0.00 end ) as NPKasar from membertogroupmaster as mg1 join voucher as v1 on v1.Head_Id=mg1.Head_Id join groupmaster as vgwd1 on vgwd1.`Head_Id`=" + ddlChit.SelectedItem.Value + " left join trans_payment as tp1 on v1.Head_Id =tp1.TokenNumber join membermaster as mm on (mg1.MemberID=mm.MemberIDNew) where mg1.BranchID=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and mg1.GroupID=" + ddlChit.SelectedItem.Value + " and v1.Head_Id=" + DtHeads.Rows[j]["NodeID"] + " and v1.ChoosenDate<='" + balayer.indiandateToMysqlDate(txtFromDate.Text) + "' group by v1.Head_Id order by cast(digits(mg1.GrpMemberID) as unsigned),v1.Voucher_Type DESC ;");
+                            if (string.IsNullOrEmpty(objCOM.Npkas))
+                            {
+                                objCOM.DrBind["NPKasar"] = "0.00";
+                            }
+                            else
+                            {
+                                strC = Convert.ToDecimal(objCOM.Npkas);
+                                objCOM.DrBind["NPKasar"] = strC;
+                            }
+                            objCOM.Pkas = balayer.GetSingleValue(@"select (case when( tp1.PaymentDate<='" + balayer.indiandateToMysqlDate(txtFromDate.Text) + "' ) then sum((case when (v1.Voucher_Type='C' and v1.Other_Trans_Type=5 ) then v1.Amount else 0.00 end)) else 0.00 end ) as PKasar from membertogroupmaster as mg1 join voucher as v1 on v1.Head_Id=mg1.Head_Id join groupmaster as vgwd1 on vgwd1.`Head_Id`=" + ddlChit.SelectedItem.Value + " left join trans_payment as tp1 on v1.Head_Id =tp1.TokenNumber join membermaster as mm on (mg1.MemberID=mm.MemberIDNew) where mg1.BranchID=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and mg1.GroupID=" + ddlChit.SelectedItem.Value + " and v1.Head_Id=" + DtHeads.Rows[j]["NodeID"] + " and v1.ChoosenDate<='" + balayer.indiandateToMysqlDate(txtFromDate.Text) + "' group by v1.Head_Id order by cast(digits(mg1.GrpMemberID) as unsigned),v1.Voucher_Type DESC ;");
+                            if (string.IsNullOrEmpty(objCOM.Excess))
+                            {
+                                objCOM.DrBind["PKasar"] = "0.00";
+                            }
+                            else
+                            {
+                                strD = Convert.ToDecimal(objCOM.Pkas);
+                                objCOM.DrBind["PKasar"] = strD;
+                            }
+
+                            objCOM.StrMember = balayer.GetSingleValue("SELECT MemberID FROM svcf.voucher where Head_id=" + DtHeads.Rows[j]["NodeID"] + " and ChoosenDate<='" + balayer.indiandateToMysqlDate(txtFromDate.Text) + "' order by ChoosenDate desc");
+
+                            if (string.IsNullOrEmpty(objCOM.StrMember))
+                            {
+                                objCOM.StrMember = "0";
+                            }
+                            objCOM.StrBranches = balayer.GetSingleValue("SELECT b1.Place FROM svcf.membermaster as m1 join branchdetails as b1 on (m1.BranchID=b1.Head_Id) where m1.MemberIDNew=" + objCOM.StrMember);
+
+
+                            if (string.IsNullOrEmpty(objCOM.StrBranches))
+                            {
+                                objCOM.DrBind["Branches"] = balayer.GetSingleValue("SELECT b1.Place FROM svcf.membertogroupmaster as m1 join branchdetails as b1 on (m1.B_Id=b1.Head_Id) where m1.Head_id=" + DtHeads.Rows[j]["NodeID"]);
+                            }
+                            else
+                            {
+                                objCOM.DrBind["Branches"] = objCOM.StrBranches;
+                            }
+
+
+                            objCOM.Debit = balayer.GetSingleValue(@"select (case when( tp1.PaymentDate<='" + balayer.indiandateToMysqlDate(txtFromDate.Text) + "' ) then sum((case when (v1.Voucher_Type='D' and v1.Other_Trans_Type<>5 ) then v1.Amount else 0.00 end) -case when (v1.Voucher_Type='C' and v1.Other_Trans_Type<>5 ) then v1.Amount else 0.00 end) else 0.00 end ) as Debit from membertogroupmaster as mg1 join voucher as v1 on v1.Head_Id=mg1.Head_Id join groupmaster as vgwd1 on vgwd1.`Head_Id`=" + ddlChit.SelectedItem.Value + " left join trans_payment as tp1 on v1.Head_Id =tp1.TokenNumber join membermaster as mm on (mg1.MemberID=mm.MemberIDNew) where mg1.BranchID=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and mg1.GroupID=" + ddlChit.SelectedItem.Value + " and v1.Head_Id=" + DtHeads.Rows[j]["NodeID"] + " and v1.ChoosenDate<= '" + balayer.indiandateToMysqlDate(txtFromDate.Text) + "' group by v1.Head_Id order by cast(digits(mg1.GrpMemberID) as unsigned),v1.Voucher_Type DESC ;");
+                            if (string.IsNullOrEmpty(objCOM.Debit))
+                            {
+                                objCOM.DrBind["Debit"] = "0.00";
+                            }
+                            else
+                            {
+                                objCOM.DrBind["Debit"] = objCOM.Debit;
+                            }
+
+                            objCOM.Nparr = balayer.GetSingleValue(@"select (case when( tp1.PaymentDate is null  or tp1.PaymentDate >'" + balayer.indiandateToMysqlDate(txtFromDate.Text) + "') then (case when( (" + TotaldueAmount + "-sum(case when (v1.Voucher_Type='C' and v1.trans_Type<>2 and v1.Other_Trans_Type<>5 ) then v1.Amount else 0.00 end) +sum(case when (v1.Voucher_Type='D' and v1.trans_Type<>2 and v1.Other_Trans_Type<>5 ) then v1.Amount else 0.00 end) )>0.00) then (" + TotaldueAmount + "-sum(case when (v1.Voucher_Type='C' and v1.trans_Type<>2 and v1.Other_Trans_Type<>5 ) then v1.Amount else 0.00 end) +sum(case when (v1.Voucher_Type='D' and v1.trans_Type<>2 and v1.Other_Trans_Type<>5 ) then v1.Amount else 0.00 end) ) else 0.00 end) else 0.00 end) as NPArrier from membertogroupmaster as mg1 join voucher as v1 on v1.Head_Id=mg1.Head_Id join groupmaster as vgwd1 on vgwd1.`Head_Id`=" + ddlChit.SelectedItem.Value + " left join trans_payment as tp1 on v1.Head_Id =tp1.TokenNumber join membermaster as mm on (mg1.MemberID=mm.MemberIDNew) where mg1.BranchID=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and mg1.GroupID=" + ddlChit.SelectedItem.Value + " and v1.Head_Id=" + DtHeads.Rows[j]["NodeID"] + " and v1.ChoosenDate<= '" + balayer.indiandateToMysqlDate(txtFromDate.Text) + "' group by v1.Head_Id order by cast(digits(mg1.GrpMemberID) as unsigned),v1.Voucher_Type DESC ;");
+
+                            //objCOM.Nparr =( objCOM.Nparr == "0.00" ? null : objCOM.Nparr);
+
+                            objCOM.MobileNumber = balayer.GetSingleValue("SELECT m1.MobileNo FROM svcf.membermaster as m1 join svcf.branchdetails as b1 on (m1.BranchID=b1.Head_Id) join svcf.membertogroupmaster as mg1 on mg1.MemberID=m1.MemberIDNew where mg1.Head_Id=" + DtHeads.Rows[j]["NodeID"]);
+                            if (string.IsNullOrEmpty(objCOM.MobileNumber))
+                            {
+                                string strMemID = balayer.GetSingleValue("SELECT MemberID FROM svcf.membertogroupmaster where Head_id=" + DtHeads.Rows[j]["NodeID"]);
+                                objCOM.DrBind["MobileNumber"] = balayer.GetSingleValue("SELECT MobileNo FROM svcf.membermaster where MemberIDNew=" + strMemID);
+
+                            }
+                            else
+                            {
+                                objCOM.DrBind["MobileNumber"] = objCOM.MobileNumber;
+                            }
+
+                            if (strA != 0.00M || strE != 0.00M || strB != 0.00M)
+                            {
+                                objCOM.DtBind.Rows.Add(objCOM.DrBind.ItemArray);
+                            }
+
+                            // objCOM.DtBind.Rows.Add(objCOM.DrBind.ItemArray);
+                        }
+                        var SumExcess_WithoutCredit = objCOM.DtBind.AsEnumerable().Where(a => a.Field<decimal>("TCredit") == 0).Sum(a => a.Field<decimal>("ExcessRemittance"));
+                        ViewState["ExcessWithoutCredit"] = SumExcess_WithoutCredit;
+                        ViewState["ExcessRemittance"] = objCOM.DtBind.Compute("Sum(ExcessRemittance)", "");
+                        ViewState["PArrier"] = objCOM.DtBind.Compute("Sum(PArrier)", "");
+                        ViewState["TCredit"] = objCOM.DtBind.Compute("Sum(TCredit)", "");
+                        ViewState["NPKasar"] = objCOM.DtBind.Compute("Sum(NPKasar)", "");
+                        ViewState["PKasar"] = objCOM.DtBind.Compute("Sum(PKasar)", "");
+
+                        if ((ViewState["TCredit"] == null) || (ViewState["TCredit"] == DBNull.Value)) ViewState["TCredit"] = 0;
+                        if ((ViewState["NPKasar"] == null) || (ViewState["NPKasar"] == DBNull.Value)) ViewState["NPKasar"] = 0;
+                        if ((ViewState["ExcessRemittance"] == null) || (ViewState["ExcessRemittance"] == DBNull.Value)) ViewState["ExcessRemittance"] = 0;
+                        if ((ViewState["PArrier"] == null) || (ViewState["PArrier"] == DBNull.Value)) ViewState["PArrier"] = 0;
+                        if ((ViewState["ExcessWithoutCredit"] == null) || (ViewState["ExcessWithoutCredit"] == DBNull.Value)) ViewState["ExcessWithoutCredit"] = 0;
+
+                    }
+
+                    var RunningDt = balayer.GetDataTable("SELECT `groupmaster`.`NoofMembers`,`groupmaster`.`GROUPNO`,date_format(`groupmaster`.`ChitEndDate`,'%d/%m/%Y') as ChitEndDate,`branchdetails`.`B_Name`,max(`auctiondetails`.`DrawNO`) as `RunningCall`,`groupmaster`.`ChitValue` FROM svcf.groupmaster join auctiondetails on (`groupmaster`.`Head_Id`=`auctiondetails`.`GroupID`) join `branchdetails` on (`groupmaster`.`BranchID`=`branchdetails`.`Head_Id`) where `groupmaster`.`Head_Id`=" + ddlChit.SelectedValue + " and `auctiondetails`.`AuctionDate`<='" + balayer.indiandateToMysqlDate(txtFromDate.Text) + "'  and `auctiondetails`.`BranchID`=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + ";");
+                    objCOM.Str = Convert.ToString(RunningDt.Rows[0]["RunningCall"]) == "" ? "0" : Convert.ToString(RunningDt.Rows[0]["RunningCall"]);
+                    objCOM.Dv = objCOM.DtBind.DefaultView;
+                    objCOM.Dv.Sort = "ChitNo1 asc";
+                    objCOM.SortedDT = objCOM.Dv.ToTable();
+
+                    //lblCaption.Text = "Sree Visalam Chit Fund Limited.,<br/>Trial And Arrear <br/> Branch Name : " + objCOM.Sssssssss.Rows[0]["B_Name"].ToString() + "; \t Running Call : " + objCOM.Str + " <br/> Group No : " + objCOM.Sssssssss.Rows[0]["GROUPNO"].ToString() + "; \t Chit Amount : " + objCOM.Sssssssss.Rows[0]["ChitValue"].ToString() + "; \t for the month of " + Convert.ToDateTime(txtFromDate.Text).ToString("MMMM yyyy");
+                    lblCaption.Text = "Sree Visalam Chit Fund Limited.,<br/>Date of Termination : " + RunningDt.Rows[0]["ChitEndDate"] + " <br/> Branch Name : " + RunningDt.Rows[0]["B_Name"].ToString() + "; \t Running Call : " + objCOM.Str + " <br/> Group No : " + RunningDt.Rows[0]["GROUPNO"].ToString() + "; \t Chit Amount : " + RunningDt.Rows[0]["ChitValue"].ToString() + ";\t As On " + txtFromDate.Text;
+                    gridTA.DataSource = objCOM.SortedDT;
+                    lblsummary_NPkasar.Text = Convert.ToString(ViewState["NPKasar"]);
+                    lblsummary_PKasar.Text = Convert.ToString(ViewState["ExcessWithoutCredit"]);
+                    lblsummary_Arrear.Text = Convert.ToString(ViewState["PArrier"]);
+
+                    lblsummary_GrandTotal.Text = Convert.ToString((Convert.ToDecimal(ViewState["TCredit"]) + Convert.ToDecimal(ViewState["NPKasar"]) + Convert.ToDecimal(ViewState["ExcessWithoutCredit"])));
+                    // lblsummary_GrandTotal.Text = Convert.ToString(Convert.ToDecimal(ViewState["NPKasar"]) + Convert.ToDecimal(ViewState["ExcessRemittance"]));
+                    //BalanceDR.Text = Math.Abs((Convert.ToDecimal(ViewState["TCredit"]) + Convert.ToDecimal(ViewState["NPKasar"]) + Convert.ToDecimal(ViewState["ExcessRemittance"])) - Convert.ToDecimal(ViewState["PArrier"])).ToString();
+                    BalanceDR.Text = Math.Abs(Convert.ToDecimal(lblsummary_GrandTotal.Text) - Convert.ToDecimal(ViewState["PArrier"])).ToString();
+                    decimal BalArrear = Convert.ToDecimal(ViewState["PArrier"]);
+
+                    if (Convert.ToDecimal(lblsummary_GrandTotal.Text) > BalArrear)
+                    {
+                        var balance = Convert.ToDecimal(lblsummary_GrandTotal.Text) - Convert.ToDecimal(ViewState["PArrier"]);
+                        lblsummary_DR.Visible = false;
+                        lblsummary_CR.Visible = true;
+                        lblsummary_BalanceCR.Text = "" + balance;
+                    }
+                    else
+                    {
+                        var balance = Convert.ToDecimal(ViewState["PArrier"]) - Convert.ToDecimal(lblsummary_GrandTotal.Text);
+                        lblsummary_CR.Visible = false;
+                        lblsummary_DR.Visible = true;
+                        lblsummary_BalanceDR.Text = "" + balance;
+                    }
+                }
+
+                Hiddentcap.Text = gridTA.Caption;
+                ViewState["CurrentData"] = objCOM.SortedDT;
+                gridTA.DataBind();
+
+            }
+            catch (Exception err)
+            {
+                //LogCls.LogError(err, "Terminate: Select");
+            }
+
+        }
+
+    
+        protected void imgpdf_Click(object sender, ImageClickEventArgs e)
+        {
+            try
+            {
+                DataTable captiondt = new DataTable();
+                string tablecaption = "";
+                captiondt = balayer.GetDataTable("SELECT `groupmaster`.`NoofMembers`,`groupmaster`.`GROUPNO`,date_format(`groupmaster`.`ChitEndDate`,'%d/%m/%Y') as ChitEndDate,`branchdetails`.`B_Name`,max(`auctiondetails`.`DrawNO`) as `RunningCall`,`groupmaster`.`ChitValue` FROM svcf.groupmaster join auctiondetails on (`groupmaster`.`Head_Id`=`auctiondetails`.`GroupID`) join `branchdetails` on (`groupmaster`.`BranchID`=`branchdetails`.`Head_Id`) where `groupmaster`.`Head_Id`=" + ddlChit.SelectedValue + " and `auctiondetails`.`AuctionDate`<='" + balayer.indiandateToMysqlDate(txtFromDate.Text) + "'  and `auctiondetails`.`BranchID`=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + ";");
+                objCOM.Str = Convert.ToString(captiondt.Rows[0]["RunningCall"]) == "" ? "0" : Convert.ToString(captiondt.Rows[0]["RunningCall"]);
+                tablecaption = "Sree Visalam Chit Fund Limited.,<br/>Terminate And Arrear <br/> Branch Name : " + captiondt.Rows[0]["B_Name"].ToString() + "; \t Running Call : " + objCOM.Str + " <br/> Group No : " + captiondt.Rows[0]["GROUPNO"].ToString() + "; \t Chit Amount : " + captiondt.Rows[0]["ChitValue"].ToString() + "; \t As On " + txtFromDate.Text;
+
+                gridTA.DataSource = (DataTable)ViewState["CurrentData"];
+                gridTA.DataBind();
+                Phrase phrase = null;
+
+                phrase = new Phrase();
+                phrase.Add(new Chunk("\t\t\t\t\t\t\t\t Sree Visalam Chit Fund Limited.,\n", FontFactory.GetFont("TIMES_ROMAN", 16, 3, iTextSharp.text.Color.BLACK)));
+                phrase.Add(new Chunk("\t\t\t\t\t\t\t\tDate of Termination : " + captiondt.Rows[0]["ChitEndDate"] + "\n", FontFactory.GetFont("Arial", 12, iTextSharp.text.Color.BLACK)));
+                phrase.Add(new Chunk("\t\t\t\t\t\t\t\t Branch Name : " + captiondt.Rows[0]["B_Name"].ToString() + "; \t Running Call : " + objCOM.Str + "\n", FontFactory.GetFont("Arial", 13, iTextSharp.text.Font.NORMAL, iTextSharp.text.Color.BLACK)));
+                phrase.Add(new Chunk("\t\t\t\t\t\t\t\t Group No : " + captiondt.Rows[0]["GROUPNO"].ToString() + ";\t Chit Value : " + captiondt.Rows[0]["ChitValue"].ToString() + "\n", FontFactory.GetFont("Arial", 13, iTextSharp.text.Font.NORMAL, iTextSharp.text.Color.BLACK)));
+                phrase.Add(new Chunk("\t\t\t\t\t\t\t\t As On " + txtFromDate.Text + "", FontFactory.GetFont("Arial", 13, iTextSharp.text.Font.NORMAL, iTextSharp.text.Color.BLACK)));
+               
+                BaseFont basefont = BaseFont.CreateFont(BaseFont.TIMES_ROMAN, BaseFont.CP1252, false);
+                iTextSharp.text.Font fnt = iTextSharp.text.FontFactory.GetFont(iTextSharp.text.FontFactory.HELVETICA, 12);
+
+
+                iTextSharp.text.Table table = new iTextSharp.text.Table(gridTA.Columns.Count);
+
+                iTextSharp.text.Cell cellcaption = new iTextSharp.text.Cell();
+                cellcaption.Add(new Phrase(phrase));
+                cellcaption.Colspan = gridTA.Columns.Count;
+                cellcaption.HorizontalAlignment = PdfCell.ALIGN_CENTER;
+                cellcaption.VerticalAlignment = PdfCell.ALIGN_TOP;
+
+                table.AddCell(cellcaption);
+                table.Cellpadding = 2;
+                int[] widths = new int[gridTA.Columns.Count];
+
+
+                for (int x = 0; x < gridTA.Columns.Count; x++)
+                {
+                    widths[x] = (int)gridTA.Columns[x].ItemStyle.Width.Value;
+                    string cellText = Server.HtmlDecode(gridTA.HeaderRow.Cells[x].Text);
+                    iTextSharp.text.Cell cell = new iTextSharp.text.Cell(cellText);
+                    cell.BackgroundColor = new iTextSharp.text.Color(System
+                                       .Drawing.ColorTranslator.FromHtml("#DCDCDC"));
+                    table.AddCell(cell);
+                }
+                table.SetWidths(widths);
+
+                //Transfer rows from GridView to table
+                for (int i = 0; i < gridTA.Rows.Count; i++)
+                {
+                    BaseFont bfTimes = BaseFont.CreateFont(BaseFont.TIMES_ROMAN, BaseFont.CP1252, false);
+                    iTextSharp.text.Font font20 = iTextSharp.text.FontFactory.GetFont
+                    (iTextSharp.text.FontFactory.HELVETICA, 12);
+
+                    if (gridTA.Rows[i].RowType == DataControlRowType.DataRow)
+                    {
+
+                        Label lblsno = (Label)gridTA.Rows[i].FindControl("lblchit");
+                        string cellText1 = Server.HtmlDecode
+                                          (lblsno.Text);
+
+                        iTextSharp.text.Cell cell1 = new iTextSharp.text.Cell();
+                        cell1.Add(new Phrase(cellText1, font20));
+                        //Set Color of Alternating row
+                        if (i % 2 != 0)
+                        {
+                            cell1.BackgroundColor = new iTextSharp.text.Color(System.Drawing
+                                                .ColorTranslator.FromHtml("#FFFFFF"));
+                        }
+                        table.AddCell(cell1);
+
+                        //2nd column
+                        Label lblmem = (Label)gridTA.Rows[i].FindControl("lblmember");
+                        string cellText2 = Server.HtmlDecode
+                                          (lblmem.Text);
+                        iTextSharp.text.Cell cell2 = new iTextSharp.text.Cell();
+                        cell2.Add(new Phrase(cellText2, font20));
+
+                        //Set Color of Alternating row
+                        if (i % 2 != 0)
+                        {
+                            cell2.BackgroundColor = new iTextSharp.text.Color(System.Drawing
+                                                .ColorTranslator.FromHtml("#FFFFFF"));
+                        }
+                        table.AddCell(cell2);
+
+                        //3rd column
+                        Label lblcrd = (Label)gridTA.Rows[i].FindControl("lblcredit");
+                        string cellText3 = Server.HtmlDecode
+                                          (lblcrd.Text);
+                        iTextSharp.text.Cell cell3 = new iTextSharp.text.Cell();
+                        cell3.Add(new Phrase(cellText3, font20));
+                        cell3.HorizontalAlignment = iTextSharp.text.Element.ALIGN_RIGHT;
+                        cell3.VerticalAlignment = iTextSharp.text.Element.ALIGN_RIGHT;
+
+                        //Set Color of Alternating row
+                        if (i % 2 != 0)
+                        {
+                            cell3.BackgroundColor = new iTextSharp.text.Color(System.Drawing
+                                                .ColorTranslator.FromHtml("#FFFFFF"));
+                        }
+                        table.AddCell(cell3);
+
+                        //5th column
+                        Label lblexremit = (Label)gridTA.Rows[i].FindControl("lblexremit");
+                        string cellText4 = Server.HtmlDecode(lblexremit.Text);
+                        iTextSharp.text.Cell cell4 = new iTextSharp.text.Cell();
+                        cell4.Add(new Phrase(cellText4, font20));
+                        cell4.HorizontalAlignment = iTextSharp.text.Element.ALIGN_RIGHT;
+                        cell4.VerticalAlignment = iTextSharp.text.Element.ALIGN_RIGHT;
+
+                        //Set Color of Alternating row
+                        if (i % 2 != 0)
+                        {
+                            cell4.BackgroundColor = new iTextSharp.text.Color(System.Drawing
+                                                .ColorTranslator.FromHtml("#FFFFFF"));
+                        }
+                        table.AddCell(cell4);
+
+                        //7th column
+                        Label lblparrear = (Label)gridTA.Rows[i].FindControl("lblparrear");
+                        string cellText5 = Server.HtmlDecode(lblparrear.Text);
+
+                        iTextSharp.text.Cell cell5 = new iTextSharp.text.Cell();
+                        cell5.Add(new Phrase(cellText5, font20));
+                        cell5.HorizontalAlignment = iTextSharp.text.Element.ALIGN_RIGHT;
+                        cell5.VerticalAlignment = iTextSharp.text.Element.ALIGN_RIGHT;
+
+                        //Set Color of Alternating row
+                        if (i % 2 != 0)
+                        {
+                            cell5.BackgroundColor = new iTextSharp.text.Color(System.Drawing
+                                                .ColorTranslator.FromHtml("#FFFFFF"));
+                        }
+                        table.AddCell(cell5);
+
+                        //8th column
+                        Label lblbranches = (Label)gridTA.Rows[i].FindControl("lblbrches");
+                        string cellText6 = Server.HtmlDecode(lblbranches.Text);
+
+                        iTextSharp.text.Cell cell6 = new iTextSharp.text.Cell();
+                        cell6.Add(new Phrase(cellText6, font20));
+
+                        //Set Color of Alternating row
+                        if (i % 2 != 0)
+                        {
+                            cell6.BackgroundColor = new iTextSharp.text.Color(System.Drawing
+                                                .ColorTranslator.FromHtml("#FFFFFF"));
+                        }
+                        table.AddCell(cell6);
+
+
+
+                        Label lblmobile = (Label)gridTA.Rows[i].FindControl("lblmobile");
+                        string cellText9 = Server.HtmlDecode(lblmobile.Text);
+
+                        iTextSharp.text.Cell cell9 = new iTextSharp.text.Cell();
+                        cell9.Add(new Phrase(cellText9, font20));
+
+                        //Set Color of Alternating row
+                        if (i % 2 != 0)
+                        {
+                            cell9.BackgroundColor = new iTextSharp.text.Color(System.Drawing
+                                                .ColorTranslator.FromHtml("#FFFFFF"));
+                        }
+                        table.AddCell(cell9);
+                    }
+                }
+
+
+                BaseFont basefnt = BaseFont.CreateFont(BaseFont.TIMES_ROMAN, BaseFont.CP1252, false);
+                iTextSharp.text.Font fnt1 = iTextSharp.text.FontFactory.GetFont(iTextSharp.text.FontFactory.HELVETICA, 12, 3);
+
+                GridViewRow row = gridTA.FooterRow;
+                // Total
+                table.AddCell("");
+
+                Label tot = (Label)row.FindControl("lbltexttotal");
+                string celltextfooter1 = Server.HtmlDecode
+                                  (tot.Text);
+                iTextSharp.text.Cell cellfooter1 = new iTextSharp.text.Cell();
+                cellfooter1.Add(new Phrase(celltextfooter1, fnt1));
+                table.AddCell(celltextfooter1);
+
+                //Total Credit
+                Label totcred = (Label)row.FindControl("totalcredit");
+                string celltextfooter2 = Server.HtmlDecode
+                                  (totcred.Text);
+                iTextSharp.text.Cell cellfooter2 = new iTextSharp.text.Cell();
+                cellfooter2.Add(new Phrase(celltextfooter2, fnt1));
+                cellfooter2.HorizontalAlignment = iTextSharp.text.Element.ALIGN_RIGHT;
+                cellfooter2.VerticalAlignment = iTextSharp.text.Element.ALIGN_RIGHT;
+                table.AddCell(cellfooter2);
+
+                //Total Excess Remittance
+                Label totalexcessremittance = (Label)row.FindControl("totalexcessremittance");
+                string celltextfooter3 = Server.HtmlDecode
+                                  (totalexcessremittance.Text);
+                iTextSharp.text.Cell cellfooter3 = new iTextSharp.text.Cell();
+                cellfooter3.Add(new Phrase(celltextfooter3, fnt1));
+                cellfooter3.HorizontalAlignment = iTextSharp.text.Element.ALIGN_RIGHT;
+                cellfooter3.VerticalAlignment = iTextSharp.text.Element.ALIGN_RIGHT;
+                table.AddCell(cellfooter3);
+
+                //Total total prized arrier
+                Label totalparrier = (Label)row.FindControl("totalpaarrier");
+                string celltextfooter4 = Server.HtmlDecode
+                                  (totalparrier.Text);
+                iTextSharp.text.Cell cellfooter4 = new iTextSharp.text.Cell();
+                cellfooter4.Add(new Phrase(celltextfooter4, fnt1));
+                cellfooter4.HorizontalAlignment = iTextSharp.text.Element.ALIGN_RIGHT;
+                cellfooter4.VerticalAlignment = iTextSharp.text.Element.ALIGN_RIGHT;
+                table.AddCell(cellfooter4);
+                table.AddCell("");
+                table.AddCell("");
+
+
+                //Summary - Non Prized Kasar
+                double grandtotalbal = 0;
+                double grandarrearbal = 0;
+                for (int i = 0; i <= tble.Rows.Count - 1; i++)
+                {
+
+                    table.AddCell("");
+                    switch (i)
+                    {
+                        case 0:
+                            Label nptitle = (Label)tble.Rows[i].FindControl("Label3");
+                            iTextSharp.text.Cell cellsummary1 = new iTextSharp.text.Cell();
+                            cellsummary1.Add(new Phrase(nptitle.Text, fnt1));
+
+                            table.AddCell(cellsummary1);
+                            Label npvalue = (Label)tble.Rows[i].FindControl("lblsummary_NPkasar");
+                            iTextSharp.text.Cell cellsummaryval1 = new iTextSharp.text.Cell();
+                            //  cellsummaryval1.Colspan = 2;
+                            cellsummaryval1.Add(new Phrase(npvalue.Text, fnt1));
+                            cellsummaryval1.HorizontalAlignment = iTextSharp.text.Element.ALIGN_RIGHT;
+                            cellsummaryval1.VerticalAlignment = iTextSharp.text.Element.ALIGN_RIGHT;
+
+                            table.AddCell(cellsummaryval1);
+                            break;
+
+                        case 1:
+                            //  Prized Kasar
+                            Label prizedtitle = (Label)tble.Rows[i].FindControl("Label4");
+                            iTextSharp.text.Cell cellsummary2 = new iTextSharp.text.Cell();
+                            cellsummary2.Add(new Phrase(prizedtitle.Text, fnt1));
+                            table.AddCell(cellsummary2);
+
+                            Label prizedvalue = (Label)tble.Rows[i].FindControl("lblsummary_PKasar");
+                            iTextSharp.text.Cell cellsummaryval2 = new iTextSharp.text.Cell();
+                            //  cellsummaryval2.Colspan = 2;
+                            cellsummaryval2.Add(new Phrase(prizedvalue.Text, fnt1));
+                            cellsummaryval2.HorizontalAlignment = iTextSharp.text.Element.ALIGN_RIGHT;
+                            cellsummaryval2.VerticalAlignment = iTextSharp.text.Element.ALIGN_RIGHT;
+                            table.AddCell(cellsummaryval2);
+                            break;
+
+                        case 2:
+                            // Grand Total 
+                            Label grndtitle = (Label)tble.Rows[i].FindControl("Label5");
+                            iTextSharp.text.Cell cellsummary3 = new iTextSharp.text.Cell();
+                            cellsummary3.Add(new Phrase(grndtitle.Text, fnt1));
+                            table.AddCell(cellsummary3);
+                            Label grandvalue = (Label)tble.Rows[i].FindControl("lblsummary_GrandTotal");
+                            iTextSharp.text.Cell cellsummaryval3 = new iTextSharp.text.Cell();
+                            //cellsummaryval3.Colspan = 2;
+
+                            cellsummaryval3.Add(new Phrase(grandvalue.Text, fnt1));
+                            cellsummaryval3.HorizontalAlignment = iTextSharp.text.Element.ALIGN_RIGHT;
+                            cellsummaryval3.VerticalAlignment = iTextSharp.text.Element.ALIGN_RIGHT;
+                            grandtotalbal = Convert.ToDouble(grandvalue.Text);
+                            table.AddCell(cellsummaryval3);
+                            break;
+
+                        case 3:
+                            Label parriear = (Label)tble.Rows[i].FindControl("Label10");
+                            iTextSharp.text.Cell cellsummary5 = new iTextSharp.text.Cell();
+                            cellsummary5.Add(new Phrase(parriear.Text, fnt1));
+                            table.AddCell(cellsummary5);
+
+
+                            Label parriearvalue = (Label)tble.Rows[i].FindControl("lblsummary_Arrear");
+                            iTextSharp.text.Cell cellsummaryval5 = new iTextSharp.text.Cell();
+                            //  cellsummaryval5.Colspan = 2;
+                            cellsummaryval5.Add(new Phrase(parriearvalue.Text, fnt1));
+                            cellsummaryval5.HorizontalAlignment = iTextSharp.text.Element.ALIGN_RIGHT;
+                            cellsummaryval5.VerticalAlignment = iTextSharp.text.Element.ALIGN_RIGHT;
+                            grandarrearbal = Convert.ToDouble(parriearvalue.Text);
+
+                            table.AddCell(cellsummaryval5);
+                            break;
+                        case 4:
+                            //Balance DR                           
+                            Label baldrtitle = (Label)tble.Rows[i].FindControl("Label6");
+                            if (grandtotalbal > grandarrearbal)             //if (grandtotalbal < 0)
+                            {
+                                baldrtitle.Text = "Balance CR";
+                            }
+                            else if (grandtotalbal < grandarrearbal)
+                            {
+                                baldrtitle.Text = "Balance DR";
+                            }
+                            iTextSharp.text.Cell cellsummary4 = new iTextSharp.text.Cell();
+
+                            cellsummary4.Add(new Phrase(baldrtitle.Text, fnt1));
+                            table.AddCell(cellsummary4);
+
+                            Label baldrvalue = (Label)tble.Rows[i].FindControl("BalanceDR");
+                            iTextSharp.text.Cell cellsummaryval4 = new iTextSharp.text.Cell();
+                            //  cellsummaryval4.Colspan = 2;
+
+                            cellsummaryval4.Add(new Phrase(baldrvalue.Text, fnt1));
+                            cellsummaryval4.HorizontalAlignment = iTextSharp.text.Element.ALIGN_RIGHT;
+                            cellsummaryval4.VerticalAlignment = iTextSharp.text.Element.ALIGN_RIGHT;
+                            table.AddCell(cellsummaryval4);
+                            break;
+                    }
+                    table.AddCell("");
+                    table.AddCell("");
+                    table.AddCell("");
+                    table.AddCell("");
+                }
+
+                table.DeleteLastRow();
+                table.DeleteLastRow();
+                table.DeleteLastRow();
+
+                StringWriter sw = new StringWriter();
+                HtmlTextWriter hw = new HtmlTextWriter(sw);
+                PrintPanel1.RenderControl(hw);
+                StringReader sr = new StringReader(sw.ToString());
+                iTextSharp.text.Document pdfDoc = new iTextSharp.text.Document(PageSize.LEGAL.Rotate(), 0, 0, 19f, 0);
+                pdfDoc.SetPageSize(new iTextSharp.text.Rectangle(900f, 1150f));
+                pdfDoc.NewPage();
+                HTMLWorker htmlparser = new HTMLWorker(pdfDoc);
+                PdfWriter.GetInstance(pdfDoc, Response.OutputStream);
+                pdfDoc.Open();
+                pdfDoc.Add(table);
+                pdfDoc.Close();
+                Response.ContentType = "application/pdf";
+                Response.AddHeader("content-disposition", "attachment;filename=Terminate.pdf");
+                Response.Cache.SetCacheability(HttpCacheability.NoCache);
+                Response.Write(pdfDoc);
+
+                Response.Flush();
+
+            }
+            catch (Exception err)
+            {
+             //   LogCls.LogError(err, "Terminate: pdf Export");
+            }
+
+        }
+        protected void gridTA_RowDataBound(object sender, GridViewRowEventArgs e)
+        {
+            if (e.Row.RowType == DataControlRowType.Footer)
+            {
+                if (ViewState["TCredit"] != null)
+                {
+                    // Credit TOTAL.
+                    Label lblcredit = (Label)e.Row.FindControl("totalcredit");
+                    lblcredit.Text = ViewState["TCredit"].ToString();
+
+                   
+
+                    //Excess Remittance TOTAL.
+                    Label lblexcess = (Label)e.Row.FindControl("totalexcessremittance");
+                    lblexcess.Text = ViewState["ExcessRemittance"].ToString();
+
+                 
+
+                    //Non Prized TOTAL.
+                    Label lbltotalpaarrier = (Label)e.Row.FindControl("totalpaarrier");
+                    lbltotalpaarrier.Text = ViewState["PArrier"].ToString();
+                }
+            }
+
+        }
+        public override void VerifyRenderingInServerForm(Control control)
+        {
+            /* Confirms that an HtmlForm control is rendered for the specified ASP.NET
+               server control at run time. */
+        }
+    }
+}

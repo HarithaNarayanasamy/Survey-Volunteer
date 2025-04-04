@@ -1,0 +1,1023 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+using MySql.Data.MySqlClient;
+using System.IO;
+using System.Data;
+using SVCF_BusinessAccessLayer;
+using SVCF_TransactionLayer;
+using SVCF_DataAccessLayer;
+using log4net;
+using log4net.Config;
+
+namespace SreeVisalamChitFundLtd_phase1
+{
+    public partial class Design : System.Web.UI.Page
+    {
+        #region VarDeclaration
+        BusinessLayer balayer = new BusinessLayer();
+        TransactionLayer tranlayer = new TransactionLayer();
+        #endregion
+        ILog logger = log4net.LogManager.GetLogger(typeof(Design));
+        //public static string BranchID;
+        private HttpPostedFile PostedFile
+        {
+            get
+            {
+                if (Page.Session["postedFile"] != null)
+                {
+                    return (HttpPostedFile)Page.Session["postedFile"];
+                }
+                return null;
+            }
+            set { Page.Session["postedFile"] = value; }
+        }
+        protected void Page_PreInit(object sender, EventArgs e)
+        {
+            if (Session["UserName"] == null || Session["Branchid"] == null || Session["BranchName"] == null)
+            {
+                Response.Redirect(Page.ResolveUrl("~/Login.aspx"), true);
+            }
+        }
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            Pnlmsg.Visible = false;
+            pnlpartner.Visible = false;
+            pnlcompany.Visible = false;
+            pnlPro.Visible = false;
+            panInd.Visible = false;
+            if (!IsPostBack)
+            {
+
+                var userinfo = HttpContext.Current.User.Identity.Name;
+                var qry = "select rs.name from roles as rs inner join rights as rt on (rt.roleid=rs.id) where memberid=" + userinfo + "";
+                var usrRole = balayer.GetSingleValue(qry);
+                if (usrRole == "Report")
+                {
+                    Response.Redirect("Home.aspx", false);
+                }
+
+                TxtAge.Text = "0";
+                TxtAge1.Text = "0";
+                this.btnUpload.Attributes["onclick"] = string.Format("document.getElementById('{0}').value= document.getElementById('{1}').value;", this.HiddenField1.ClientID, this.fileuploadImage.ClientID);
+                rbtnList.SelectedIndex = 0;
+                //BranchID = balayer.ToobjectstrEvenNull(Session["Branchid"]);
+              //  DataTable dtNode = balayer.GetDataTable("SELECT B_Name,Head_id FROM svcf.branchdetails;");
+                DataTable dtNode = balayer.GetDataTable("SELECT B_Name,Head_id FROM svcf.branchdetails where Head_id not in(1688,1113841,1485,159,1482,1596,1611,171);");
+                DataRow drNode;
+                drNode = dtNode.NewRow();
+                drNode[0] = "--Select--";
+                drNode[1] = "0";
+                dtNode.Rows.InsertAt(drNode, 0);
+                ddlBranch.DataSource = dtNode;
+                ddlBranch.DataTextField = "B_Name";
+                ddlBranch.DataValueField = "Head_id";
+                ddlBranch.DataBind();
+                //ddlBranch.SelectedValue = balayer.ToobjectstrEvenNull(Session["Branchid"]);
+                Session["CheckRefresh"] = System.Guid.NewGuid().ToString();
+               // txtAadharno.Visible = false;
+            }
+            else
+            {
+               
+            }
+            if (this.fileuploadImage.PostedFile != null && this.fileuploadImage.PostedFile.ContentLength > 0)
+            {
+                this.PostedFile = this.fileuploadImage.PostedFile;
+            }
+            if (!string.IsNullOrEmpty(this.HiddenField1.Value))
+            {
+
+                string[] strPat = this.HiddenField1.Value.Split('\\');
+                this.lblCurrentFile.Text = strPat[strPat.Length - 1];
+            }
+
+            logger.Info("Member Addition- at: " + DateTime.Now);
+        }
+        protected void Page_PreRender(object sender, EventArgs e)
+        {
+            ViewState["CheckRefresh"] = Session["CheckRefresh"];
+        }
+        protected void btnUpload_Click(object sender, EventArgs e)
+        {
+            if (fileuploadImage.HasFile)
+            {
+                //CommonClassFile.IMGusersPhoto = fileuploadImage.PostedFile;               
+               // ScriptManager.RegisterStartupScript(this, this.GetType(), "alertmessage", "javascript:alert(' photo uploaded successfully')", true);
+            }
+        }
+        protected void btnAdd_Click(object sender, EventArgs e)
+        {
+            Page.Validate("add");
+            if (!Page.IsValid)
+            {
+                return;
+            }
+            if (Session["CheckRefresh"].ToString() != ViewState["CheckRefresh"].ToString())
+            {
+                return;
+            }
+            string uploadedPath = "";
+            string filename = "";
+            string ext = "";
+            string qry = "";
+            string selectedfilename = "";
+            string MemberID;
+            //string memberIDnew;
+            bool b = Page.IsValid;
+            bool IsFinished = true;
+            string aadharno="NA";
+            string memberIDnew = "";
+            TransactionLayer trn = new TransactionLayer();
+            if (b == true)
+            {
+                try
+                {
+                    if (balayer.ToobjectstrEvenNull(ddlCategory.SelectedItem) == "Individual")
+                    {
+                        DataTable dtExist = balayer.GetDataTable("SELECT CustomerName as `Name`,date_format(DOB,'%d-%b-%Y') as DOB,ResidentialAddress as `Address`,MobileNo as `Mobile Number` FROM svcf.membermaster where TypeOfMember='Individual' and  (CustomerName='" + balayer.MySQLEscapeString(txtSubscriberName.Text) + "' and MobileNo='" + balayer.MySQLEscapeString(txtMobNo.Text) + "' and ResidentialAddress='" + balayer.MySQLEscapeString(txtResAddr.Text) + "')");
+                        if (dtExist.Rows.Count > 0)
+                        {
+                            IsFinished = false;
+                            ModalPopup12.PopupControlID = "Pnlmsg10";
+                            this.ModalPopup12.Show();
+                            lblHint.Text = "confirmation";
+                            gvConfirm.DataSource = dtExist;
+                            gvConfirm.DataBind();
+                            btnY.Text = "Ok";
+                            btnno.Text = "Cancel";
+                            lblHead.Text = "Member Addition Check";
+                            lblcon.Text = "<br/> Same Member details already Available!!! <br/> Do you Want to Proceed Anyway???<br/>";
+                            lblContent.ForeColor = System.Drawing.Color.Black;
+                            Pnlmsg10.Visible = true;
+                            return;
+                        }
+
+                        MemberID = Convert.ToString(balayer.GetSingleValue("select max(MemberID)+1 from membermaster where BranchId=" + ddlBranch.SelectedValue + ""));
+                        //Int32 selectBranchHeadQuery = Int32.Parse(balayer.GetSingleValue("SELECT B_Code FROM svcf.branchdetails where Head_Id=" + ddlBranch.SelectedValue + ""));
+                        //Int32 mem = Convert.ToInt32(balayer.GetSingleValue("select ifnull(max(cast(replace(MemberID,'" + selectBranchHeadQuery + "-','') as unsigned)) ,0)+1 from membermaster where BranchId=" + ddlBranch.SelectedValue + ""));
+                        //MemberID = balayer.ToobjectstrEvenNull(selectBranchHeadQuery) + "-" + (mem);
+                        //DataTable memexists = balayer.GetDataTable("select * from membermaster");
+                        
+                        //if (memexists.Rows.Count > 0)
+                        //{
+                        //    for (int val = 0; val < memexists.Rows.Count; val++)
+                        //    {
+                        //        MemberID = balayer.ToobjectstrEvenNull(selectBranchHeadQuery) + "-" + (mem + 1);
+                        //        if (Convert.ToString(memexists.Rows[val]["MemberID"]) == MemberID.ToString())
+                        //        {
+                        //            continue;
+                        //        }
+                        //        else
+                        //        {
+                        //            break;
+                        //        }
+
+                        //    }
+                        //}
+                        RadioButtonList rdSel = (RadioButtonList)panInd.FindControl("rbtnList");
+                        TxtpropName.TabIndex = 0;
+                        rdSel.TabIndex = 1;
+                        TxtAge.TabIndex = 2;
+                        txtDOB.TabIndex = 3;
+                        TxtFathOrHusbName.TabIndex = 4;
+                        TxtMotherName.TabIndex = 5;
+                        btnAdd.TabIndex = 6;
+                        btnCancel.TabIndex = 7;
+                        TextBox txtAge = (TextBox)panInd.FindControl("TxtAge");
+                        TextBox txtdob = (TextBox)panInd.FindControl("txtDOB");
+                        TextBox txtFatName = (TextBox)panInd.FindControl("TxtFathOrHusbName");
+                        TextBox txtMotName = (TextBox)panInd.FindControl("TxtMotherName");
+                        DropDownList ddlProof = (DropDownList)panInd.FindControl("DdlAddrProof");
+                        TextBox txtAadharno = (TextBox)panInd.FindControl("txtAadharno");
+                        if (txtAadharno.Text != "")
+                        {
+                            aadharno = balayer.MySQLEscapeString(txtAadharno.Text);
+                        }                       
+                        long incmd = trn.insertorupdateTrn("insert into membermaster(`BranchId`,`CustomerName`,`TypeOfMember`,`Gender`,`Age`,`DOB`,`FatherHusbandName`,"+
+                            "`MotherWifeName`,`ProfessionBusiness`,`NatureofProfessionBusiness`,`ResidentialAddress`,`AddressForCommunication`,`ProofofResidence`,"+
+                            "`AddressProfessionBusiness`,`TelephoneNoProfessionBusiness`,`TelephoneNoResidence`,`MobileNo`,`MonthlyIncome`,`SalesTaxRegistrationNoTNGST`,"+
+                            "`CSTRegistrationNumber`,`IncomeTaxPANoWardandCircle`,`BankName`,`BranchName`,`SavingsCurrentAccountNo`,`MemberID`,AadharNumber) values(" + ddlBranch.SelectedValue + ","+
+                            "'" + balayer.MySQLEscapeString(txtSubscriberName.Text) + "','" + balayer.MySQLEscapeString(balayer.ToobjectstrEvenNull(ddlCategory.SelectedItem)) + "',"+
+                            "'" + rdSel.SelectedItem + "'," + balayer.MySQLEscapeString(txtAge.Text) + ",'" + balayer.indiandateToMysqlDate(txtDOB.Text) + "',"+
+                            "'" + balayer.MySQLEscapeString(balayer.ToobjectstrEvenNull(txtFatName.Text)) + "','" + balayer.MySQLEscapeString(txtMotName.Text) + "','" + balayer.MySQLEscapeString(txtProfOrBus.Text) + "',"+
+                            "'" + balayer.MySQLEscapeString(txtNatureProfOrBusi.Text) + "','" + balayer.MySQLEscapeString(txtResAddr.Text) + "','" + balayer.MySQLEscapeString(txtAddrComm.Text) + "','AADHAR NO'," +
+                            "'" + balayer.MySQLEscapeString(TxtAddrBusiOrProf.Text) + "','" + balayer.MySQLEscapeString(txtOffTeleNo.Text) + "','" + balayer.MySQLEscapeString(txtResiTeleNo.Text) + "','" + balayer.MySQLEscapeString(txtMobNo.Text) + "',"+
+                            "" + balayer.MySQLEscapeString(txtMonthInc.Text) + ",'" + balayer.MySQLEscapeString(TxtSTRegNo.Text) + "',"+
+                            "'" + balayer.MySQLEscapeString(TxtCSTRegNo.Text) + "','" + balayer.MySQLEscapeString(TxtIncTaxPANCircle.Text) + "','" + balayer.MySQLEscapeString(TxtBankName.Text) + "',"+
+                            "'" + balayer.MySQLEscapeString(TxtBranch.Text) + "','" + balayer.MySQLEscapeString(txtAcctNo.Text) + "'," +
+                            "'" + balayer.MySQLEscapeString(balayer.ToobjectstrEvenNull(MemberID)) + "','" + aadharno + "')");
+
+                        //04/08/2021
+                        var updUser = trn.insertorupdateTrn("update svcf.membermaster set username=MemberIDNew,password=MemberIDNew where MemberIDNew=" + incmd);
+                        clear();
+                       // rdSel.SelectedItem.Selected = false;
+                        TxtAge.Text = "";
+                        txtDOB.Text = "";
+                        TxtFathOrHusbName.Text = "";
+                        TxtMotherName.Text = "";
+                        //ddlProof.SelectedIndex = 0;
+                       // if (CommonClassFile.IMGusersPhoto != null)
+                        if (fileuploadImage.HasFile)
+                        {
+                            //int length = CommonClassFile.IMGusersPhoto.ContentLength;
+                            //byte[] imgbyte = new byte[length];
+                            //using (var binaryReader = new BinaryReader(CommonClassFile.IMGusersPhoto.InputStream))
+                            //{
+                            //    imgbyte = binaryReader.ReadBytes(CommonClassFile.IMGusersPhoto.ContentLength);
+                            //}
+                            //memberIDnew = balayer.GetSingleValue("SELECT MemberIDNew FROM svcf.membermaster where MemberID='" + MemberID + "' and BranchId=" + BranchID + "");
+                            //MySqlConnection connection = new MySqlConnection(CommonClassFile.ConnectionString);
+                            //connection.Open();
+                            //MySqlCommand cmd = new MySqlCommand("INSERT INTO membersdocuments (MemberID ,Photo,ImageTYpe) VALUES (?MemberID,?Photo,?ImageTYpe)", connection);
+                            //cmd.Parameters.Add("?MemberID", MySqlDbType.Int32, 45).Value = incmd;
+                            //cmd.Parameters.Add("?Photo", MySqlDbType.Blob).Value = imgbyte;
+                            //cmd.Parameters.Add("?ImageTYpe", MySqlDbType.VarChar, 15).Value = CommonClassFile.IMGusersPhoto.ContentType;
+                            //int count = cmd.ExecuteNonQuery();
+                            //connection.Close();
+                            //CommonClassFile.IMGusersPhoto = null;
+                            filename = ""; selectedfilename = ""; ext = "";
+                            filename = Path.GetFileName(fileuploadImage.PostedFile.FileName);
+                            selectedfilename = Path.GetFileName(fileuploadImage.PostedFile.FileName);
+                            ext = System.IO.Path.GetExtension(fileuploadImage.FileName);
+                            string DirectoryPath = Server.MapPath(@"~/MemberImages/");
+                            if (!Directory.Exists(DirectoryPath))
+                            {
+                                Directory.CreateDirectory(DirectoryPath);
+                            }
+                            filename = DirectoryPath + filename;
+                            if (File.Exists(filename))
+                            {
+                                File.Delete(filename);
+                            }
+                            fileuploadImage.PostedFile.SaveAs(filename);
+                            uploadedPath = "~/MemberImages/" + selectedfilename;
+                            //Updating Image
+
+                            memberIDnew = balayer.GetSingleValue("SELECT MemberIDNew FROM svcf.membermaster where MemberID='" + MemberID + "' and BranchId=" + ddlBranch.SelectedValue + "");
+                            balayer.GetInsertItem("delete from membersdocuments where MemberID=" + memberIDnew + "");
+                            //MemberID, Photo, ImageTYpe, IsDeleted, ImageUrl
+                            qry = "insert into membersdocuments(MemberID, ImageTYpe, IsDeleted, ImageUrl) values(" + memberIDnew + ",'" + fileuploadImage.PostedFile.ContentType + "'," +
+                                "" + 0 + ",'" + uploadedPath + "')";
+                            balayer.GetInsertItem(qry);
+                        }
+                    }
+                    else if (balayer.ToobjectstrEvenNull(ddlCategory.SelectedItem) == "Proprietary Concern")
+                    {
+                        DataTable dtExist = balayer.GetDataTable("SELECT CustomerName as `Name`,date_format(DOB,'%d-%b-%Y') as DOB,ResidentialAddress as `Address`,MobileNo as `Mobile Number` FROM svcf.membermaster where TypeOfMember='Proprietary Concern' and  (CustomerName='" + balayer.MySQLEscapeString(txtSubscriberName.Text) + "' and MobileNo='" + balayer.MySQLEscapeString(txtMobNo.Text) + "' and ResidentialAddress='" + balayer.MySQLEscapeString(txtResAddr.Text) + "')");
+                        if (dtExist.Rows.Count > 0)
+                        {
+                            IsFinished = false;
+                            ModalPopup12.PopupControlID = "Pnlmsg10";
+                            this.ModalPopup12.Show();
+                            lblHint.Text = "confirmation";
+                            gvConfirm.DataSource = dtExist;
+                            gvConfirm.DataBind();
+                            btnY.Text = "Ok";
+                            btnno.Text = "Cancel";
+                            lblHead.Text = "Member Addition Check";
+                            lblcon.Text = "<br/> Same Member details already Available!!! <br/> Do you Want to Proceed Anyway???<br/>";
+                            lblContent.ForeColor = System.Drawing.Color.Black;
+                            Pnlmsg10.Visible = true;
+                            return;
+                        }
+                        //Int32 selectBranchHeadQuery = Int32.Parse(balayer.GetSingleValue("SELECT B_Code FROM svcf.branchdetails where Head_Id=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + ""));
+                        //Int32 mem = Convert.ToInt32(balayer.GetSingleValue("select ifnull(max(cast(replace(MemberID,'" + selectBranchHeadQuery + "-','') as unsigned)) ,0)+1 from membermaster where BranchId=" + ddlBranch.SelectedValue + ""));
+                        //MemberID = balayer.ToobjectstrEvenNull(selectBranchHeadQuery) + "-" + (mem);
+                        //DataTable memexists = balayer.GetDataTable("select * from membermaster");
+
+                        //if (memexists.Rows.Count > 0)
+                        //{
+                        //    for (int val = 0; val < memexists.Rows.Count; val++)
+                        //    {
+                        //        MemberID = balayer.ToobjectstrEvenNull(selectBranchHeadQuery) + "-" + (mem + 1);
+                        //        if (Convert.ToString(memexists.Rows[val]["MemberID"]) == MemberID.ToString())
+                        //        {
+                        //            continue;
+                        //        }
+                        //        else
+                        //        {
+                        //            break;
+                        //        }
+
+                        //    }
+                        //}
+                        MemberID = Convert.ToString(balayer.GetSingleValue("select max(MemberID)+1 from membermaster where BranchId=" + ddlBranch.SelectedValue + ""));
+                        TextBox txtPropnm = (TextBox)pnlPro.FindControl("TxtpropName");
+                        RadioButtonList rdSel = (RadioButtonList)pnlPro.FindControl("Rbtn");
+                        TextBox txtdob = (TextBox)pnlPro.FindControl("TxtDOB1");
+                        TextBox txtAge = (TextBox)pnlPro.FindControl("TxtAge1");
+                        TextBox txtFatName = (TextBox)pnlPro.FindControl("TxtFathOrHusbName1");
+                        TextBox txtMotName = (TextBox)pnlPro.FindControl("TxtMotherName1");
+                        long incmd = trn.insertorupdateTrn("insert into membermaster(`BranchId`,`CustomerName`,`TypeOfMember`,`ProprietorName`,`Gender`,`Age`,`DOB`,`FatherHusbandName`,`MotherWifeName`,`ProfessionBusiness`,`NatureofProfessionBusiness`,`ResidentialAddress`,`AddressForCommunication`,`AddressProfessionBusiness`,`TelephoneNoProfessionBusiness`,`TelephoneNoResidence`,`MobileNo`,`MonthlyIncome`,`SalesTaxRegistrationNoTNGST`,`CSTRegistrationNumber`,`IncomeTaxPANoWardandCircle`,`BankName`,`BranchName`,`SavingsCurrentAccountNo`,`MemberID`) values(" + ddlBranch.SelectedValue + ",'" + balayer.MySQLEscapeString(txtSubscriberName.Text) + "','" + balayer.MySQLEscapeString(balayer.ToobjectstrEvenNull(ddlCategory.SelectedItem)) + "','" + TxtpropName.Text + "','" + balayer.MySQLEscapeString(balayer.ToobjectstrEvenNull(rdSel.SelectedItem)) + "'," + balayer.MySQLEscapeString(txtAge.Text) + ",'" + balayer.indiandateToMysqlDate(txtdob.Text) + "','" + balayer.MySQLEscapeString(txtFatName.Text) + "','" + balayer.MySQLEscapeString(txtMotName.Text) + "','" + balayer.MySQLEscapeString(txtProfOrBus.Text) + "','" + balayer.MySQLEscapeString(txtNatureProfOrBusi.Text) + "','" + balayer.MySQLEscapeString(txtResAddr.Text) + "','" + balayer.MySQLEscapeString(txtAddrComm.Text) + "','" + balayer.MySQLEscapeString(TxtAddrBusiOrProf.Text) + "','" + balayer.MySQLEscapeString(txtOffTeleNo.Text) + "','" + balayer.MySQLEscapeString(txtResiTeleNo.Text) + "','" + balayer.MySQLEscapeString(txtMobNo.Text) + "','" + balayer.MySQLEscapeString(txtMonthInc.Text) + "','" + balayer.MySQLEscapeString(TxtSTRegNo.Text) + "','" + balayer.MySQLEscapeString(TxtCSTRegNo.Text) + "','" + balayer.MySQLEscapeString(TxtIncTaxPANCircle.Text) + "','" + balayer.MySQLEscapeString(TxtBankName.Text) + "','" + balayer.MySQLEscapeString(TxtBranch.Text) + "','" + balayer.MySQLEscapeString(txtAcctNo.Text) + "','" + balayer.MySQLEscapeString(balayer.ToobjectstrEvenNull(MemberID)) + "')");
+                        clear();
+                       // rdSel.SelectedItem.Selected = false;
+                        TxtpropName.Text = "";
+                        TxtAge1.Text = "";
+                        TxtDOB1.Text = "";
+                        TxtFathOrHusbName1.Text = "";
+                        TxtMotherName1.Text = "";
+                        DdlAddrProof.SelectedIndex = 0;
+
+                        if (fileuploadImage.HasFile)
+                        {
+                            //int length = CommonClassFile.IMGusersPhoto.ContentLength;
+                            //byte[] imgbyte = new byte[length];
+                            //using (var binaryReader = new BinaryReader(CommonClassFile.IMGusersPhoto.InputStream))
+                            //{
+                            //    imgbyte = binaryReader.ReadBytes(CommonClassFile.IMGusersPhoto.ContentLength);
+                            //}
+                            ////memberIDnew = balayer.GetSingleValue("SELECT MemberIDNew FROM svcf.membermaster where MemberID='" + MemberID + "' and BranchId=" + BranchID + "");
+                            //MySqlConnection connection = new MySqlConnection(CommonClassFile.ConnectionString);
+                            //connection.Open();
+                            //MySqlCommand cmd = new MySqlCommand("INSERT INTO membersdocuments (MemberID ,Photo,ImageTYpe) VALUES (?MemberID,?Photo,?ImageTYpe)", connection);
+                            //cmd.Parameters.Add("?MemberID", MySqlDbType.Int32, 45).Value = incmd;
+                            //cmd.Parameters.Add("?Photo", MySqlDbType.Blob).Value = imgbyte;
+                            //cmd.Parameters.Add("?ImageTYpe", MySqlDbType.VarChar, 15).Value = CommonClassFile.IMGusersPhoto.ContentType;
+                            //int count = cmd.ExecuteNonQuery();
+                            //connection.Close();
+                            //CommonClassFile.IMGusersPhoto = null;
+                            filename = ""; selectedfilename = ""; ext = "";
+                            filename = Path.GetFileName(fileuploadImage.PostedFile.FileName);
+                            selectedfilename = Path.GetFileName(fileuploadImage.PostedFile.FileName);
+                            ext = System.IO.Path.GetExtension(fileuploadImage.FileName);
+                            string DirectoryPath = Server.MapPath(@"~/MemberImages/");
+                            if (!Directory.Exists(DirectoryPath))
+                            {
+                                Directory.CreateDirectory(DirectoryPath);
+                            }
+                            filename = DirectoryPath + filename;
+                            if (File.Exists(filename))
+                            {
+                                File.Delete(filename);
+                            }
+                            fileuploadImage.PostedFile.SaveAs(filename);
+                            uploadedPath = "~/MemberImages/" + selectedfilename;
+                            //Updating Image
+
+                            memberIDnew = balayer.GetSingleValue("SELECT MemberIDNew FROM svcf.membermaster where MemberID='" + MemberID + "' and BranchId=" + ddlBranch.SelectedValue + "");
+                            balayer.GetInsertItem("delete from membersdocuments where MemberID=" + memberIDnew + "");
+                            //MemberID, Photo, ImageTYpe, IsDeleted, ImageUrl
+                            qry = "insert into membersdocuments(MemberID, ImageTYpe, IsDeleted, ImageUrl) values(" + memberIDnew + ",'" + fileuploadImage.PostedFile.ContentType + "'," +
+                                "" + 0 + ",'" + uploadedPath + "')";
+                            balayer.GetInsertItem(qry);
+                        }
+                    }
+                    else if ("Partnership Firm" == balayer.ToobjectstrEvenNull(ddlCategory.SelectedItem))
+                    {
+                        DataTable dtExist = balayer.GetDataTable("SELECT CustomerName as `Name`,ResidentialAddress as `Address`,MobileNo as `Mobile Number` FROM svcf.membermaster where TypeOfMember='Partnership Firm' and (CustomerName='" + balayer.MySQLEscapeString(txtSubscriberName.Text) + "' and MobileNo='" + balayer.MySQLEscapeString(txtMobNo.Text) + "' and ResidentialAddress='" + balayer.MySQLEscapeString(txtResAddr.Text) + "')");
+                        if (dtExist.Rows.Count > 0)
+                        {
+                            IsFinished = false;
+                            ModalPopup12.PopupControlID = "Pnlmsg10";
+                            this.ModalPopup12.Show();
+                            lblHint.Text = "confirmation";
+                            gvConfirm.DataSource = dtExist;
+                            gvConfirm.DataBind();
+                            btnY.Text = "Ok";
+                            btnno.Text = "Cancel";
+                            lblHead.Text = "Member Addition Check";
+                            lblcon.Text = "<br/> Same Member details already Available!!! <br/> Do you Want to Proceed Anyway???<br/>";
+                            lblContent.ForeColor = System.Drawing.Color.Black;
+                            Pnlmsg10.Visible = true;
+                            return;
+                        }
+                        //Int32 selectBranchHeadQuery = Int32.Parse(balayer.GetSingleValue("SELECT B_Code FROM svcf.branchdetails where Head_Id=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + ""));
+                        //Int32 mem = Convert.ToInt32(balayer.GetSingleValue("select ifnull(max(cast(replace(MemberID,'" + selectBranchHeadQuery + "-','') as unsigned)) ,0)+1 from membermaster where BranchId=" + ddlBranch.SelectedValue + ""));
+                        //MemberID = balayer.ToobjectstrEvenNull(selectBranchHeadQuery) + "-" + (mem);
+                        //DataTable memexists = balayer.GetDataTable("select * from membermaster");
+
+                        //if (memexists.Rows.Count > 0)
+                        //{
+                        //    for (int val = 0; val < memexists.Rows.Count; val++)
+                        //    {
+                        //        MemberID = balayer.ToobjectstrEvenNull(selectBranchHeadQuery) + "-" + (mem + 1);
+                        //        if (Convert.ToString(memexists.Rows[val]["MemberID"]) == MemberID.ToString())
+                        //        {
+                        //            continue;
+                        //        }
+                        //        else
+                        //        {
+                        //            break;
+                        //        }
+
+                        //    }
+                        //}
+                        MemberID = Convert.ToString(balayer.GetSingleValue("select max(MemberID)+1 from membermaster where BranchId=" + ddlBranch.SelectedValue + ""));
+                        TextBox txtPartnm1 = (TextBox)pnlpartner.FindControl("TxtPartnerName1");
+                        TextBox txtPartnm2 = (TextBox)pnlpartner.FindControl("TxtPartnerName2");
+                        TextBox txtPartnm3 = (TextBox)pnlpartner.FindControl("TxtPartnerName3");
+                        TextBox txtPartnm4 = (TextBox)pnlpartner.FindControl("TxtPartnerName4");
+                        TextBox txtPartnm5 = (TextBox)pnlpartner.FindControl("TxtPartnerName5");
+                        string Partconcat = txtPartnm1.Text + "," + txtPartnm2.Text + "," + txtPartnm3.Text + "," + txtPartnm4.Text + "," + txtPartnm5.Text;
+                        Partconcat = Partconcat.TrimEnd(',');
+                        TextBox txtDOPartWithEnclo = (TextBox)pnlpartner.FindControl("TxtDOPartWithEncl");
+                        long incmd = trn.insertorupdateTrn("insert into membermaster(`BranchId`,`CustomerName`,`TypeOfMember`,`PartnersName`,`DateOfPartnershipWithAmendment`,`ProfessionBusiness`,`NatureofProfessionBusiness`,`ResidentialAddress`,`AddressForCommunication`,`AddressProfessionBusiness`,`TelephoneNoProfessionBusiness`,`TelephoneNoResidence`,`MobileNo`,`MonthlyIncome`,`SalesTaxRegistrationNoTNGST`,`CSTRegistrationNumber`,`IncomeTaxPANoWardandCircle`,`BankName`,`BranchName`,`SavingsCurrentAccountNo`,`MemberID`) values(" + ddlBranch.SelectedValue + ",'" + balayer.MySQLEscapeString(txtSubscriberName.Text) + "','" + balayer.MySQLEscapeString(balayer.ToobjectstrEvenNull(ddlCategory.SelectedItem)) + "','" + balayer.MySQLEscapeString(Partconcat) + "','" + balayer.indiandateToMysqlDate(txtDOPartWithEnclo.Text) + "','" + balayer.MySQLEscapeString(txtProfOrBus.Text) + "','" + balayer.MySQLEscapeString(txtNatureProfOrBusi.Text) + "','" + balayer.MySQLEscapeString(txtResAddr.Text) + "','" + balayer.MySQLEscapeString(txtAddrComm.Text) + "','" + balayer.MySQLEscapeString(TxtAddrBusiOrProf.Text) + "','" + balayer.MySQLEscapeString(txtOffTeleNo.Text) + "','" + balayer.MySQLEscapeString(txtResiTeleNo.Text) + "','" + balayer.MySQLEscapeString(txtMobNo.Text) + "','" + balayer.MySQLEscapeString(txtMonthInc.Text) + "','" + balayer.MySQLEscapeString(TxtSTRegNo.Text) + "','" + balayer.MySQLEscapeString(TxtCSTRegNo.Text) + "','" + balayer.MySQLEscapeString(TxtIncTaxPANCircle.Text) + "','" + balayer.MySQLEscapeString(TxtBankName.Text) + "','" + balayer.MySQLEscapeString(TxtBranch.Text) + "','" + balayer.MySQLEscapeString(txtAcctNo.Text) + "','" + balayer.MySQLEscapeString(balayer.ToobjectstrEvenNull(MemberID)) + "')");
+                        clear();
+                        TxtPartnerName1.Text = "";
+                        TxtPartnerName1.TabIndex = 1;
+                        TxtPartnerName2.Text = "";
+                        TxtPartnerName2.TabIndex = 2;
+                        TxtPartnerName3.Text = "";
+                        TxtPartnerName3.TabIndex = 3;
+                        TxtPartnerName4.Text = "";
+                        TxtPartnerName4.TabIndex = 4;
+                        TxtPartnerName5.Text = "";
+                        TxtPartnerName5.TabIndex = 5;
+                        TxtDOPartWithEncl.Text = "";
+                        TxtDOPartWithEncl.TabIndex = 6;
+                        buttonAdd.TabIndex = 7;
+                        btnCancel.TabIndex = 8;
+
+                        if (fileuploadImage.HasFile)
+                        {
+                            //int length = CommonClassFile.IMGusersPhoto.ContentLength;
+                            //byte[] imgbyte = new byte[length];
+                            //using (var binaryReader = new BinaryReader(CommonClassFile.IMGusersPhoto.InputStream))
+                            //{
+                            //    imgbyte = binaryReader.ReadBytes(CommonClassFile.IMGusersPhoto.ContentLength);
+                            //}
+                            ////memberIDnew = balayer.GetSingleValue("SELECT MemberIDNew FROM svcf.membermaster where MemberID='" + MemberID + "' and BranchId=" + BranchID + "");
+                            //MySqlConnection connection = new MySqlConnection(CommonClassFile.ConnectionString);
+                            //connection.Open();
+                            //MySqlCommand cmd = new MySqlCommand("INSERT INTO membersdocuments (MemberID ,Photo,ImageTYpe) VALUES (?MemberID,?Photo,?ImageTYpe)", connection);
+                            //cmd.Parameters.Add("?MemberID", MySqlDbType.Int32, 45).Value = incmd;
+                            //cmd.Parameters.Add("?Photo", MySqlDbType.Blob).Value = imgbyte;
+                            //cmd.Parameters.Add("?ImageTYpe", MySqlDbType.VarChar, 15).Value = CommonClassFile.IMGusersPhoto.ContentType;
+                            //int count = cmd.ExecuteNonQuery();
+                            //connection.Close();
+                            //CommonClassFile.IMGusersPhoto = null;
+                            filename = ""; selectedfilename = ""; ext = "";
+                            filename = Path.GetFileName(fileuploadImage.PostedFile.FileName);
+                            selectedfilename = Path.GetFileName(fileuploadImage.PostedFile.FileName);
+                            ext = System.IO.Path.GetExtension(fileuploadImage.FileName);
+                            string DirectoryPath = Server.MapPath(@"~/MemberImages/");
+                            if (!Directory.Exists(DirectoryPath))
+                            {
+                                Directory.CreateDirectory(DirectoryPath);
+                            }
+                            filename = DirectoryPath + filename;
+                            if (File.Exists(filename))
+                            {
+                                File.Delete(filename);
+                            }
+                            fileuploadImage.PostedFile.SaveAs(filename);
+                            uploadedPath = "~/MemberImages/" + selectedfilename;
+                            //Updating Image
+
+                            memberIDnew = balayer.GetSingleValue("SELECT MemberIDNew FROM svcf.membermaster where MemberID='" + MemberID + "' and BranchId=" + ddlBranch.SelectedValue + "");
+                            balayer.GetInsertItem("delete from membersdocuments where MemberID=" + memberIDnew + "");
+                            //MemberID, Photo, ImageTYpe, IsDeleted, ImageUrl
+                            qry = "insert into membersdocuments(MemberID, ImageTYpe, IsDeleted, ImageUrl) values(" + memberIDnew + ",'" + fileuploadImage.PostedFile.ContentType + "'," +
+                                "" + 0 + ",'" + uploadedPath + "')";
+                            balayer.GetInsertItem(qry);
+                        }
+                    }
+                    else if ("Company" == balayer.ToobjectstrEvenNull(ddlCategory.SelectedItem))
+                    {
+                        DataTable dtExist = balayer.GetDataTable("SELECT CustomerName as `Name`,ResidentialAddress as `Address`,MobileNo as `Mobile Number` FROM svcf.membermaster where TypeOfMember='Company' and (CustomerName='" + balayer.MySQLEscapeString(txtSubscriberName.Text) + "' and MobileNo='" + balayer.MySQLEscapeString(txtMobNo.Text) + "' and ResidentialAddress='" + balayer.MySQLEscapeString(txtResAddr.Text) + "')");
+                        if (dtExist.Rows.Count > 0)
+                        {
+                            IsFinished = false;
+                            ModalPopup12.PopupControlID = "Pnlmsg10";
+                            this.ModalPopup12.Show();
+                            lblHint.Text = "confirmation";
+                            gvConfirm.DataSource = dtExist;
+                            gvConfirm.DataBind();
+                            btnY.Text = "Ok";
+                            btnno.Text = "Cancel";
+                            lblHead.Text = "Member Addition Check";
+                            lblcon.Text = "<br/> Same Member details already Available!!! <br/> Do you Want to Proceed Anyway???<br/>";
+                            lblContent.ForeColor = System.Drawing.Color.Black;
+                            Pnlmsg10.Visible = true;
+                            return;
+                        }
+                        MemberID = Convert.ToString(balayer.GetSingleValue("select max(MemberID)+1 from membermaster where BranchId=" + ddlBranch.SelectedValue + ""));
+                        //Int32 selectBranchHeadQuery = Int32.Parse(balayer.GetSingleValue("SELECT B_Code FROM svcf.branchdetails where Head_Id=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + ""));
+                        //Int32 mem = Convert.ToInt32(balayer.GetSingleValue("select ifnull(max(cast(replace(MemberID,'" + selectBranchHeadQuery + "-','') as unsigned)) ,0)+1 from membermaster where BranchId=" + ddlBranch.SelectedValue + ""));
+                        //MemberID = balayer.ToobjectstrEvenNull(selectBranchHeadQuery) + "-" + (mem);
+                        //DataTable memexists = balayer.GetDataTable("select * from membermaster");
+
+                        //if (memexists.Rows.Count > 0)
+                        //{
+                        //    for (int val = 0; val < memexists.Rows.Count; val++)
+                        //    {
+                        //        MemberID = balayer.ToobjectstrEvenNull(selectBranchHeadQuery) + "-" + (mem + 1);
+                        //        if (Convert.ToString(memexists.Rows[val]["MemberID"]) == MemberID.ToString())
+                        //        {
+                        //            continue;
+                        //        }
+                        //        else
+                        //        {
+                        //            break;
+                        //        }
+
+                        //    }
+                        //}
+                        TextBox txtattach = (TextBox)pnlcompany.FindControl("TxtAttachXeroxCopy");
+                        TextBox txtDateofResol = (TextBox)pnlcompany.FindControl("TxtResolDate");
+                        long incmd = trn.insertorupdateTrn("insert into membermaster(`BranchId`,`CustomerName`,`TypeOfMember`,`compxerox`,`dateofResol`,`ProfessionBusiness`,`NatureofProfessionBusiness`,`ResidentialAddress`,`AddressForCommunication`,`AddressProfessionBusiness`,`TelephoneNoProfessionBusiness`,`TelephoneNoResidence`,`MobileNo`,`MonthlyIncome`,`SalesTaxRegistrationNoTNGST`,`CSTRegistrationNumber`,`IncomeTaxPANoWardandCircle`,`BankName`,`BranchName`,`SavingsCurrentAccountNo`,`MemberID`) values(" + ddlBranch.SelectedValue + ",'" + balayer.MySQLEscapeString(txtSubscriberName.Text) + "','" + balayer.MySQLEscapeString(balayer.ToobjectstrEvenNull(ddlCategory.SelectedItem)) + "','" + balayer.MySQLEscapeString(txtattach.Text) + "','" + balayer.indiandateToMysqlDate(txtDateofResol.Text) + "','" + balayer.MySQLEscapeString(txtProfOrBus.Text) + "','" + balayer.MySQLEscapeString(txtNatureProfOrBusi.Text) + "','" + balayer.MySQLEscapeString(txtResAddr.Text) + "','" + balayer.MySQLEscapeString(txtAddrComm.Text) + "','" + balayer.MySQLEscapeString(TxtAddrBusiOrProf.Text) + "','" + balayer.MySQLEscapeString(txtOffTeleNo.Text) + "','" + balayer.MySQLEscapeString(txtResiTeleNo.Text) + "','" + balayer.MySQLEscapeString(txtMobNo.Text) + "','" + balayer.MySQLEscapeString(txtMonthInc.Text) + "','" + balayer.MySQLEscapeString(TxtSTRegNo.Text) + "','" + balayer.MySQLEscapeString(TxtCSTRegNo.Text) + "','" + balayer.MySQLEscapeString(TxtIncTaxPANCircle.Text) + "','" + balayer.MySQLEscapeString(TxtBankName.Text) + "','" + balayer.MySQLEscapeString(TxtBranch.Text) + "','" + balayer.MySQLEscapeString(txtAcctNo.Text) + "','" + balayer.MySQLEscapeString(balayer.ToobjectstrEvenNull(MemberID)) + "')");
+                        clear();
+                        TxtAttachXeroxCopy.Text = "";
+                        TxtResolDate.Text = "";
+                        if (fileuploadImage.HasFile)
+                        {
+                            //int length = CommonClassFile.IMGusersPhoto.ContentLength;
+                            //byte[] imgbyte = new byte[length];
+                            //using (var binaryReader = new BinaryReader(CommonClassFile.IMGusersPhoto.InputStream))
+                            //{
+                            //    imgbyte = binaryReader.ReadBytes(CommonClassFile.IMGusersPhoto.ContentLength);
+                            //}
+                            ////memberIDnew = balayer.GetSingleValue("SELECT MemberIDNew FROM svcf.membermaster where MemberID='" + MemberID + "' and BranchId=" + BranchID + "");
+                            //MySqlConnection connection = new MySqlConnection(CommonClassFile.ConnectionString);
+                            //connection.Open();
+                            //MySqlCommand cmd = new MySqlCommand("INSERT INTO membersdocuments (MemberID ,Photo,ImageTYpe) VALUES (?MemberID,?Photo,?ImageTYpe)", connection);
+                            //cmd.Parameters.Add("?MemberID", MySqlDbType.Int32, 45).Value = incmd;
+                            //cmd.Parameters.Add("?Photo", MySqlDbType.Blob).Value = imgbyte;
+                            //cmd.Parameters.Add("?ImageTYpe", MySqlDbType.VarChar, 15).Value = CommonClassFile.IMGusersPhoto.ContentType;
+                            //int count = cmd.ExecuteNonQuery();
+                            //connection.Close();
+                            //CommonClassFile.IMGusersPhoto = null;
+                            filename = ""; selectedfilename = ""; ext = "";
+                            filename = Path.GetFileName(fileuploadImage.PostedFile.FileName);
+                            selectedfilename = Path.GetFileName(fileuploadImage.PostedFile.FileName);
+                            ext = System.IO.Path.GetExtension(fileuploadImage.FileName);
+                            string DirectoryPath = Server.MapPath(@"~/MemberImages/");
+                            if (!Directory.Exists(DirectoryPath))
+                            {
+                                Directory.CreateDirectory(DirectoryPath);
+                            }
+                            filename = DirectoryPath + filename;
+                            if (File.Exists(filename))
+                            {
+                                File.Delete(filename);
+                            }
+                            fileuploadImage.PostedFile.SaveAs(filename);
+                            uploadedPath = "~/MemberImages/" + selectedfilename;
+                            //Updating Image
+
+                            memberIDnew = balayer.GetSingleValue("SELECT MemberIDNew FROM svcf.membermaster where MemberID='" + MemberID + "' and BranchId=" + ddlBranch.SelectedValue + "");
+                            balayer.GetInsertItem("delete from membersdocuments where MemberID=" + memberIDnew + "");
+                            //MemberID, Photo, ImageTYpe, IsDeleted, ImageUrl
+                            qry = "insert into membersdocuments(MemberID, ImageTYpe, IsDeleted, ImageUrl) values(" + memberIDnew + ",'" + fileuploadImage.PostedFile.ContentType + "'," +
+                                "" + 0 + ",'" + uploadedPath + "')";
+                            balayer.GetInsertItem(qry);
+                        }
+                    }
+                    trn.CommitTrn();
+                    logger.Info("MemberAddition.aspx - btnAdd_click():  Completed: " + DateTime.Now + " by: " + Convert.ToString(Session["UserName"]) + "");
+                }
+
+                catch (Exception error)
+                {
+                    try
+                    {
+                       trn.RollbackTrn();
+                       logger.Info("MemberAddition.aspx - btnAdd_click():  Error: " + error.Message + ": " + DateTime.Now + " by: " + Convert.ToString(Session["UserName"]) + "");
+                    }
+                    catch { }
+                    finally
+                    {
+                        IsFinished = false;
+                        Pnlmsg.Visible = true;
+                        ModalPopup12.PopupControlID = "Pnlmsg";
+                        this.ModalPopup12.Show();
+                        lblHD.Text = "Status";
+                        lblContent.Text = error.Message;
+                        lblContent.ForeColor = System.Drawing.Color.Red;
+                    }
+                }
+                finally
+                {
+                    trn.DisposeTrn();
+                    if (IsFinished == true)
+                    {
+                        Pnlmsg.Visible = true;
+                        ModalPopup12.PopupControlID = "Pnlmsg";
+                        this.ModalPopup12.Show();
+                        lblHD.Text = "Status";
+                        lblContent.Text = "Member : " + balayer.MySQLEscapeString(txtSubscriberName.Text) + " Added Successfully";
+                        lblContent.ForeColor = System.Drawing.Color.Green;
+                    }
+                }
+            }
+        }
+        //bagya added - verify aadhar/pan already exists-1/4/2023
+        protected void BtnAddition_Click(object sender, EventArgs e)
+        {
+            Int32 cntaadharno = Convert.ToInt32(balayer.GetSingleValue("select count(AadharNumber) from membermaster where AadharNumber ='" + txtAadharno.Text + "'"));
+            if (cntaadharno == 1)
+            {
+                txtAadharno.Text = "Already Exist";
+                ModalPopup12.PopupControlID = "panInd";
+                ModalPopup12.Show();
+                panInd.Visible = true;
+                Response.Redirect(Request.Url.AbsolutePath.ToString());
+                
+            }
+        }
+
+        protected void BtnCancel_Click(object sender, EventArgs e)
+        {
+            CommonClassFile.isKyc_member = false;
+            if ("Individual" == balayer.ToobjectstrEvenNull(ddlCategory.SelectedItem))
+            {
+                RadioButtonList rdSel = (RadioButtonList)panInd.FindControl("rbtnList");
+                TxtpropName.TabIndex = 0;
+                rdSel.TabIndex = 1;
+                TxtAge.TabIndex = 2;
+                txtDOB.TabIndex = 3;
+                TxtFathOrHusbName.TabIndex = 4;
+                TxtMotherName.TabIndex = 5;
+                btnAdd.TabIndex = 6;
+                btnCancel.TabIndex = 7;
+                TextBox txtAge = (TextBox)panInd.FindControl("TxtAge");
+                TextBox txtdob = (TextBox)panInd.FindControl("txtDOB");
+                TextBox txtFatName = (TextBox)panInd.FindControl("TxtFathOrHusbName");
+                TextBox txtMotName = (TextBox)panInd.FindControl("TxtMotherName");
+                DropDownList ddlProof = (DropDownList)panInd.FindControl("DdlAddrProof");
+                rdSel.SelectedItem.Selected = false;
+                TxtAge.Text = "";
+                txtDOB.Text = "";
+                TxtFathOrHusbName.Text = "";
+                TxtMotherName.Text = "";
+                ddlProof.SelectedIndex = 0;
+            }
+            else if ("Proprietary Concern" == balayer.ToobjectstrEvenNull(ddlCategory.SelectedItem))
+            {
+                TextBox txtPropnm = (TextBox)pnlPro.FindControl("TxtpropName");
+                RadioButtonList rdSel = (RadioButtonList)pnlPro.FindControl("Rbtn");
+                TextBox txtdob = (TextBox)pnlPro.FindControl("TxtDOB1");
+                TextBox txtAge = (TextBox)pnlPro.FindControl("TxtAge1");
+                TextBox txtFatName = (TextBox)pnlPro.FindControl("TxtFathOrHusbName1");
+                TextBox txtMotName = (TextBox)pnlPro.FindControl("TxtMotherName1");
+                TxtpropName.Text = "";
+                rdSel.SelectedItem.Selected = false;
+                TxtAge1.Text = "";
+                TxtDOB1.Text = "";
+                TxtFathOrHusbName1.Text = "";
+                TxtMotherName1.Text = "";
+                DdlAddrProof.SelectedIndex = 0;
+            }
+            else if ("Company" == balayer.ToobjectstrEvenNull(ddlCategory.SelectedItem))
+            {
+                TextBox txtattach = (TextBox)pnlcompany.FindControl("TxtAttachXeroxCopy");
+                TextBox txtDateofResol = (TextBox)pnlcompany.FindControl("TxtResolDate");
+                TxtAttachXeroxCopy.Text = "";
+                TxtResolDate.Text = "";
+            }
+            else if ("Partnership Firm" == balayer.ToobjectstrEvenNull(ddlCategory.SelectedItem))
+            {
+                TextBox txtPartnm1 = (TextBox)pnlpartner.FindControl("TxtPartnerName1");
+                TextBox txtPartnm2 = (TextBox)pnlpartner.FindControl("TxtPartnerName2");
+                TextBox txtPartnm3 = (TextBox)pnlpartner.FindControl("TxtPartnerName3");
+                TextBox txtPartnm4 = (TextBox)pnlpartner.FindControl("TxtPartnerName4");
+                TextBox txtPartnm5 = (TextBox)pnlpartner.FindControl("TxtPartnerName5");
+                string Partconcat = txtPartnm1.Text + "," + txtPartnm2.Text + "," + txtPartnm3.Text + "," + txtPartnm4.Text + "," + txtPartnm5.Text;
+                TextBox txtDOPartWithEnclo = (TextBox)pnlpartner.FindControl("TxtDOPartWithEncl");
+                TxtPartnerName1.Text = "";
+                TxtPartnerName1.TabIndex = 1;
+                TxtPartnerName2.Text = "";
+                TxtPartnerName2.TabIndex = 2;
+                TxtPartnerName3.Text = "";
+                TxtPartnerName3.TabIndex = 3;
+                TxtPartnerName4.Text = "";
+                TxtPartnerName4.TabIndex = 4;
+                TxtPartnerName5.Text = "";
+                TxtPartnerName5.TabIndex = 5;
+                TxtDOPartWithEncl.Text = "";
+                TxtDOPartWithEncl.TabIndex = 6;
+                buttonAdd.TabIndex = 7;
+                btnCancel.TabIndex = 8;
+            }
+            ddlCategory.SelectedIndex = 0;
+            ModalPopup12.Hide();
+        }
+
+        protected void btnClosing_click(object sender, EventArgs e)
+        {
+            Response.Redirect(Request.Url.AbsolutePath.ToString());
+        }
+
+        protected void ddlCategory_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if ("--select--" == balayer.ToobjectstrEvenNull(ddlCategory.SelectedItem))
+            {
+                return;
+            }
+            else if ("Individual" == balayer.ToobjectstrEvenNull(ddlCategory.SelectedItem))
+            {
+                ModalPopup12.PopupControlID = "panInd";
+                ModalPopup12.Show();
+                panInd.Visible = true;
+                DdlAddrProof.Focus();
+            }
+            else if ("Proprietary Concern" == balayer.ToobjectstrEvenNull(ddlCategory.SelectedItem))
+            {
+                this.ModalPopup12.PopupControlID = "pnlpro";
+                this.ModalPopup12.Show();
+                pnlPro.Visible = true;
+                TxtpropName.Focus();
+            }
+            else if ("Partnership Firm" == balayer.ToobjectstrEvenNull(ddlCategory.SelectedItem))
+            {
+                this.ModalPopup12.PopupControlID = "pnlpartner";
+                this.ModalPopup12.Show();
+                pnlpartner.Visible = true;
+                TxtPartnerName1.Focus();
+            }
+            else if ("Company" == balayer.ToobjectstrEvenNull(ddlCategory.SelectedItem))
+            {
+                this.ModalPopup12.PopupControlID = "pnlcompany";
+                this.ModalPopup12.Show();
+                pnlcompany.Visible = true;
+                TxtAttachXeroxCopy.Focus();
+            }
+        }
+
+        public void clear()
+        {
+            lblCurrentFile.Text = "";
+            ddlCategory.SelectedIndex = 0;
+            txtProfOrBus.Text = "";
+            txtNatureProfOrBusi.Text = "";
+            txtResAddr.Text = "";
+            TxtAddrBusiOrProf.Text = "";
+            txtAddrComm.Text = "";
+            txtOffTeleNo.Text = "";
+            txtResiTeleNo.Text = "";
+            txtMobNo.Text = "";
+            txtMonthInc.Text = "";
+            TxtSTRegNo.Text = "";
+            TxtCSTRegNo.Text = "";
+            TxtIncTaxPANCircle.Text = "";
+            TxtBankName.Text = "";
+            TxtBranch.Text = "";
+            txtAcctNo.Text = "";
+        }
+        protected void btnyes_click(object sender, EventArgs e)
+        {
+            Response.Redirect(Request.Url.AbsolutePath.ToString());
+          //  clear();
+        }
+        protected void btnno_Click(object sender, EventArgs e)
+        {
+            ddlCategory.SelectedIndex = 0;
+            txtProfOrBus.Text = "";
+            txtNatureProfOrBusi.Text = "";
+            txtResAddr.Text = "";
+            TxtAddrBusiOrProf.Text = "";
+            txtAddrComm.Text = "";
+            txtOffTeleNo.Text = "";
+            txtResiTeleNo.Text = "";
+            txtMobNo.Text = "";
+            txtMonthInc.Text = "";
+            TxtSTRegNo.Text = "";
+            TxtCSTRegNo.Text = "";
+            TxtIncTaxPANCircle.Text = "";
+            TxtBankName.Text = "";
+            TxtBranch.Text = "";
+            txtAcctNo.Text = "";
+        }
+
+        protected void btnclear_Click(object sender, EventArgs e)
+        {
+            Response.Redirect(Request.Url.AbsolutePath.ToString());
+        }
+
+        protected void btnY_Click(object sender, EventArgs e)
+        {
+            Pnlmsg10.Visible = false;
+            string MemberID;
+            bool IsFinished = true;
+            TransactionLayer trn = new TransactionLayer();
+            try
+            {
+                if (balayer.ToobjectstrEvenNull(ddlCategory.SelectedItem) == "Individual")
+                {
+                    Int32 selectBranchHeadQuery = Int32.Parse(balayer.GetSingleValue("SELECT B_Code FROM svcf.branchdetails where Head_Id=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + ""));
+                    Int32 mem = Convert.ToInt32(balayer.GetSingleValue("select ifnull(max(cast(replace(MemberID,'" + selectBranchHeadQuery + "-','') as unsigned)) ,0)+1 from membermaster where BranchId=" + ddlBranch.SelectedValue + ""));
+                    MemberID = balayer.ToobjectstrEvenNull(selectBranchHeadQuery) + "-" + (mem);
+                    RadioButtonList rdSel = (RadioButtonList)panInd.FindControl("rbtnList");
+                    TxtpropName.TabIndex = 0;
+                    rdSel.TabIndex = 1;
+                    TxtAge.TabIndex = 2;
+                    txtDOB.TabIndex = 3;
+                    TxtFathOrHusbName.TabIndex = 4;
+                    TxtMotherName.TabIndex = 5;
+                    btnAdd.TabIndex = 6;
+                    btnCancel.TabIndex = 7;
+                    TextBox txtAge = (TextBox)panInd.FindControl("TxtAge");
+                    TextBox txtdob = (TextBox)panInd.FindControl("txtDOB");
+                    TextBox txtFatName = (TextBox)panInd.FindControl("TxtFathOrHusbName");
+                    TextBox txtMotName = (TextBox)panInd.FindControl("TxtMotherName");
+                    DropDownList ddlProof = (DropDownList)panInd.FindControl("DdlAddrProof");
+                    long incmd = trn.insertorupdateTrn("insert into membermaster(`BranchId`,`CustomerName`,`TypeOfMember`,`Gender`,`Age`,`DOB`,`FatherHusbandName`,`MotherWifeName`,`ProfessionBusiness`,`NatureofProfessionBusiness`,`ResidentialAddress`,`AddressForCommunication`,`ProofofResidence`,"+
+                        "`AddressProfessionBusiness`,`TelephoneNoProfessionBusiness`,`TelephoneNoResidence`,`MobileNo`,`MonthlyIncome`,`SalesTaxRegistrationNoTNGST`,`CSTRegistrationNumber`,`IncomeTaxPANoWardandCircle`,`BankName`,`BranchName`,`SavingsCurrentAccountNo`,`MemberID`) values(" + ddlBranch.SelectedValue + ",'" + balayer.MySQLEscapeString(txtSubscriberName.Text) + "','" + balayer.MySQLEscapeString(balayer.ToobjectstrEvenNull(ddlCategory.SelectedItem)) + "','" + rdSel.SelectedItem + "'," + balayer.MySQLEscapeString(txtAge.Text) + ",'" + balayer.indiandateToMysqlDate(txtDOB.Text) + "','" + balayer.MySQLEscapeString(balayer.ToobjectstrEvenNull(txtFatName.Text)) + "','" + balayer.MySQLEscapeString(txtMotName.Text) + "','" + balayer.MySQLEscapeString(txtProfOrBus.Text) + "','" + balayer.MySQLEscapeString(txtNatureProfOrBusi.Text) + "','" + balayer.MySQLEscapeString(txtResAddr.Text) + "','" + balayer.MySQLEscapeString(txtAddrComm.Text) + "','" + DdlAddrProof.SelectedItem.Text + "','" + balayer.MySQLEscapeString(TxtAddrBusiOrProf.Text) + "','" + balayer.MySQLEscapeString(txtOffTeleNo.Text) + "','" + balayer.MySQLEscapeString(txtResiTeleNo.Text) + "','" + balayer.MySQLEscapeString(txtMobNo.Text) + "'," + balayer.MySQLEscapeString(txtMonthInc.Text) + ",'" + balayer.MySQLEscapeString(TxtSTRegNo.Text) + "','" + balayer.MySQLEscapeString(TxtCSTRegNo.Text) + "','" + balayer.MySQLEscapeString(TxtIncTaxPANCircle.Text) + "','" + balayer.MySQLEscapeString(TxtBankName.Text) + "','" + balayer.MySQLEscapeString(TxtBranch.Text) + "','" + balayer.MySQLEscapeString(txtAcctNo.Text) + "','" + balayer.MySQLEscapeString(balayer.ToobjectstrEvenNull(MemberID)) + "')");
+                    clear();
+                  //  rdSel.SelectedItem.Selected = false;
+                    TxtAge.Text = "";
+                    txtDOB.Text = "";
+                    TxtFathOrHusbName.Text = "";
+                    TxtMotherName.Text = "";
+                    ddlProof.SelectedIndex = 0;
+                    if (CommonClassFile.IMGusersPhoto != null)
+                    {
+                        int length = CommonClassFile.IMGusersPhoto.ContentLength;
+                        byte[] imgbyte = new byte[length];
+                        using (var binaryReader = new BinaryReader(CommonClassFile.IMGusersPhoto.InputStream))
+                        {
+                            imgbyte = binaryReader.ReadBytes(CommonClassFile.IMGusersPhoto.ContentLength);
+                        }
+                        //memberIDnew = balayer.GetSingleValue("SELECT MemberIDNew FROM svcf.membermaster where MemberID='" + MemberID + "' and BranchId=" + BranchID + "");
+                        MySqlConnection connection = new MySqlConnection(CommonClassFile.ConnectionString);
+                        connection.Open();
+                        MySqlCommand cmd = new MySqlCommand("INSERT INTO membersdocuments (MemberID ,Photo,ImageTYpe) VALUES (?MemberID,?Photo,?ImageTYpe)", connection);
+                        cmd.Parameters.Add("?MemberID", MySqlDbType.Int32, 45).Value = incmd;
+                        cmd.Parameters.Add("?Photo", MySqlDbType.Blob).Value = imgbyte;
+                        cmd.Parameters.Add("?ImageTYpe", MySqlDbType.VarChar, 15).Value = CommonClassFile.IMGusersPhoto.ContentType;
+                        int count = cmd.ExecuteNonQuery();
+                        connection.Close();
+                        CommonClassFile.IMGusersPhoto = null;
+                    }
+                    
+                }
+                else if (balayer.ToobjectstrEvenNull(ddlCategory.SelectedItem) == "Proprietary Concern")
+                {
+                    Int32 selectBranchHeadQuery = Int32.Parse(balayer.GetSingleValue("SELECT B_Code FROM svcf.branchdetails where Head_Id=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + ""));
+                    Int32 mem = Convert.ToInt32(balayer.GetSingleValue("select ifnull(max(cast(replace(MemberID,'" + selectBranchHeadQuery + "-','') as unsigned)) ,0)+1 from membermaster where BranchId=" + ddlBranch.SelectedValue + ""));
+                    MemberID = balayer.ToobjectstrEvenNull(selectBranchHeadQuery) + "-" + (mem);
+                    TextBox txtPropnm = (TextBox)pnlPro.FindControl("TxtpropName");
+                    RadioButtonList rdSel = (RadioButtonList)pnlPro.FindControl("Rbtn");
+                    TextBox txtdob = (TextBox)pnlPro.FindControl("TxtDOB1");
+                    TextBox txtAge = (TextBox)pnlPro.FindControl("TxtAge1");
+                    TextBox txtFatName = (TextBox)pnlPro.FindControl("TxtFathOrHusbName1");
+                    TextBox txtMotName = (TextBox)pnlPro.FindControl("TxtMotherName1");
+                    long incmd = trn.insertorupdateTrn("insert into membermaster(`BranchId`,`CustomerName`,`TypeOfMember`,`ProprietorName`,`Gender`,`Age`,`DOB`,`FatherHusbandName`,`MotherWifeName`,`ProfessionBusiness`,`NatureofProfessionBusiness`,`ResidentialAddress`,`AddressForCommunication`,`AddressProfessionBusiness`,`TelephoneNoProfessionBusiness`,`TelephoneNoResidence`,`MobileNo`,`MonthlyIncome`,`SalesTaxRegistrationNoTNGST`,`CSTRegistrationNumber`,`IncomeTaxPANoWardandCircle`,`BankName`,`BranchName`,`SavingsCurrentAccountNo`,`MemberID`) values(" + ddlBranch.SelectedValue + ",'" + balayer.MySQLEscapeString(txtSubscriberName.Text) + "','" + balayer.MySQLEscapeString(balayer.ToobjectstrEvenNull(ddlCategory.SelectedItem)) + "','" + TxtpropName.Text + "','" + balayer.MySQLEscapeString(balayer.ToobjectstrEvenNull(rdSel.SelectedItem)) + "'," + balayer.MySQLEscapeString(txtAge.Text) + ",'" + balayer.indiandateToMysqlDate(txtdob.Text) + "','" + balayer.MySQLEscapeString(txtFatName.Text) + "','" + balayer.MySQLEscapeString(txtMotName.Text) + "','" + balayer.MySQLEscapeString(txtProfOrBus.Text) + "','" + balayer.MySQLEscapeString(txtNatureProfOrBusi.Text) + "','" + balayer.MySQLEscapeString(txtResAddr.Text) + "','" + balayer.MySQLEscapeString(txtAddrComm.Text) + "','" + balayer.MySQLEscapeString(TxtAddrBusiOrProf.Text) + "','" + balayer.MySQLEscapeString(txtOffTeleNo.Text) + "','" + balayer.MySQLEscapeString(txtResiTeleNo.Text) + "','" + balayer.MySQLEscapeString(txtMobNo.Text) + "','" + balayer.MySQLEscapeString(txtMonthInc.Text) + "','" + balayer.MySQLEscapeString(TxtSTRegNo.Text) + "','" + balayer.MySQLEscapeString(TxtCSTRegNo.Text) + "','" + balayer.MySQLEscapeString(TxtIncTaxPANCircle.Text) + "','" + balayer.MySQLEscapeString(TxtBankName.Text) + "','" + balayer.MySQLEscapeString(TxtBranch.Text) + "','" + balayer.MySQLEscapeString(txtAcctNo.Text) + "','" + balayer.MySQLEscapeString(balayer.ToobjectstrEvenNull(MemberID)) + "')");
+                    clear();
+                  //  rdSel.SelectedItem.Selected = false;
+                    TxtpropName.Text = "";
+                    TxtAge1.Text = "";
+                    TxtDOB1.Text = "";
+                    TxtFathOrHusbName1.Text = "";
+                    TxtMotherName1.Text = "";
+                    DdlAddrProof.SelectedIndex = 0;
+
+                    if (CommonClassFile.IMGusersPhoto != null)
+                    {
+                        int length = CommonClassFile.IMGusersPhoto.ContentLength;
+                        byte[] imgbyte = new byte[length];
+                        using (var binaryReader = new BinaryReader(CommonClassFile.IMGusersPhoto.InputStream))
+                        {
+                            imgbyte = binaryReader.ReadBytes(CommonClassFile.IMGusersPhoto.ContentLength);
+                        }
+                        //memberIDnew = balayer.GetSingleValue("SELECT MemberIDNew FROM svcf.membermaster where MemberID='" + MemberID + "' and BranchId=" + BranchID + "");
+                        MySqlConnection connection = new MySqlConnection(CommonClassFile.ConnectionString);
+                        connection.Open();
+                        MySqlCommand cmd = new MySqlCommand("INSERT INTO membersdocuments (MemberID ,Photo,ImageTYpe) VALUES (?MemberID,?Photo,?ImageTYpe)", connection);
+                        cmd.Parameters.Add("?MemberID", MySqlDbType.Int32, 45).Value = incmd;
+                        cmd.Parameters.Add("?Photo", MySqlDbType.Blob).Value = imgbyte;
+                        cmd.Parameters.Add("?ImageTYpe", MySqlDbType.VarChar, 15).Value = CommonClassFile.IMGusersPhoto.ContentType;
+                        int count = cmd.ExecuteNonQuery();
+                        connection.Close();
+                        CommonClassFile.IMGusersPhoto = null;
+                    }
+                }
+                else if ("Partnership Firm" == balayer.ToobjectstrEvenNull(ddlCategory.SelectedItem))
+                {
+                    Int32 selectBranchHeadQuery = Int32.Parse(balayer.GetSingleValue("SELECT B_Code FROM svcf.branchdetails where Head_Id=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + ""));
+                    Int32 mem = Convert.ToInt32(balayer.GetSingleValue("select ifnull(max(cast(replace(MemberID,'" + selectBranchHeadQuery + "-','') as unsigned)) ,0)+1 from membermaster where BranchId=" + ddlBranch.SelectedValue + ""));
+                    MemberID = balayer.ToobjectstrEvenNull(selectBranchHeadQuery) + "-" + (mem);
+                    TextBox txtPartnm1 = (TextBox)pnlpartner.FindControl("TxtPartnerName1");
+                    TextBox txtPartnm2 = (TextBox)pnlpartner.FindControl("TxtPartnerName2");
+                    TextBox txtPartnm3 = (TextBox)pnlpartner.FindControl("TxtPartnerName3");
+                    TextBox txtPartnm4 = (TextBox)pnlpartner.FindControl("TxtPartnerName4");
+                    TextBox txtPartnm5 = (TextBox)pnlpartner.FindControl("TxtPartnerName5");
+                    string Partconcat = txtPartnm1.Text + "," + txtPartnm2.Text + "," + txtPartnm3.Text + "," + txtPartnm4.Text + "," + txtPartnm5.Text;
+                    Partconcat = Partconcat.TrimEnd(',');
+                    TextBox txtDOPartWithEnclo = (TextBox)pnlpartner.FindControl("TxtDOPartWithEncl");
+                    long incmd = trn.insertorupdateTrn("insert into membermaster(`BranchId`,`CustomerName`,`TypeOfMember`,`PartnersName`,`DateOfPartnershipWithAmendment`,`ProfessionBusiness`,`NatureofProfessionBusiness`,`ResidentialAddress`,`AddressForCommunication`,`AddressProfessionBusiness`,`TelephoneNoProfessionBusiness`,`TelephoneNoResidence`,`MobileNo`,`MonthlyIncome`,`SalesTaxRegistrationNoTNGST`,`CSTRegistrationNumber`,`IncomeTaxPANoWardandCircle`,`BankName`,`BranchName`,`SavingsCurrentAccountNo`,`MemberID`) values(" + ddlBranch.SelectedValue + ",'" + balayer.MySQLEscapeString(txtSubscriberName.Text) + "','" + balayer.MySQLEscapeString(balayer.ToobjectstrEvenNull(ddlCategory.SelectedItem)) + "','" + balayer.MySQLEscapeString(Partconcat) + "','" + balayer.indiandateToMysqlDate(txtDOPartWithEnclo.Text) + "','" + balayer.MySQLEscapeString(txtProfOrBus.Text) + "','" + balayer.MySQLEscapeString(txtNatureProfOrBusi.Text) + "','" + balayer.MySQLEscapeString(txtResAddr.Text) + "','" + balayer.MySQLEscapeString(txtAddrComm.Text) + "','" + balayer.MySQLEscapeString(TxtAddrBusiOrProf.Text) + "','" + balayer.MySQLEscapeString(txtOffTeleNo.Text) + "','" + balayer.MySQLEscapeString(txtResiTeleNo.Text) + "','" + balayer.MySQLEscapeString(txtMobNo.Text) + "','" + balayer.MySQLEscapeString(txtMonthInc.Text) + "','" + balayer.MySQLEscapeString(TxtSTRegNo.Text) + "','" + balayer.MySQLEscapeString(TxtCSTRegNo.Text) + "','" + balayer.MySQLEscapeString(TxtIncTaxPANCircle.Text) + "','" + balayer.MySQLEscapeString(TxtBankName.Text) + "','" + balayer.MySQLEscapeString(TxtBranch.Text) + "','" + balayer.MySQLEscapeString(txtAcctNo.Text) + "','" + balayer.MySQLEscapeString(balayer.ToobjectstrEvenNull(MemberID)) + "')");
+                    clear();
+                    TxtPartnerName1.Text = "";
+                    TxtPartnerName1.TabIndex = 1;
+                    TxtPartnerName2.Text = "";
+                    TxtPartnerName2.TabIndex = 2;
+                    TxtPartnerName3.Text = "";
+                    TxtPartnerName3.TabIndex = 3;
+                    TxtPartnerName4.Text = "";
+                    TxtPartnerName4.TabIndex = 4;
+                    TxtPartnerName5.Text = "";
+                    TxtPartnerName5.TabIndex = 5;
+                    TxtDOPartWithEncl.Text = "";
+                    TxtDOPartWithEncl.TabIndex = 6;
+                    buttonAdd.TabIndex = 7;
+                    btnCancel.TabIndex = 8;
+                    // TabCont.Visible = false;
+
+                    if (CommonClassFile.IMGusersPhoto != null)
+                    {
+                        int length = CommonClassFile.IMGusersPhoto.ContentLength;
+                        byte[] imgbyte = new byte[length];
+                        using (var binaryReader = new BinaryReader(CommonClassFile.IMGusersPhoto.InputStream))
+                        {
+                            imgbyte = binaryReader.ReadBytes(CommonClassFile.IMGusersPhoto.ContentLength);
+                        }
+                        //memberIDnew = balayer.GetSingleValue("SELECT MemberIDNew FROM svcf.membermaster where MemberID='" + MemberID + "' and BranchId=" + BranchID + "");
+                        MySqlConnection connection = new MySqlConnection(CommonClassFile.ConnectionString);
+                        connection.Open();
+                        MySqlCommand cmd = new MySqlCommand("INSERT INTO membersdocuments (MemberID ,Photo,ImageTYpe) VALUES (?MemberID,?Photo,?ImageTYpe)", connection);
+                        cmd.Parameters.Add("?MemberID", MySqlDbType.Int32, 45).Value = incmd;
+                        cmd.Parameters.Add("?Photo", MySqlDbType.Blob).Value = imgbyte;
+                        cmd.Parameters.Add("?ImageTYpe", MySqlDbType.VarChar, 15).Value = CommonClassFile.IMGusersPhoto.ContentType;
+                        int count = cmd.ExecuteNonQuery();
+                        connection.Close();
+                        CommonClassFile.IMGusersPhoto = null;
+                    }
+                }
+                else if ("Company" == balayer.ToobjectstrEvenNull(ddlCategory.SelectedItem))
+                {
+                    Int32 selectBranchHeadQuery = Int32.Parse(balayer.GetSingleValue("SELECT B_Code FROM svcf.branchdetails where Head_Id=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + ""));
+                    Int32 mem = Convert.ToInt32(balayer.GetSingleValue("select ifnull(max(cast(replace(MemberID,'" + selectBranchHeadQuery + "-','') as unsigned)) ,0)+1 from membermaster where BranchId=" + ddlBranch.SelectedValue + ""));
+                    MemberID = balayer.ToobjectstrEvenNull(selectBranchHeadQuery) + "-" + (mem);
+                    TextBox txtattach = (TextBox)pnlcompany.FindControl("TxtAttachXeroxCopy");
+                    TextBox txtDateofResol = (TextBox)pnlcompany.FindControl("TxtResolDate");
+                    long incmd = trn.insertorupdateTrn("insert into membermaster(`BranchId`,`CustomerName`,`TypeOfMember`,`compxerox`,`dateofResol`,`ProfessionBusiness`,`NatureofProfessionBusiness`,`ResidentialAddress`,`AddressForCommunication`,`AddressProfessionBusiness`,`TelephoneNoProfessionBusiness`,`TelephoneNoResidence`,`MobileNo`,`MonthlyIncome`,`SalesTaxRegistrationNoTNGST`,`CSTRegistrationNumber`,`IncomeTaxPANoWardandCircle`,`BankName`,`BranchName`,`SavingsCurrentAccountNo`,`MemberID`) values(" + ddlBranch.SelectedValue + ",'" + balayer.MySQLEscapeString(txtSubscriberName.Text) + "','" + balayer.MySQLEscapeString(balayer.ToobjectstrEvenNull(ddlCategory.SelectedItem)) + "','" + balayer.MySQLEscapeString(txtattach.Text) + "','" + balayer.indiandateToMysqlDate(txtDateofResol.Text) + "','" + balayer.MySQLEscapeString(txtProfOrBus.Text) + "','" + balayer.MySQLEscapeString(txtNatureProfOrBusi.Text) + "','" + balayer.MySQLEscapeString(txtResAddr.Text) + "','" + balayer.MySQLEscapeString(txtAddrComm.Text) + "','" + balayer.MySQLEscapeString(TxtAddrBusiOrProf.Text) + "','" + balayer.MySQLEscapeString(txtOffTeleNo.Text) + "','" + balayer.MySQLEscapeString(txtResiTeleNo.Text) + "','" + balayer.MySQLEscapeString(txtMobNo.Text) + "','" + balayer.MySQLEscapeString(txtMonthInc.Text) + "','" + balayer.MySQLEscapeString(TxtSTRegNo.Text) + "','" + balayer.MySQLEscapeString(TxtCSTRegNo.Text) + "','" + balayer.MySQLEscapeString(TxtIncTaxPANCircle.Text) + "','" + balayer.MySQLEscapeString(TxtBankName.Text) + "','" + balayer.MySQLEscapeString(TxtBranch.Text) + "','" + balayer.MySQLEscapeString(txtAcctNo.Text) + "','" + balayer.MySQLEscapeString(balayer.ToobjectstrEvenNull(MemberID)) + "')");
+                    clear();
+                    TxtAttachXeroxCopy.Text = "";
+                    TxtResolDate.Text = "";
+
+                    if (CommonClassFile.IMGusersPhoto != null)
+                    {
+                        int length = CommonClassFile.IMGusersPhoto.ContentLength;
+                        byte[] imgbyte = new byte[length];
+                        using (var binaryReader = new BinaryReader(CommonClassFile.IMGusersPhoto.InputStream))
+                        {
+                            imgbyte = binaryReader.ReadBytes(CommonClassFile.IMGusersPhoto.ContentLength);
+                        }
+                        //memberIDnew = balayer.GetSingleValue("SELECT MemberIDNew FROM svcf.membermaster where MemberID='" + MemberID + "' and BranchId=" + BranchID + "");
+                        MySqlConnection connection = new MySqlConnection(CommonClassFile.ConnectionString);
+                        connection.Open();
+                        MySqlCommand cmd = new MySqlCommand("INSERT INTO membersdocuments (MemberID ,Photo,ImageTYpe) VALUES (?MemberID,?Photo,?ImageTYpe)", connection);
+                        cmd.Parameters.Add("?MemberID", MySqlDbType.Int32, 45).Value = incmd;
+                        cmd.Parameters.Add("?Photo", MySqlDbType.Blob).Value = imgbyte;
+                        cmd.Parameters.Add("?ImageTYpe", MySqlDbType.VarChar, 15).Value = CommonClassFile.IMGusersPhoto.ContentType;
+                        int count = cmd.ExecuteNonQuery();
+                        connection.Close();
+                        CommonClassFile.IMGusersPhoto = null;
+                    }
+                }
+                trn.CommitTrn();
+            }
+            catch(Exception error)
+            {
+
+                try
+                {
+                   trn.RollbackTrn();
+                }
+                catch { }
+                finally
+                {
+                    IsFinished = false;
+                    Pnlmsg.Visible = true;
+                    ModalPopup12.PopupControlID = "Pnlmsg";
+                    this.ModalPopup12.Show();
+                    lblHD.Text = "Status";
+                    lblContent.Text = error.Message;
+                    lblContent.ForeColor = System.Drawing.Color.Red;
+                }
+            }
+            finally
+            {
+                trn.DisposeTrn();
+                if (IsFinished == true)
+                {
+                    Pnlmsg.Visible = true;
+                    ModalPopup12.PopupControlID = "Pnlmsg";
+                    this.ModalPopup12.Show();
+                    lblHD.Text = "Status";
+                    lblContent.Text = "Member : " + balayer.MySQLEscapeString(txtSubscriberName.Text) + " Added Successfully";
+                    lblContent.ForeColor = System.Drawing.Color.Green;
+                }
+            }
+        }
+
+        protected void DdlAddrProof_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (DdlAddrProof.SelectedItem.Text == "Aadhar Card No." || DdlAddrProof.SelectedItem.Text == "PAN Card No.")
+            {
+                txtAadharno.Visible = true;
+            }
+            else
+            {
+                txtAadharno.Visible = false;
+            }
+            ModalPopup12.PopupControlID = "panInd";
+            ModalPopup12.Show();
+            panInd.Visible = true;
+        }
+    }
+}

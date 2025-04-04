@@ -1,0 +1,73 @@
+﻿        .div[style="padding: 2px; position: absolute; left: 1px; top: 1px; z-index: 100000; font-family: sans-serif; font-size: 8pt; color: black; background-color: white;"]
+        {
+        	display:none ! important;
+        }
+        ::-webkit-scrollbar
+        {
+            width: 10px;
+            height: 10px;
+        }
+        ::-webkit-scrollbar-button:start:decrement, ::-webkit-scrollbar-button:end:increment
+        {
+            height: 30px;
+            display: block;
+            background-color: transparent;
+        }
+        ::-webkit-scrollbar-track-piece
+        {
+            background-color: #3b3b3b;
+            -webkit-border-radius: 6px;
+        }
+        ::-webkit-scrollbar-thumb:vertical
+        {
+            height: 50px;
+            background-color: #666;
+            border: 1px solid #eee;
+            -webkit-border-radius: 6px;
+        }
+        
+        .ofv
+        {
+            font-size: 13px;
+            color: Red;
+            text-shadow: 1px 1px 1px #fff;
+        }
+        .rfv
+        {
+            font-size: 16px;
+            color: Red;
+            text-shadow: 2px 2px 2px #000;
+        }
+        .modalBackground
+        {
+            background-color: Gray;
+            filter: alpha(opacity=80);
+            opacity: 0.8;
+            z-index: 10000;
+        }
+        .modalPopup
+        {
+            background-color: #ffffdd;
+            border-width: 2px;
+            border-style: solid;
+            border-color: Gray;
+            padding: 2px;
+            width: 240px;
+            border-radius: 19px;
+        }
+       
+        .ModelPopupHeading
+        {
+            height: 5em;
+            width: 12em;
+            -moz-border-radius: 1em 4em 1em 4em;
+            border-radius: 1em 4em 1em 4em;
+            font-family: arial; 
+            text-align: center;
+        }
+        .ModalWindow
+        {
+            padding: 0px10px10px10px;
+            position: absolute;
+            top: -1000px;
+        }

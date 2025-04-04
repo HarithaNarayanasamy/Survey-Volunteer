@@ -1,0 +1,297 @@
+﻿using System;
+using System.Collections;
+using System.Configuration;
+using System.Data;
+using System.Linq;
+using System.Web;
+using System.Web.Security;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+using System.Web.UI.WebControls.WebParts;
+using System.Web.UI.HtmlControls;
+using System.Xml.Linq;
+using SVCF_BusinessAccessLayer;
+using SVCF_DataAccessLayer;
+using SVCF_TransactionLayer;
+using log4net;
+using log4net.Config;
+
+namespace SreeVisalamChitFundLtd_phase1
+{
+    public partial class undoPayment : System.Web.UI.Page
+    {
+
+        #region Object
+        BusinessLayer balayer = new BusinessLayer();
+        TransactionLayer trn = new TransactionLayer();
+        static bool key = false;
+        #endregion
+        ILog logger = log4net.LogManager.GetLogger(typeof(undoPayment));
+
+        protected void Page_PreInit(object sender, EventArgs e)
+        {
+            if (Session["UserName"] == null || Session["Branchid"] == null || Session["BranchName"] == null)
+            {
+                Response.Redirect(Page.ResolveUrl("~/Login.aspx"), true);
+            }
+        }
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            if (!IsPostBack)
+            {
+
+                var userinfo = HttpContext.Current.User.Identity.Name;
+                var qry = "select rs.name from roles as rs inner join rights as rt on (rt.roleid=rs.id) where memberid=" + userinfo + "";
+                var usrRole = balayer.GetSingleValue(qry);
+                if (usrRole == "Administrator")
+                {
+                    getGroup();
+                    Session["CheckRefresh"] = System.Guid.NewGuid().ToString();
+                }
+                else
+                {
+                    Response.Redirect("Home.aspx", false);
+                }
+            }
+            logger.Info("TRR Other Branch - at: " + DateTime.Now + " by: " + Convert.ToString(Session["UserName"]) + "");
+        }
+        protected void Page_PreRender(object sender, EventArgs e)
+        {
+            ViewState["CheckRefresh"] = Session["CheckRefresh"];
+        }
+        protected void load_ddlGroup(object sender, EventArgs e)
+        {
+            if (ddlGroup.SelectedItem.Text != "--Select--")
+            {
+                //DataTable dtchit = balayer.GetDataTable("SELECT `voucher`.`Head_Id`,concat(`headstree`.`Node`,'=' ,`membertogroupmaster`.`MemberName`) as MemberName FROM voucher join trans_payment on (`voucher`.`TransactionKey`=`trans_payment`.`TransactionKey`) join headstree on (`voucher`.`Head_Id`=`headstree`.`NodeID`) join membertogroupmaster on (`voucher`.`Head_Id`=`membertogroupmaster`.`Head_Id`) where trans_payment.ChitGroupID=" + ddlGroup.SelectedItem.Value + " and `trans_payment`.`BranchID`=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and `voucher`.`Trans_Type`=2");
+                DataTable dtchit = balayer.GetDataTable("SELECT mg1.Head_Id, concat(mg1.GrpMemberID,'=',mg1.MemberName)as MemberName FROM svcf.trans_payment as tp1  join membertogroupmaster  as mg1 on  tp1.TokenNumber=mg1.Head_Id     where ChitGroupID=" + ddlGroup.SelectedItem.Value + ";");
+
+                ddlToken.DataSource = dtchit;
+                ddlToken.DataTextField = "MemberName";
+                ddlToken.DataValueField = "Head_Id";
+                ddlToken.DataBind();
+                ddlToken.Focus();
+                ListItem lst1 = new ListItem("--Select--", "--Select--");
+                ddlToken.Items.Insert(0, lst1);
+            }
+            else
+            {
+                ddlToken.DataSource = null;
+                ddlToken.Items.Clear();
+                ddlToken.DataBind();
+            }
+            txtDrawNumber.Text = "";
+            lbDual.Text = "";
+        }
+        protected void load_ddlToken(object sender, EventArgs e)
+        {
+            if (ddlGroup.SelectedItem.Text != "--Select--")
+            {
+                if (ddlToken.SelectedItem.Text != "--Select--")
+                {
+                    //02/08/2021
+                    //string dtchit1 = balayer.GetSingleValue("SELECT DrawNO from auctiondetails where BranchID=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and auctiondetails.GroupID=" + ddlGroup.SelectedItem.Value + " and PrizedMemberID=" + ddlToken.SelectedItem.Value + " and auctiondetails.IsPrized='Y'");
+                    string dtchit1 = balayer.GetSingleValue("SELECT DrawNO from auctiondetails where BranchID=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and auctiondetails.GroupID=" + ddlGroup.SelectedItem.Value + " and PrizedMemberID=" + ddlToken.SelectedItem.Value + " and (auctiondetails.IsPrized='Y' or auctiondetails.IsPrized='N')");
+                    txtDrawNumber.Text = dtchit1.ToString();
+                    DataTable dtchit = balayer.GetDataTable("SELECT replace(insertkey_from_bin(trans_payment.DualTransactionKey),'-','') as DualTransactionKey FROM voucher join trans_payment on (`voucher`.`TransactionKey`=`trans_payment`.`TransactionKey`) join headstree on (`voucher`.`Head_Id`=`headstree`.`NodeID`) join membertogroupmaster on (`voucher`.`Head_Id`=`membertogroupmaster`.`Head_Id`) where trans_payment.ChitGroupID=" + ddlGroup.SelectedItem.Value + " and `trans_payment`.`TokenNumber`=" + ddlToken.SelectedItem.Value + " and `trans_payment`.`DrawNo`=" + txtDrawNumber.Text + "");
+                    if (dtchit.Rows.Count > 0)
+                    {
+                        lbDual.Text = dtchit.Rows[0]["DualTransactionKey"].ToString();
+                    }
+                    else
+                    {
+                        key = true;
+                        string Dutrans = balayer.GetSingleValue("SELECT replace(insertkey_from_bin(trans_payment.DualTransactionKey),'-','') as DualTransactionKey FROM  trans_payment where trans_payment.ChitGroupID=" + ddlGroup.SelectedItem.Value + " and `trans_payment`.`TokenNumber`=" + ddlToken.SelectedItem.Value + " and `trans_payment`.`DrawNo`=" + txtDrawNumber.Text + "");
+                        lbDual.Text = Dutrans;
+                    }
+                }
+                else
+                {
+                    txtDrawNumber.Text = "";
+                    lbDual.Text = "";
+                }
+            }
+        }
+        public void getGroup()
+        {
+            DataTable dtchitgrpno = balayer.GetDataTable("SELECT distinct `headstree`.`Node`,`trans_payment`.`ChitGroupId` FROM svcf.trans_payment join " +
+                "headstree on (trans_payment.ChitGroupID=`headstree`.`NodeID`)  join voucher on (`trans_payment`.`DualTransactionKey`=`voucher`.`DualTransactionKey`) " +
+                " and (trans_payment.BranchID=voucher.BranchID) where `voucher`.`Trans_Type`=2  and voucher.BranchID=" + balayer.ToobjectstrEvenNull(Session["Branchid"]));
+            DataRow drchitgrpno;
+            drchitgrpno = dtchitgrpno.NewRow();
+            drchitgrpno[0] = "--Select--";
+            drchitgrpno[1] = "0";
+            dtchitgrpno.Rows.InsertAt(drchitgrpno, 0);
+            ddlGroup.DataSource = dtchitgrpno;
+            ddlGroup.DataTextField = "Node";
+            ddlGroup.DataValueField = "ChitGroupId";
+            ddlGroup.DataBind();
+        }
+        protected void load_btnPayment(object sender, EventArgs e)
+        {            
+            Page.Validate("undo");
+            if (!Page.IsValid)
+            {
+                return;
+            }
+            if (Session["CheckRefresh"].ToString() != ViewState["CheckRefresh"].ToString())
+            {
+                return;
+            }
+            if (ddlGroup.SelectedItem.Text != "--Select--")
+            {
+                if (ddlToken.SelectedItem.Text != "--Select--")
+                {
+                    ModalPopupExtender1.PopupControlID = "pnlmsg";
+                    ModalPopupExtender1.Show();
+                    pnlmsg.Visible = true;
+                    lblh.Text = "Status";
+                    lblcon.Text = "Do you want to Undo Payment of Token : "+ddlToken.SelectedItem.Text+" for Call No.: "+txtDrawNumber.Text+"";
+                    lblcon.ForeColor = System.Drawing.Color.Green;
+                }
+            }
+        }
+        protected void load_btnCancel(object sender, EventArgs e)
+        {
+            Response.Redirect(Request.Url.AbsolutePath.ToString());
+        }
+        protected void load_btnconfirm(object sender, EventArgs e)
+        {
+            //TransactionLayer trn = new TransactionLayer();
+            //try
+            //{
+            //    pnlmsg.Visible = false;
+            //    long DeleteVoucher;
+            //    if (key != true)
+            //    {
+            //        DeleteVoucher = trn.insertorupdateTrn("delete from voucher where DualTransactionKey=" + lbDual.Text + "");
+            //    }
+            //    long DeleteTransBank = trn.insertorupdateTrn("delete from transbank where DualTransactionKey=" + lbDual.Text + "");
+            //    long DeleteTransPayment = trn.insertorupdateTrn("delete from trans_payment where DualTransactionKey=" + lbDual.Text + "");
+            //    if (Convert.ToInt32(txtDrawNumber.Text) == 1)
+            //    {
+            //        long UpdateAuction = trn.insertorupdateTrn("update auctiondetails set `auctiondetails`.`IsPrized`='F' where `auctiondetails`.`PrizedMemberID`=" + ddlToken.SelectedItem.Value + " and `auctiondetails`.`GroupID`=" + ddlGroup.SelectedItem.Value + " and `auctiondetails`.`BranchID`=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and `auctiondetails`.`IsPrized`='Y'");
+            //    }
+            //    else
+            //    {
+            //        long UpdateAuction = trn.insertorupdateTrn("update auctiondetails set `auctiondetails`.`IsPrized`='N' where `auctiondetails`.`PrizedMemberID`=" + ddlToken.SelectedItem.Value + " and `auctiondetails`.`GroupID`=" + ddlGroup.SelectedItem.Value + " and `auctiondetails`.`BranchID`=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and `auctiondetails`.`IsPrized`='Y'");
+            //    }
+            //    ModalPopupExtender1.PopupControlID = "Panel1";
+            //    ModalPopupExtender1.Show();
+            //    Panel1.Visible = true;
+            //    Label1.Text = "Status";
+            //    Label2.Text = "The Token : " + ddlToken.SelectedItem.Text + " and Draw Number : " + txtDrawNumber.Text + " deleted successfully";
+            //    Label2.ForeColor = System.Drawing.Color.Green;
+            //    trn.CommitTrn();
+            //    key = false;
+            //}
+        //    catch (Exception error)
+        //    {
+        //        try
+        //        {
+        //           trn.RollbackTrn();
+        //        }
+        //        catch { }
+        //        finally
+        //        {
+        //            //int UpdateAuction1 = balayer.GetInsertItem("update auctiondetails set `auctiondetails`.`IsPrized`='Y' where `auctiondetails`.`PrizedMemberID`=" + ddlToken.SelectedItem.Value + " and `auctiondetails`.`GroupID`=" + ddlGroup.SelectedItem.Value + " and `auctiondetails`.`BranchID`=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and `auctiondetails`.`IsPrized`='N'");
+        //            ScriptManager.RegisterStartupScript(this, GetType(), "Warning", "alert('" + error.Message.ToString().Replace("'", "\\'") + "');", true);
+        //        }
+        //    }
+        //    finally
+        //    {
+        //        trn.DisposeTrn();
+        //    }
+
+            TransactionLayer trn = new TransactionLayer();
+            try
+            {
+                pnlmsg.Visible = false;
+                long DeleteVoucher;
+                string strTransKey = "";
+                long DeleteDocument;
+                //string strTransKey = "";
+                string drawno = "";
+                string groupid = "";
+                string prizedmemberid = "";
+
+                if (key != true)
+                {
+                    DataTable dtDelVoucher = balayer.GetDataTable("Select `TransactionKey` from voucher where DualTransactionKey=" + lbDual.Text + "");
+                    for (int iRow = 0; iRow < dtDelVoucher.Rows.Count; iRow++)
+                    {
+                        strTransKey = Convert.ToString(dtDelVoucher.Rows[iRow]["TransactionKey"]);
+                        DeleteVoucher = trn.insertorupdateTrn("delete from voucher where `TransactionKey`=" + strTransKey + "");
+                    }
+                }
+
+                DataTable dtdocument = balayer.GetDataTable("select dc.drawno,dc.groupid,dc.prizedmemberid from svcf.documentdetails as dc join membertogroupmaster as mg on (dc.prizedmemberid=mg.MemberID) where dc.GroupID=" + ddlGroup.SelectedItem.Value + " and mg.Head_Id=" + ddlToken.SelectedItem.Value + ";");
+                for (int i = 0; i < dtdocument.Rows.Count; i++)
+                { 
+                    drawno = Convert.ToString(dtdocument.Rows[i]["drawno"]);
+                    groupid = Convert.ToString(dtdocument.Rows[i]["groupid"]);
+                    prizedmemberid = Convert.ToString(dtdocument.Rows[i]["prizedmemberid"]);
+                    DeleteDocument = trn.insertorupdateTrn("delete from documentdetails where drawno=" + drawno + " and groupid=" + groupid + " and prizedmemberid=" + prizedmemberid + "");
+                }
+                //`autoid`
+                DataTable dtDelTransBank = balayer.GetDataTable("Select `TransactionKey` from transbank where DualTransactionKey=" + lbDual.Text + "");
+                for (int iRow = 0; iRow < dtDelTransBank.Rows.Count; iRow++)
+                {
+                    strTransKey = Convert.ToString(dtDelTransBank.Rows[iRow]["TransactionKey"]);
+                    long DeleteTransBank = trn.insertorupdateTrn("delete from transbank where `TransactionKey`=" + strTransKey + "");
+                }
+                DataTable dtDelTransPayment = balayer.GetDataTable("Select `autoid` from trans_payment where DualTransactionKey=" + lbDual.Text + "");
+                for (int iRow = 0; iRow < dtDelTransPayment.Rows.Count; iRow++)
+                {
+                    strTransKey = Convert.ToString(dtDelTransPayment.Rows[iRow]["autoid"]);
+                    long DeleteTransPayment = trn.insertorupdateTrn("delete from trans_payment where `autoid`=" + strTransKey + "");
+                }
+                if (Convert.ToInt32(txtDrawNumber.Text) == 1)
+                {
+                    long UpdateAuction = trn.insertorupdateTrn("update auctiondetails set `auctiondetails`.`IsPrized`='F' where `auctiondetails`.`PrizedMemberID`=" + ddlToken.SelectedItem.Value + " and `auctiondetails`.`GroupID`=" + ddlGroup.SelectedItem.Value + " and `auctiondetails`.`BranchID`=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and `auctiondetails`.`IsPrized`='Y'");
+                }
+                else
+                {
+                    long UpdateAuction = trn.insertorupdateTrn("update auctiondetails set `auctiondetails`.`IsPrized`='N' where `auctiondetails`.`PrizedMemberID`=" + ddlToken.SelectedItem.Value + " and `auctiondetails`.`GroupID`=" + ddlGroup.SelectedItem.Value + " and `auctiondetails`.`BranchID`=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and `auctiondetails`.`IsPrized`='Y'");
+                }
+                ModalPopupExtender1.PopupControlID = "Panel1";
+                ModalPopupExtender1.Show();
+                Panel1.Visible = true;
+                Label1.Text = "Status";
+                Label2.Text = "The Token : " + ddlToken.SelectedItem.Text + " and Draw Number : " + txtDrawNumber.Text + " deleted successfully";
+                Label2.ForeColor = System.Drawing.Color.Green;
+                trn.CommitTrn();
+
+                logger.Info("undoPayment.aspx - load_btnconfirm():  Completed: " + DateTime.Now + " by: " + Convert.ToString(Session["UserName"]) + "");
+                key = false;
+            }
+            catch (Exception error)
+            {
+                try
+                {
+                   trn.RollbackTrn();
+                   logger.Info("undoPayment.aspx - load_btnconfirm():  Error: " + error.Message + ": " + DateTime.Now + " by: " + Convert.ToString(Session["UserName"]) + "");
+                }
+                catch { }
+                finally
+                {
+                    //int UpdateAuction1 = balayer.GetInsertItem("update auctiondetails set `auctiondetails`.`IsPrized`='Y' where `auctiondetails`.`PrizedMemberID`=" + ddlToken.SelectedItem.Value + " and `auctiondetails`.`GroupID`=" + ddlGroup.SelectedItem.Value + " and `auctiondetails`.`BranchID`=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and `auctiondetails`.`IsPrized`='N'");
+                    ScriptManager.RegisterStartupScript(this, GetType(), "Warning", "alert('" + error.Message.ToString().Replace("'", "\\'") + "');", true);
+                }
+            }
+            finally
+            {
+                trn.DisposeTrn();
+            }
+        }
+        
+        protected void load_btnexit(object sender, EventArgs e)
+        {
+            Response.Redirect(Request.Url.AbsolutePath.ToString());
+        }
+        protected void load_btnconfirm1(object sender, EventArgs e)
+        {
+            Response.Redirect(Request.Url.AbsolutePath.ToString());
+        }
+    }
+}

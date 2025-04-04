@@ -1,0 +1,172 @@
+﻿using log4net;
+using SVCF_BusinessAccessLayer;
+using SVCF_TransactionLayer;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+using System.Data;
+
+namespace SreeVisalamChitFundLtd_phase1
+{
+    public partial class FdrandPsoDetails : System.Web.UI.Page
+    {
+        #region Object
+        BusinessLayer balayer = new BusinessLayer();
+        TransactionLayer trn = new TransactionLayer();
+        #endregion
+
+        ILog logger = log4net.LogManager.GetLogger(typeof(groups));
+
+        protected void Page_PreInit(object sender, EventArgs e)
+        {
+            if (Session["UserName"] == null || Session["Branchid"] == null || Session["BranchName"] == null)
+            {
+                Response.Redirect(Page.ResolveUrl("~/Login.aspx"), true);
+            }
+        }
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            if (!IsPostBack)
+            {
+
+                var userinfo = HttpContext.Current.User.Identity.Name;
+                var qry = "select rs.name from roles as rs inner join rights as rt on (rt.roleid=rs.id) where memberid=" + userinfo + "";
+                var usrRole = balayer.GetSingleValue(qry);
+                if (usrRole == "Report")
+                {
+                    Response.Redirect("Home.aspx", false);
+                }
+
+                Session["CheckRefresh"] = System.Guid.NewGuid().ToString();
+                //  txtgroup_no.Focus();
+                ddlChitGroup.DataSource = null;
+                ddlChitGroup.Items.Clear();
+                ddlChitGroup.DataBind();
+                DataTable dtGroups;
+                //dtGroups = balayer.GetDataTable("SELECT t1.GroupNo as GroupNo,t1.Head_Id,Count(t2.GroupID) as NoofFilledToken,t1.NoofMembers FROM `groupmaster` as t1 left Join  membertogroupmaster as t2 on   t1.Head_Id=t2.GroupID where t1.`BranchID`=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + "    Group by t1.Head_Id HAVING Count(t2.GroupID)<>NoofMembers");
+                dtGroups = balayer.GetDataTable("select GroupNo as GroupNo,Head_Id from groupmaster where Head_Id not in(select Head_Id from groupmaster as g1 join auctiondetails as ac on ac.GroupID=g1.Head_Id where g1.BranchID=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + ")and branchid=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + "");
+                DataRow dr = dtGroups.NewRow();
+                dr[0] = "--Select--";
+                dr[1] = "0";
+                ddlChitGroup.DataSource = dtGroups;
+                ddlChitGroup.DataTextField = "GROUPNO";
+                ddlChitGroup.DataValueField = "Head_Id";
+                dtGroups.Rows.InsertAt(dr, 0);
+                ddlChitGroup.DataBind();
+
+                txtpso_order_date.ToolTip = "Ex. " + DateTime.Now.ToString("dd/MM/yyyy") + " (dd/mm/yyyy)";
+                txtsdpComm.ToolTip = "Ex. " + DateTime.Now.ToString("dd/MM/yyyy") + " (dd/mm/yyyy)";
+                txtsdpMatur.ToolTip = "Ex. " + DateTime.Now.ToString("dd/MM/yyyy") + " (dd/mm/yyyy)";
+                
+            }
+        }
+
+        protected void Page_PreRender(object sender, EventArgs e)
+        {
+            ViewState["CheckRefresh"] = Session["CheckRefresh"];
+        }
+
+        protected void btnclose(object sender, EventArgs e)
+        {
+            clearGroup();
+        }
+
+        protected void btnaddGroup_click(object sender, EventArgs e)
+        {
+            Page.Validate("group");
+            if (!Page.IsValid)
+            {
+                return;
+            }
+            if (Session["CheckRefresh"].ToString() != ViewState["CheckRefresh"].ToString())
+            {
+                return;
+            }
+            TransactionLayer trn = new TransactionLayer();
+            string DualTransactionKey = "";
+            try
+            {
+                int count = Convert.ToInt32(balayer.GetSingleValue("SELECT count(*) FROM  `groupmaster` where GROUPNO='" + balayer.MySQLEscapeString(ddlChitGroup.SelectedItem.Value) + "'"));
+                if (count > 0)
+                {
+                    //ScriptManager.RegisterStartupScript(this, GetType(), "Warning", "alert('" + balayer.MySQLEscapeString(txtgroup_no.Text) + " Already Exists!!!');", true);
+                    ScriptManager.RegisterStartupScript(this, GetType(), "Warning", "alert('" + balayer.MySQLEscapeString(ddlChitGroup.SelectedItem.Text) + " Already Exists!!!');", true);
+                    // txtgroup_no.Text = "";
+                    //txtgroup_no.Focus();
+                    return;
+                }
+                int parentID = 0;
+                string strPreviousID = "";
+                long iresult = 0;
+                string strIdtoInsert = "";
+                long strCall;
+                long strPrized;
+
+
+                //iresult = trn.insertorupdateTrn("insert into headstree(ParentID, Node, TreeHint,Branchid) values(" + parentID + ",'" + balayer.MySQLEscapeString(ddlChitGroup.SelectedItem.Value) + "','Null'," + balayer.ToobjectstrEvenNull(Session["Branchid"]) + ")");
+
+
+
+
+
+                //update Portion
+
+                //long insertCmd = trn.insertorupdateTrn("update groupmaster set(PSOOrderNo,PSOOrderDate,PSODROffice,`SDP_FDRNO`,`SDP_Bank`,`SDP_BankPlace`,`SDP_Commencement`,`SDP_Maturity`,`SDP_RateofInterest`,`SDP_PeriodinMonths`,`SDP_Amount`) values("   + balayer.MySQLEscapeString(txtpso_order_no.Text) + ",'" + balayer.indiandateToMysqlDate(txtpso_order_date.Text) + "','" + balayer.MySQLEscapeString(txtpso_dr_office.Text)    + "','" + balayer.MySQLEscapeString(txtSDPFDR.Text) + "','" + balayer.MySQLEscapeString(txtSDP_bank.Text) + "','" + balayer.MySQLEscapeString(txtsdpbankPlace.Text) + "','" + balayer.indiandateToMysqlDate(txtsdpComm.Text) + "','" + balayer.indiandateToMysqlDate(txtsdpMatur.Text) + "'," + balayer.MySQLEscapeString(txtInterest.Text) + "," + balayer.MySQLEscapeString(txtPeriodMonths.Text) + "," + balayer.MySQLEscapeString(txtAmount.Text) + "," + ddlChitGroup.SelectedItem.Value + ")");
+
+                long insertCmd = trn.insertorupdateTrn("update groupmaster set PSOOrderNo='"+ balayer.MySQLEscapeString(txtpso_order_no.Text) + "',PSOOrderDate='"+ balayer.indiandateToMysqlDate(txtpso_order_date.Text) + "',PSODROffice='"+ balayer.MySQLEscapeString(txtpso_dr_office.Text) + "',`SDP_FDRNO`="+ balayer.MySQLEscapeString(txtSDPFDR.Text) + ",`SDP_Bank`='"+ balayer.MySQLEscapeString(txtSDP_bank.Text) + "',`SDP_BankPlace`='"+ balayer.MySQLEscapeString(txtsdpbankPlace.Text) + "',`SDP_Commencement`='"+ balayer.indiandateToMysqlDate(txtsdpComm.Text) + "',`SDP_Maturity`='"+ balayer.indiandateToMysqlDate(txtsdpMatur.Text) + "',`SDP_RateofInterest`="+ balayer.MySQLEscapeString(txtInterest.Text) + ",`SDP_PeriodinMonths`="+ balayer.MySQLEscapeString(txtPeriodMonths.Text) + ",`SDP_Amount`="+ balayer.MySQLEscapeString(txtAmount.Text) + " where Head_Id="+ddlChitGroup.SelectedItem.Value+" ");
+
+
+                //string MemIDTab = balayer.GetSingleValue("select MemberIDNew from membermaster where  BranchID=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + "");
+                
+
+
+                
+            
+                ModalPopupExtender2.PopupControlID = "Pnlmsg";
+                this.ModalPopupExtender2.Show();
+                Pnlmsg.Visible = true;
+                lblT.Text = "Status";
+                lblContent.Text = "Group : " + ddlChitGroup.SelectedItem.Text + " inserted Successfully";
+                lblContent.ForeColor = System.Drawing.Color.Green;
+                trn.CommitTrn();
+                logger.Info("groups.aspx - btnaddGroup_Click():  Completed: " + DateTime.Now + " by: " + Convert.ToString(Session["UserName"]) + "");
+            }
+            catch (Exception error)
+            {
+                try
+                {
+                    trn.RollbackTrn();
+                    logger.Info("groups.aspx - btnaddGroup_Click():  Error:" + error.Message + ": " + DateTime.Now + " by: " + Convert.ToString(Session["UserName"]) + "");
+                }
+                catch { }
+                finally
+                {
+                    ScriptManager.RegisterStartupScript(this, GetType(), "Warning", "alert('" + error.Message.ToString().Replace("'", "\\'") + "');", true);
+                }
+            }
+            finally
+            {
+
+                trn.DisposeTrn();
+            }
+        }
+        protected void IndianDateValidator_ServerValidate(object sender, ServerValidateEventArgs e)
+        {
+            DateTime d;
+            e.IsValid = DateTime.TryParseExact(e.Value, "dd/MM/yyyy", System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out d);
+        }
+
+        protected void clearGroup()
+        {
+            Response.Redirect(Request.Url.AbsolutePath.ToString());
+        }
+
+        protected void BtnCancel_click(object sender, EventArgs e)
+        {
+            clearGroup();
+        }
+    }
+}

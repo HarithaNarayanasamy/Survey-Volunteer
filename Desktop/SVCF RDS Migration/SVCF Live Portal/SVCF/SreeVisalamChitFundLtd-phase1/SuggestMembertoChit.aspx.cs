@@ -1,0 +1,528 @@
+﻿using System;
+using System.Collections;
+using System.Configuration;
+using System.Data;
+using System.Linq;
+using System.Web;
+using System.Web.Security;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+using System.Web.UI.WebControls.WebParts;
+using System.Web.UI.HtmlControls;
+using System.Xml.Linq;
+using SVCF_BusinessAccessLayer;
+using SVCF_DataAccessLayer;
+using SVCF_TransactionLayer;
+using log4net;
+using log4net.Config;
+
+namespace SreeVisalamChitFundLtd_phase1
+{
+    public partial class SuggestMembertoChit : System.Web.UI.Page
+    {
+        #region Object
+        BusinessLayer balayer = new BusinessLayer();
+        TransactionLayer trn = new TransactionLayer();
+        #endregion
+
+        #region declaration
+        string ChitsBranchId = "";
+        #endregion
+
+        ILog logger = log4net.LogManager.GetLogger(typeof(SuggestMembertoChit));
+        protected void Page_PreInit(object sender, EventArgs e)
+        {
+            if (Session["UserName"] == null || Session["Branchid"] == null || Session["BranchName"] == null)
+            {
+                Response.Redirect(Page.ResolveUrl("~/Login.aspx"), true);
+            }
+
+        }
+        protected void GetGroups(string Branchid)
+        {
+            ddlChitGroup.DataSource = null;
+            ddlChitGroup.Items.Clear();
+            ddlChitGroup.DataBind();
+            DataTable dtGroups;
+            if (Branchid == "All")
+            {
+                dtGroups = balayer.GetDataTable("SELECT t1.GroupNo as GroupNo,t1.Head_Id,Count(t2.GroupID) as NoofFilledToken,t1.NoofMembers FROM `groupmaster` as t1 left Join  membertogroupmaster as t2 on   t1.Head_Id=t2.GroupID   Group by t1.Head_Id HAVING Count(t2.GroupID)<>NoofMembers");
+            }
+            else
+            {
+                dtGroups = balayer.GetDataTable("SELECT t1.GroupNo as GroupNo,t1.Head_Id,Count(t2.GroupID) as NoofFilledToken,t1.NoofMembers FROM `groupmaster` as t1 left Join  membertogroupmaster as t2 on   t1.Head_Id=t2.GroupID where t1.`BranchID`=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + "  Group by t1.Head_Id HAVING Count(t2.GroupID)<>NoofMembers");
+            }
+            DataRow dr = dtGroups.NewRow();
+            dr[0] = "--Select--";
+            dr[1] = "0";
+            ddlChitGroup.DataSource = dtGroups;
+            ddlChitGroup.DataTextField = "GROUPNO";
+            ddlChitGroup.DataValueField = "Head_Id";
+            dtGroups.Rows.InsertAt(dr, 0);
+            ddlChitGroup.DataBind();
+            
+        }
+        protected void Getpoolssuggestion()
+        {
+            //string strQuery = "SELECT t2.MemberID,t1.PoolNo  as PoolNo ,t2.CustomerName as  CustomerName , t2.AddressForCommunication as AddressForCommunication FROM `membersuggestion` as t1  left Join membermaster as t2 on t1.MemberID=t2.MemberIDNew ";
+            string strQuery = "SELECT concat(t2.MemberID,'|',t1.PoolNo)  as MemberID , concat( t2.CustomerName,'|', t2.AddressForCommunication) as CustomerName FROM `membersuggestion` as t1  left Join membermaster as t2 on t1.MemberID=t2.MemberIDNew";
+            DataTable dt = balayer.GetDataTable(strQuery);
+            //for (int i = 0; i < dt.Rows.Count; i++)
+            //{
+            //    dt.Rows[i]["CustomerName"] = dt.Rows[i]["CustomerName"].ToString() + "    |  " + dt.Rows[i]["AddressForCommunication"].ToString().Replace("\r", " ").Replace("\t", " ").Replace("\n", " ");
+            //    dt.Rows[i]["MemberID"] = dt.Rows[i]["MemberID"].ToString() + "    |" + dt.Rows[i]["PoolNo"].ToString();
+            //}
+            DataRow dr = dt.NewRow();
+            dr[0] = "--Select--";
+            dr[1] = "--Select--";
+            ddlFindbyName.DataSource = dt;
+            ddlFindbyName.DataTextField = "CustomerName";
+            ddlFindbyName.DataValueField = "MemberID";
+            dt.Rows.InsertAt(dr, 0);
+            ddlFindbyName.DataBind();
+        }
+        protected void GetChitPool(string BranchId)
+        {
+            DataTable dtChitPool;
+            if (BranchId != "All")
+            {
+                dtChitPool = balayer.GetDataTable("SELECT distinct PoolNo FROM `membersuggestion` where BranchID=" +balayer.ToobjectstrEvenNull(Session["Branchid"]) + " order by cast(SUBSTRING_INDEX(PoolNo,'-',-1) as unsigned)");
+            }
+            else
+            {
+                dtChitPool = balayer.GetDataTable("SELECT distinct PoolNo FROM `membersuggestion`  order by cast(SUBSTRING_INDEX(PoolNo,'-',-1) as unsigned)");
+            }
+            ddlChitPool.DataSource = dtChitPool;
+            ddlChitPool.DataTextField = "PoolNo";
+            ddlChitPool.DataValueField = "PoolNo";
+            ddlChitPool.DataBind();
+            ddlChitPool.Items.Insert(0, "New");
+            ddlChitPool.Items.Insert(0, "--Select--");
+        }
+        protected void GetMembers(string BranchId)
+        {
+            DataTable dtmemTab;
+            if (BranchId == "All")
+            {
+                //22/05/2021 - Menaka
+
+                //dtmemTab = balayer.GetDataTable("select concat(CustomerName,'|',`AddressForCommunication`) as CustomerName,MemberIDNew from membermaster where TypeOfMember<>'Foreman' order by CustomerName ");
+                dtmemTab = balayer.GetDataTable("select concat(MemberID, ' | ',replace(CustomerName,'|',''),'|',replace(AddressForCommunication,'|','')) as CustomerName,MemberIDNew from membermaster where TypeOfMember<>'Foreman' order by CustomerName ");
+                DataTable dt = balayer.GetDataTable("select concat(MemberID,'|',CustomerName,'|',`AddressForCommunication`) as CustomerName,MemberIDNew from membermaster where TypeOfMember='Foreman' and BranchId=" + Session["Branchid"] + " order by CustomerName ");
+                ddlMembName.DataSource = dtmemTab;
+                DataRow dr = dtmemTab.NewRow();
+                dr[0] = "--Select--";
+                dr[1] = "0";
+                ddlMembName.DataTextField = "CustomerName";
+                ddlMembName.DataValueField = "MemberIDNew";
+                dtmemTab.Rows.InsertAt(dr, 0);
+                DataRow dr1 = dtmemTab.NewRow();
+                dr1[0] = dt.Rows[0]["CustomerName"];
+                dr1[1] = dt.Rows[0]["MemberIDNew"];
+                dtmemTab.Rows.InsertAt(dr1, 1);
+                ddlMembName.DataBind();
+            }
+            else
+            {
+                //22/05/2021 - Menaka
+                //dtmemTab = balayer.GetDataTable("select concat(CustomerName,'|',`AddressForCommunication`) as CustomerName,MemberIDNew from membermaster where Branchid=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " order by CustomerName ");
+                dtmemTab = balayer.GetDataTable("select concat(MemberID, ' | ',replace(CustomerName,'|',''),'|',replace(AddressForCommunication,'|','')) as CustomerName,MemberIDNew from membermaster where Branchid=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " order by CustomerName ");
+                ddlMembName.DataSource = dtmemTab;
+                DataRow dr = dtmemTab.NewRow();
+                dr[0] = "--Select--";
+                dr[1] = "0";
+                ddlMembName.DataTextField = "CustomerName";
+                ddlMembName.DataValueField = "MemberIDNew";
+                dtmemTab.Rows.InsertAt(dr, 0);
+                ddlMembName.DataBind();
+            }
+            
+        }
+
+        public void LoadbranchList()
+        {
+            ddlBranchName.DataSource = null;
+            DataTable dtgroupno = null;
+            dtgroupno = balayer.GetDataTable("select NodeID,Node from headstree where ParentID=1 and NodeID<>" + Session["Branchid"]);
+            DataRow dr = dtgroupno.NewRow();
+            dr[0] = "0";
+            dr[1] = "--Select--";
+            ddlBranchName.DataValueField = "NodeID";
+            ddlBranchName.DataTextField = "Node";
+            dtgroupno.Rows.InsertAt(dr, 0);
+            ddlBranchName.DataSource = dtgroupno;
+            ddlBranchName.DataBind();
+        }
+
+        protected void chkLoadAll_CheckedChanged(object sender, EventArgs e)
+        {
+            if (ckkLoadAllCommon.Checked == true)
+            {
+                GetChitPool("All");
+                //GetGroups("All");
+                GetGroups(balayer.ToobjectstrEvenNull(Session["Branchid"]));
+                GetMembers("All");
+            }
+            else
+            {
+                GetChitPool(balayer.ToobjectstrEvenNull(Session["Branchid"]) );
+                GetGroups(balayer.ToobjectstrEvenNull(Session["Branchid"]));
+                GetMembers(balayer.ToobjectstrEvenNull(Session["Branchid"]));
+            }
+        }
+        protected void Page_PreRender(object sender, EventArgs e)
+        {
+            ViewState["CheckRefresh"] = Session["CheckRefresh"];
+        }
+        public void getCollector()
+        {
+            // ddlCollectorID = new DropDownList();
+            DataTable dtMC;
+            //string strBranchID = balayer.ToobjectstrEvenNull(balayer.ToobjectstrEvenNull(Session["Branchid"]));
+            string strQuery = "Select moneycollid,concat(moneycollname,'|',`moneycolladdress`) as moneycollname from moneycollector where BranchID=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " order by moneycollname";
+            dtMC = balayer.GetDataTable(strQuery);
+            ddlMoneyCollector.DataSource = dtMC;
+            DataRow dr = dtMC.NewRow();
+            dr[0] = "0";
+            dr[1] = "--Select--";
+            ddlMoneyCollector.DataValueField = "moneycollid";
+            ddlMoneyCollector.DataTextField = "moneycollname";
+            dtMC.Rows.InsertAt(dr, 0);
+            ddlMoneyCollector.DataBind();
+        }
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            if (!IsPostBack)
+            {
+                var userinfo = HttpContext.Current.User.Identity.Name;
+                var qry = "select rs.name from roles as rs inner join rights as rt on (rt.roleid=rs.id) where memberid=" + userinfo + "";
+                var usrRole = balayer.GetSingleValue(qry);
+                if (usrRole == "Report")
+                {
+                    Response.Redirect("Home.aspx", false);
+                }
+
+                Session["CheckRefresh"] = System.Guid.NewGuid().ToString();
+                Getpoolssuggestion();
+                GetGroups(balayer.ToobjectstrEvenNull(Session["Branchid"]));
+                GetChitPool(balayer.ToobjectstrEvenNull(Session["Branchid"]) );
+                GetMembers(balayer.ToobjectstrEvenNull(Session["Branchid"]));
+                getCollector();
+                LoadbranchList();
+            }
+            logger.Info("Suggest Member to Chit - at: " + DateTime.Now);
+        }
+
+        protected void btnSuggest_Click(object sender, EventArgs e)
+        {
+            TransactionLayer trn = new TransactionLayer();
+            Page.Validate("sug");
+            if (Page.IsValid == false)
+            {
+                return;
+            }
+            if (Session["CheckRefresh"].ToString() != ViewState["CheckRefresh"].ToString())
+            {
+                return;
+            }
+            string strQuery = "";
+            ChitsBranchId = balayer.GetSingleValue("SELECT BranchID FROM `groupmaster` where Head_Id=" + ddlChitGroup.SelectedItem.Value);
+            //ChitsBranchId = balayer.GetSingleValue("SELECT BranchID FROM `membermaster` where MemberIDNew=" + ddlMembName.SelectedValue);
+            try
+            {
+                if (ddlBranchName.SelectedItem.Text == "--Select--")
+                {
+             // string chitPool = balayer.ToobjectstrEvenNull(Session["Branchid"]) + "-CP-" + balayer.GetSingleValue("SELECT ifnull(max(cast(SUBSTRING_INDEX(PoolNo,'-',-1) as unsigned)),0)+1 as NextChitPool FROM `membersuggestion` where BranchID='" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + "'");
+
+                    strQuery = "INSERT INTO `membersuggestion`  (`BranchID`,`GroupNo`,`MemberID`,`PoolNo`, `EstSuretyDocument`,`EstCallNoOfAuction`,`M_ID`,`Comments`,`NoofTokens`,`Income`,`SuggestedDate`,`SuggestedBranchId`,`NoofRemainingTokens`) VALUES (" + ChitsBranchId + "," + ddlChitGroup.SelectedValue + "," + ddlMembName.SelectedValue + ",'','" + balayer.MySQLEscapeString(txtEstSuretyDocument.Text) + "','" + balayer.MySQLEscapeString(txtEstCallNoofAuction.Text) + "'," + ddlMoneyCollector.SelectedValue + ",'" + balayer.MySQLEscapeString(txtMcDesc.Text) + "'," + txtNoofTokens.Text + "," + txtIncome.Text + ",'" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "'," + balayer.ToobjectstrEvenNull(Session["Branchid"]) + "," + txtNoofTokens.Text + ")";
+                }
+                else
+                {
+                    strQuery = "INSERT INTO `membersuggestion`  (`BranchID`,`GroupNo`,`MemberID`,`PoolNo`, `EstSuretyDocument`,`EstCallNoOfAuction`,`M_ID`,`Comments`,`NoofTokens`,`Income`,`SuggestedDate`,`SuggestedBranchId`,`NoofRemainingTokens`) VALUES (" + ChitsBranchId + "," + ddlChitGroup.SelectedValue + "," + ddlMembName.SelectedValue + ",'','" + balayer.MySQLEscapeString(txtEstSuretyDocument.Text) + "','" + balayer.MySQLEscapeString(txtEstCallNoofAuction.Text) + "'," + ddlMoneyCollector.SelectedValue + ",'" + balayer.MySQLEscapeString(txtMcDesc.Text) + "'," + txtNoofTokens.Text + "," + txtIncome.Text + ",'" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "'," + ddlBranchName.SelectedValue + "," + txtNoofTokens.Text + ")";
+                }
+                long rt= trn.insertorupdateTrn(strQuery);
+                lblHeading.Text = "Status";
+                lblContent.Text = "You Have successFully Suggested Mr/Ms./Mrs :" + ddlMembName.SelectedItem.Text;
+                lblContent.ForeColor = System.Drawing.Color.Green;
+                mpAll.PopupControlID = "Pnlmsg";
+                Pnlmsg.Visible = true;
+                mpAll.Show();
+                //"select ifnull(max(cast(replace(MemberID,'" +balayer.ToobjectstrEvenNull(Session["Branchid"]) + "-','') as unsigned)) ,0)+1 from membermaster where BranchId='" + balayer.MySQLEscapeString(BranchID) + "'";
+                trn.CommitTrn();
+                logger.Info("SuggesMembertoChit.aspx - btnSuggest_click():  Completed: " + DateTime.Now + " by: " + Convert.ToString(Session["UserName"]) + "");
+            }
+            catch (Exception ex)
+            {
+                try
+                {
+                   trn.RollbackTrn();
+                   logger.Info("SuggesMembertoChit.aspx - btnSuggest_click():  Error: " + ex.Message + ": " + DateTime.Now + " by: " + Convert.ToString(Session["UserName"]) + "");
+                }
+                catch (Exception error)
+                {
+
+                }
+                finally {
+                    ScriptManager.RegisterStartupScript(this, GetType(), "Warning", "alert('" + ex.Message.ToString().Replace("'", "\\'") + "');", true);
+                }
+            }
+            finally
+            {
+                trn.DisposeTrn();
+            }
+        }
+        protected void btn_Yesy_Click(object sender, EventArgs e)
+        {
+            Response.Redirect(Request.Url.AbsolutePath);
+        }
+        protected void Btncan_Click(object sender, EventArgs e)
+        {
+            ddlMembName.ClearSelection();
+            //"select ifnull(max(cast(replace(MemberID,'" +balayer.ToobjectstrEvenNull(Session["Branchid"]) + "-','') as unsigned)) ,0)+1 from membermaster where BranchId='" + balayer.MySQLEscapeString(BranchID) + "'";
+        }
+        protected void btn_col_cancel_click(object sender, EventArgs e)
+        {
+            ddlMoneyCollector.ClearSelection();
+            //"select ifnull(max(cast(replace(MemberID,'" +balayer.ToobjectstrEvenNull(Session["Branchid"]) + "-','') as unsigned)) ,0)+1 from membermaster where BranchId='" + balayer.MySQLEscapeString(BranchID) + "'";
+        }
+        //Btncan_Click
+        protected void btnChoose_click(object sender, EventArgs e)
+        {
+            Button selbtn = (Button)sender;
+            GridViewRow gr = (GridViewRow)selbtn.Parent.Parent;
+            ddlMembName.ClearSelection();
+            ddlMembName.Items.FindByValue(((Label)gvDubName.Rows[gr.RowIndex].FindControl("lblMemberID")).Text).Selected = true ;
+            txtAddress.Text = ((Label)gvDubName.Rows[gr.RowIndex].FindControl("lblMemAddr")).Text;
+            string PoolNo = balayer.GetSingleValue("select PoolNo from membersuggestion where MemberID='" + ddlMembName.SelectedValue + "'");
+            if (!string.IsNullOrEmpty(PoolNo))
+            {
+                ckkLoadAllCommon.Checked = true;
+                string prevselection = ddlMembName.SelectedValue;
+                GetChitPool("All");
+                GetMembers(balayer.ToobjectstrEvenNull(Session["Branchid"]));
+                getCollector();
+                ddlMembName.ClearSelection();
+                ddlMembName.Items.FindByValue(prevselection).Selected = true;
+                ddlChitPool.ClearSelection();
+                ddlChitPool.Items.FindByText(PoolNo).Selected = true;
+                ddlMoneyCollector.ClearSelection();
+                ddlChitPool.Enabled = false;
+                //ddlChitPool.ClearSelection();
+                //ddlChitPool.Items.FindByText(PoolNo).Selected = true;
+                //ddlChitPool.Enabled = false;
+            }
+        }
+        protected void btnChooseMC_click(object sender, EventArgs e)
+        {
+            Button selbtn = (Button)sender;
+            GridViewRow gr = (GridViewRow)selbtn.Parent.Parent;
+            ddlMoneyCollector.ClearSelection();
+            ddlMoneyCollector.Items.FindByValue(((Label)gvMCDub.Rows[gr.RowIndex].FindControl("lblcollectorid")).Text).Selected = true;
+            //txtAddress.Text = ((Label)gvDubName.Rows[gr.RowIndex].FindControl("lblMemAddr")).Text;
+            //string PoolNo = balayer.GetSingleValue("select PoolNo from membersuggestion where MemberID='" + ddlMembName.SelectedValue + "'");
+            //if (!string.IsNullOrEmpty(PoolNo))
+            //{
+            //    ddlChitPool.Items.FindByText(PoolNo).Selected = true;
+            //    ddlChitPool.Enabled = false;
+            //}
+        }
+        //lbFindpool_Click
+        protected void ddlFindbyName_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            ddlChitPool.Enabled = true;
+            ddlChitPool.ClearSelection();
+            if (ddlFindbyName.SelectedValue == "--Select--")
+            {
+                return;
+            }
+            if (ddlChitPool.Items.FindByValue(ddlFindbyName.SelectedValue.Split('|')[1]) != null)
+            {
+                ddlChitPool.Items.FindByValue(ddlFindbyName.SelectedValue.Split('|')[1]).Selected = true;
+            }
+            else
+            {
+                string prevselection = ddlMembName.SelectedValue;
+                GetChitPool("All");
+                GetMembers(balayer.ToobjectstrEvenNull(Session["Branchid"]));
+                getCollector();
+                ddlMembName.ClearSelection();
+                ddlMembName.Items.FindByValue(prevselection).Selected = true;
+                ddlChitPool.ClearSelection();
+                ddlChitPool.Items.FindByText(ddlFindbyName.SelectedValue.Split('|')[1]).Selected = true;
+                ddlMoneyCollector.ClearSelection();
+            }
+        }
+        protected void lbFindpool_Click(object sender, EventArgs e)
+        {
+            if (ddlFindbyName.Visible == false)
+            {
+                lbFindbyName.Text = "Hide Relations";
+                ddlFindbyName.Visible = true;
+            }
+            else
+            {
+                lbFindbyName.Text = "Show Relations";
+                ddlFindbyName.Visible = false ;
+            }
+        }
+        protected void ddlMoneyCollector_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            bool isDuplicate = false;
+            if (ddlMoneyCollector.SelectedIndex >= 1 & ddlMoneyCollector.SelectedIndex != (ddlMoneyCollector.Items.Count - 1))
+            {
+                string prevName = ddlMoneyCollector.Items[ddlMoneyCollector.SelectedIndex - 1].Text;
+                string nextName = ddlMoneyCollector.Items[ddlMoneyCollector.SelectedIndex + 1].Text;
+                if (ddlMoneyCollector.SelectedItem.Text == prevName || ddlMoneyCollector.SelectedItem.Text == nextName)
+                {
+                    isDuplicate = true;
+                }
+            }
+            else
+                if (ddlMoneyCollector.SelectedIndex == 0)
+                {
+                    string nextName = ddlMoneyCollector.Items[ddlMoneyCollector.SelectedIndex + 1].Text;
+                    if (ddlMoneyCollector.SelectedItem.Text == nextName)
+                    {
+                        isDuplicate = true;
+                    }
+                }
+                else
+                    if (ddlMoneyCollector.SelectedIndex == ddlMoneyCollector.Items.Count - 1)
+                    {
+                        string prevName = ddlMoneyCollector.Items[ddlMoneyCollector.SelectedIndex - 1].Text;
+                        // string nextName = ddlMembName.Items[ddlMembNameSelectedIndex + 1].Text;
+                        if (ddlMoneyCollector.SelectedItem.Text == prevName)
+                        {
+                            isDuplicate = true;
+                        }
+                    }
+            //if (isDuplicate == false)
+            //{
+            //    string PoolNo = balayer.GetSingleValue("select PoolNo from membersuggestion where MemberID='" + ddlMembName.SelectedValue + "'");
+            //    if (!string.IsNullOrEmpty(PoolNo))
+            //    {
+            //        ddlChitPool.Items.FindByText(PoolNo).Selected = true;
+            //        ddlChitPool.Enabled = false;
+            //    }
+            //    txtAddress.Text = balayer.GetSingleValue("select AddressForCommunication from membermaster where MemberID='" + ddlMembName .SelectedValue+ "'");
+            //}
+            if ( isDuplicate == true )
+            {
+                //string memdet = "select MemberID,CustomerName,AddressForCommunication from membermaster where CustomerName='" + balayer.MySQLEscapeString(balayer.ToobjectstrEvenNull(ddlMembName.SelectedItem)) + "'";
+                //DataTable dtMC = balayer.GetDataTable("Select * from moneycollector where moneycollname='" + ddlCollectorID.SelectedItem.Text + "'");
+                DataTable dtMC = balayer.GetDataTable("Select * from moneycollector where moneycollname='" + ddlMoneyCollector.SelectedItem.Text + "'");
+                //DataTable memdetTab = balayer.GetDataTable(memdet);
+                gvMCDub.Visible = true;
+                gvMCDub.DataSource = dtMC;
+                gvMCDub.DataBind();
+                mpAll.PopupControlID = "pnlMCDub";
+                mpAll.Show();
+                pnlMCDub.Visible = true;
+            }
+        }
+        protected void ddlMembName_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            ddlChitPool.ClearSelection();
+            ddlChitPool.Enabled = true;
+            bool isDuplicate = false;
+            if (ddlMembName.SelectedIndex >= 1 & ddlMembName.SelectedIndex != (ddlMembName.Items.Count - 1))
+            {
+                string prevName = ddlMembName.Items[ddlMembName.SelectedIndex - 1].Text;
+                string nextName = ddlMembName.Items[ddlMembName.SelectedIndex + 1].Text;
+                if (ddlMembName.SelectedItem.Text == prevName || ddlMembName.SelectedItem.Text == nextName)
+                {
+                    isDuplicate = true;
+                }
+            }
+            else
+                if (ddlMembName.SelectedIndex == 0)
+                {
+                    string nextName = ddlMembName.Items[ddlMembName.SelectedIndex + 1].Text;
+                    if ( ddlMembName.SelectedItem.Text == nextName)
+                    {
+                        isDuplicate = true;
+                    }
+                }
+                else
+                    if (ddlMembName.SelectedIndex == ddlMembName.Items.Count - 1)
+                    {
+                        string prevName = ddlMembName.Items[ddlMembName.SelectedIndex - 1].Text;
+                        // string nextName = ddlMembName.Items[ddlMembNameSelectedIndex + 1].Text;
+                        if (ddlMembName.SelectedItem.Text == prevName )
+                        {
+                            isDuplicate = true;
+                        }
+                    }
+            if (isDuplicate == false)
+            {
+                string PoolNo = balayer.GetSingleValue("select PoolNo from membersuggestion where MemberID='" + ddlMembName.SelectedValue + "'");
+                if (!string.IsNullOrEmpty(PoolNo))
+                {
+                    ddlChitPool.ClearSelection();
+                    if (ddlChitPool.Items.FindByText(PoolNo) != null)
+                    {
+                        ddlChitPool.Items.FindByText(PoolNo).Selected = true;
+                    }
+                    else
+                    {
+                        ckkLoadAllCommon.Checked = true;
+                        string prevselection = ddlMembName.SelectedValue;
+                        GetChitPool("All");
+                        GetMembers("All");
+                        //getCollector();
+                        ddlMembName.ClearSelection();
+                        ddlMembName.Items.FindByValue(prevselection).Selected = true;
+                        ddlChitPool.ClearSelection();
+                        ddlChitPool.Items.FindByText(PoolNo).Selected = true;
+                        ddlMoneyCollector.ClearSelection();
+                    }
+                    ddlChitPool.Enabled = false;
+                }
+                txtAddress.Text = balayer.GetSingleValue("select AddressForCommunication from membermaster where MemberID='" + ddlMembName .SelectedValue + "'");
+                txtIncome.Text = balayer.GetSingleValue("select MonthlyIncome from membermaster where MemberIDNew=" + ddlMembName.SelectedValue);
+            }
+            else
+            {
+                string memdet = "select MemberID,CustomerName,AddressForCommunication from membermaster where CustomerName='" + balayer.MySQLEscapeString(balayer.ToobjectstrEvenNull(ddlMembName.SelectedItem)) + "'";
+                DataTable memdetTab = balayer.GetDataTable(memdet);
+                gvDubName.Visible = true;
+                gvDubName.DataSource = memdetTab;
+                gvDubName.DataBind();
+                mpAll.PopupControlID = "pandupName";
+                mpAll.Show();
+                pandupName.Visible = true;
+            }
+        }
+
+        protected void ddlBranchName_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            ddlMembName.DataSource = null;
+            DataTable dtmember=null;
+            //29/05/2021 -Bala
+            //dtmember = balayer.GetDataTable("select concat(CustomerName,'|',`AddressForCommunication`) as CustomerName,MemberIDNew from membermaster where Branchid=" + ddlBranchName.SelectedValue + " order by CustomerName ");
+            dtmember = balayer.GetDataTable("select concat(MemberID,'|',CustomerName,'|',`AddressForCommunication`) as CustomerName,MemberIDNew from membermaster where Branchid=" + ddlBranchName.SelectedValue + " order by CustomerName ");
+            ddlMembName.DataSource = dtmember;
+            DataRow dr = dtmember.NewRow();
+            dr[0] = "--Select--";
+            dr[1] = "0";
+            ddlMembName.DataTextField = "CustomerName";
+            ddlMembName.DataValueField = "MemberIDNew";
+            dtmember.Rows.InsertAt(dr, 0);
+            ddlMembName.DataBind();
+
+            //Load Money Collector list for that branch
+            DataTable dtMC;
+            //string strBranchID = balayer.ToobjectstrEvenNull(balayer.ToobjectstrEvenNull(Session["Branchid"]));
+            string strQuery = "Select moneycollid,concat(moneycollname,'|',`moneycolladdress`) as moneycollname from moneycollector where BranchID=" + ddlBranchName.SelectedValue + " order by moneycollname";
+            dtMC = balayer.GetDataTable(strQuery);
+            ddlMoneyCollector.DataSource = dtMC;
+            DataRow dr1 = dtMC.NewRow();
+            dr1[0] = "0";
+            dr1[1] = "--Select--";
+            ddlMoneyCollector.DataValueField = "moneycollid";
+            ddlMoneyCollector.DataTextField = "moneycollname";
+            dtMC.Rows.InsertAt(dr1, 0);
+            ddlMoneyCollector.DataBind();
+        }
+    }
+}

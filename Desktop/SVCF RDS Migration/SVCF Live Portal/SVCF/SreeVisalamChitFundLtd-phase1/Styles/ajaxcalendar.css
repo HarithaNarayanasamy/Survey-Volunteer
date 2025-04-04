@@ -1,0 +1,167 @@
+﻿ .ajax__calendar_container
+        {
+            background-color: #fff;
+            border: solid 1px #a6c9e2 !important;
+        }
+        .ajax__calendar_header
+        {
+            background-color: #87b6d9;
+            margin-bottom: 5px;
+        }
+        .ajax__calendar_prev
+        {
+        }
+        .ajax__calendar_title
+        {
+            height: 20px;
+            color: #fff;
+            line-height: 1.7em;
+        }
+        .ajax__calendar_hover .ajax__calendar_title
+        {
+            color: #eee !important;
+        }
+        .ajax__calendar_next
+        {
+        }
+        .ajax__calendar_prev, .ajax__calendar_next
+        {
+            background-color: #dce6f4;
+            height: 20px !important;
+            color: #fff !important;
+        }
+        .ajax__calendar_body
+        {
+        }
+        .ajax__calendar_days
+        {
+        }
+        .breadcrumb
+        {
+            margin-bottom: -.9em !important;
+        }
+        .ajax__calendar_days table thead tr td
+        {
+            background-color: #fff;
+            color: #000;
+            font-weight: bold;
+        }
+        .ajax__calendar_dayname
+        {
+            border: 0 !important;
+        }
+        .ajax__calendar_day
+        {
+            border: 1px solid #c5dbec !important;
+            background: #eaf4fd;
+            margin: 1px !important;
+            height: 15px !important;
+            width: 16px !important;
+        }
+        .ajax__calendar_months
+        {
+        }
+        .ajax__calendar_month
+        {
+        }
+        .ajax__calendar_month, .ajax__calendar_day
+        {
+            color: #2e6e9e;
+            font-weight: bold;
+        }
+        .ajax__calendar_years
+        {
+        }
+        .ajax__calendar_year
+        {
+        }
+        .ajax__calendar_footer
+        {
+            border-top: 1px solid #c5dbec !important;
+            line-height: 1.2em;
+        }
+        .ajax__calendar_today
+        {
+            border: 1px solid #c5dbec;
+            background-color: #e1effb;
+        }
+        .ajax__calendar_hover
+        {
+        }
+        td.ajax__calendar_hover div
+        {
+            background: #d2e6f5 !important;
+            border: 1px solid #79b7e7 !important;
+        }
+        .ajax__calendar_active
+        {
+        }
+        td.ajax__calendar_active div
+        {
+            background: #fbec88 !important;
+            border: 1px solid #fad42e !important;
+        }
+        .ajax__calendar_other
+        {
+        }
+        .ajax__calendar_other .ajax__calendar_day
+        {
+            font-weight: normal !important;
+            color: #bbb !important;
+            border: 1px solid #eee !important;
+        }
+        .ajax__calendar_hover.ajax__calendar_other .ajax__calendar_day
+        {
+            background: #efefef !important;
+            color: #aaa !important;
+            border: 1px solid #ddd !important;
+        }
+        .dxpcCloseButtonHover_MBlueDX img
+        {
+            background-position: -157px -108px;
+        }
+        .ajaxcalendar .ajax__calendar_container
+        {
+            background-color: #e2e2e2;
+            border: solid 1px #cccccc;
+        }
+        .ajaxcalendar .ajax__calendar_header
+        {
+            background-color: #ffffff;
+            margin-bottom: 4px;
+        }
+        .ajaxcalendar .ajax__calendar_title, .ajaxcalendar .ajax__calendar_next, .ajaxcalendar .ajax__calendar_prev
+        {
+            color: #004080;
+            padding-top: 3px;
+        }
+        .ajaxcalendar .ajax__calendar_body
+        {
+            background-color: #e9e9e9;
+            border: solid 1px #cccccc;
+        }
+        .ajaxcalendar .ajax__calendar_dayname
+        {
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 4px;
+            margin-top: 2px;
+        }
+        .ajaxcalendar .ajax__calendar_day
+        {
+            text-align: center;
+        }
+        .ajaxcalendar .ajax__calendar_hover .ajax__calendar_day, .ajaxcalendar .ajax__calendar_hover .ajax__calendar_month, .ajaxcalendar .ajax__calendar_hover .ajax__calendar_year, .ajaxcalendar .ajax__calendar_active
+        {
+            color: #004080;
+            font-weight: bold;
+            background-color: #ffffff;
+        }
+        .ajaxcalendar .ajax__calendar_today
+        {
+            font-weight: bold;
+        }
+        .ajaxcalendar .ajax__calendar_other, .ajaxcalendar .ajax__calendar_hover .ajax__calendar_today, .ajaxcalendar .ajax__calendar_hover .ajax__calendar_title
+        {
+            color: #bbbbbb;
+        }

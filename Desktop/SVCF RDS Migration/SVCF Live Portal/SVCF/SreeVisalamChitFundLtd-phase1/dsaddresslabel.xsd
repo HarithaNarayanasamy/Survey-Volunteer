@@ -1,0 +1,148 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="dsaddresslabel" targetNamespace="http://tempuri.org/dsaddresslabel.xsd" xmlns:mstns="http://tempuri.org/dsaddresslabel.xsd" xmlns="http://tempuri.org/dsaddresslabel.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:msprop="urn:schemas-microsoft-com:xml-msprop" attributeFormDefault="qualified" elementFormDefault="qualified">
+  <xs:annotation>
+    <xs:appinfo source="urn:schemas-microsoft-com:xml-msdatasource">
+      <DataSource DefaultConnectionIndex="0" FunctionsComponentName="QueriesTableAdapter" Modifier="AutoLayout, AnsiClass, Class, Public" SchemaSerializationMode="IncludeSchema" xmlns="urn:schemas-microsoft-com:xml-msdatasource">
+        <Connections>
+          <Connection AppSettingsObjectName="Web.config" AppSettingsPropertyName="svcfConnectionString2" ConnectionStringObject="" IsAppSettingsProperty="true" Modifier="Assembly" Name="svcfConnectionString2 (Web.config)" ParameterPrefix="@" PropertyReference="AppConfig.System.Configuration.ConfigurationManager.0.ConnectionStrings.svcfConnectionString2.ConnectionString" Provider="MySql.Data.MySqlClient" />
+        </Connections>
+        <Tables>
+          <TableAdapter BaseClass="System.ComponentModel.Component" DataAccessorModifier="AutoLayout, AnsiClass, Class, Public" DataAccessorName="view_membertogroupmasterTableAdapter" GeneratorDataComponentClassName="view_membertogroupmasterTableAdapter" Name="view_membertogroupmaster" UserDataComponentName="view_membertogroupmasterTableAdapter">
+            <MainSource>
+              <DbSource ConnectionRef="svcfConnectionString2 (Web.config)" DbObjectName="svcf.view_membertogroupmaster" DbObjectType="View" FillMethodModifier="Public" FillMethodName="Fill" GenerateMethods="Both" GenerateShortCommands="false" GeneratorGetMethodName="GetData" GeneratorSourceName="Fill" GetMethodModifier="Public" GetMethodName="GetData" QueryType="Rowset" ScalarCallRetval="System.Object, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" UseOptimisticConcurrency="false" UserGetMethodName="GetData" UserSourceName="Fill">
+                <SelectCommand>
+                  <DbCommand CommandType="Text" ModifiedByUser="false">
+                    <CommandText>SELECT `SlNo`, `BranchID`, `MemberName`, `MemberID`, `MemberAddress`, `GroupID`, `GrpMemberID`, `NomineeName`, `NomineeAddress`, `Nocard`, `Isremoved`, `M_Id`, `Head_Id`, `EstCallNoOfAuction`, `EstSuretyDocument`, `PoolNo` FROM `view_membertogroupmaster`</CommandText>
+                    <Parameters />
+                  </DbCommand>
+                </SelectCommand>
+              </DbSource>
+            </MainSource>
+            <Mappings>
+              <Mapping SourceColumn="SlNo" DataSetColumn="SlNo" />
+              <Mapping SourceColumn="BranchID" DataSetColumn="BranchID" />
+              <Mapping SourceColumn="MemberName" DataSetColumn="MemberName" />
+              <Mapping SourceColumn="MemberID" DataSetColumn="MemberID" />
+              <Mapping SourceColumn="MemberAddress" DataSetColumn="MemberAddress" />
+              <Mapping SourceColumn="GroupID" DataSetColumn="GroupID" />
+              <Mapping SourceColumn="GrpMemberID" DataSetColumn="GrpMemberID" />
+              <Mapping SourceColumn="NomineeName" DataSetColumn="NomineeName" />
+              <Mapping SourceColumn="NomineeAddress" DataSetColumn="NomineeAddress" />
+              <Mapping SourceColumn="Nocard" DataSetColumn="Nocard" />
+              <Mapping SourceColumn="Isremoved" DataSetColumn="Isremoved" />
+              <Mapping SourceColumn="M_Id" DataSetColumn="M_Id" />
+              <Mapping SourceColumn="Head_Id" DataSetColumn="Head_Id" />
+              <Mapping SourceColumn="EstCallNoOfAuction" DataSetColumn="EstCallNoOfAuction" />
+              <Mapping SourceColumn="EstSuretyDocument" DataSetColumn="EstSuretyDocument" />
+              <Mapping SourceColumn="PoolNo" DataSetColumn="PoolNo" />
+            </Mappings>
+            <Sources />
+          </TableAdapter>
+        </Tables>
+        <Sources />
+      </DataSource>
+    </xs:appinfo>
+  </xs:annotation>
+  <xs:element name="dsaddresslabel" msdata:IsDataSet="true" msdata:UseCurrentLocale="true" msprop:Generator_DataSetName="dsaddresslabel" msprop:Generator_UserDSName="dsaddresslabel" msprop:EnableTableAdapterManager="true">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="view_membertogroupmaster" msprop:Generator_UserTableName="view_membertogroupmaster" msprop:Generator_RowDeletedName="view_membertogroupmasterRowDeleted" msprop:Generator_TableClassName="view_membertogroupmasterDataTable" msprop:Generator_RowChangedName="view_membertogroupmasterRowChanged" msprop:Generator_RowClassName="view_membertogroupmasterRow" msprop:Generator_RowChangingName="view_membertogroupmasterRowChanging" msprop:Generator_RowEvArgName="view_membertogroupmasterRowChangeEvent" msprop:Generator_RowEvHandlerName="view_membertogroupmasterRowChangeEventHandler" msprop:Generator_TablePropName="view_membertogroupmaster" msprop:Generator_TableVarName="tableview_membertogroupmaster" msprop:Generator_RowDeletingName="view_membertogroupmasterRowDeleting">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="SlNo" msdata:AutoIncrement="true" msdata:AutoIncrementSeed="-1" msdata:AutoIncrementStep="-1" msprop:Generator_UserColumnName="SlNo" msprop:Generator_ColumnPropNameInRow="SlNo" msprop:Generator_ColumnVarNameInTable="columnSlNo" msprop:Generator_ColumnPropNameInTable="SlNoColumn" type="xs:int" />
+              <xs:element name="BranchID" msprop:Generator_UserColumnName="BranchID" msprop:Generator_ColumnPropNameInRow="BranchID" msprop:Generator_ColumnVarNameInTable="columnBranchID" msprop:Generator_ColumnPropNameInTable="BranchIDColumn" type="xs:int" minOccurs="0" />
+              <xs:element name="MemberName" msprop:Generator_UserColumnName="MemberName" msprop:Generator_ColumnPropNameInRow="MemberName" msprop:Generator_ColumnVarNameInTable="columnMemberName" msprop:Generator_ColumnPropNameInTable="MemberNameColumn" minOccurs="0">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="100" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="MemberID" msprop:Generator_UserColumnName="MemberID" msprop:Generator_ColumnPropNameInRow="MemberID" msprop:Generator_ColumnVarNameInTable="columnMemberID" msprop:Generator_ColumnPropNameInTable="MemberIDColumn" minOccurs="0">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="13" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="MemberAddress" msprop:Generator_UserColumnName="MemberAddress" msprop:Generator_ColumnPropNameInRow="MemberAddress" msprop:Generator_ColumnVarNameInTable="columnMemberAddress" msprop:Generator_ColumnPropNameInTable="MemberAddressColumn" minOccurs="0">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="300" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="GroupID" msprop:Generator_UserColumnName="GroupID" msprop:Generator_ColumnPropNameInRow="GroupID" msprop:Generator_ColumnVarNameInTable="columnGroupID" msprop:Generator_ColumnPropNameInTable="GroupIDColumn" minOccurs="0">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="13" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="GrpMemberID" msprop:Generator_UserColumnName="GrpMemberID" msprop:Generator_ColumnPropNameInRow="GrpMemberID" msprop:Generator_ColumnVarNameInTable="columnGrpMemberID" msprop:Generator_ColumnPropNameInTable="GrpMemberIDColumn" minOccurs="0">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="13" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="NomineeName" msprop:Generator_UserColumnName="NomineeName" msprop:Generator_ColumnPropNameInRow="NomineeName" msprop:Generator_ColumnVarNameInTable="columnNomineeName" msprop:Generator_ColumnPropNameInTable="NomineeNameColumn" minOccurs="0">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="100" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="NomineeAddress" msprop:Generator_UserColumnName="NomineeAddress" msprop:Generator_ColumnPropNameInRow="NomineeAddress" msprop:Generator_ColumnVarNameInTable="columnNomineeAddress" msprop:Generator_ColumnPropNameInTable="NomineeAddressColumn" minOccurs="0">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="300" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="Nocard" msprop:Generator_UserColumnName="Nocard" msprop:Generator_ColumnPropNameInRow="Nocard" msprop:Generator_ColumnVarNameInTable="columnNocard" msprop:Generator_ColumnPropNameInTable="NocardColumn" minOccurs="0">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="3" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="Isremoved" msprop:Generator_UserColumnName="Isremoved" msprop:Generator_ColumnPropNameInRow="Isremoved" msprop:Generator_ColumnVarNameInTable="columnIsremoved" msprop:Generator_ColumnPropNameInTable="IsremovedColumn" type="xs:byte" />
+              <xs:element name="M_Id" msprop:Generator_UserColumnName="M_Id" msprop:Generator_ColumnPropNameInRow="M_Id" msprop:Generator_ColumnVarNameInTable="columnM_Id" msprop:Generator_ColumnPropNameInTable="M_IdColumn" minOccurs="0">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="20" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="Head_Id" msprop:Generator_UserColumnName="Head_Id" msprop:Generator_ColumnPropNameInRow="Head_Id" msprop:Generator_ColumnVarNameInTable="columnHead_Id" msprop:Generator_ColumnPropNameInTable="Head_IdColumn" type="xs:int" minOccurs="0" />
+              <xs:element name="EstCallNoOfAuction" msprop:Generator_UserColumnName="EstCallNoOfAuction" msprop:Generator_ColumnPropNameInRow="EstCallNoOfAuction" msprop:Generator_ColumnVarNameInTable="columnEstCallNoOfAuction" msprop:Generator_ColumnPropNameInTable="EstCallNoOfAuctionColumn" type="xs:int" minOccurs="0" />
+              <xs:element name="EstSuretyDocument" msprop:Generator_UserColumnName="EstSuretyDocument" msprop:Generator_ColumnPropNameInRow="EstSuretyDocument" msprop:Generator_ColumnVarNameInTable="columnEstSuretyDocument" msprop:Generator_ColumnPropNameInTable="EstSuretyDocumentColumn" minOccurs="0">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="200" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+              <xs:element name="PoolNo" msprop:Generator_UserColumnName="PoolNo" msprop:Generator_ColumnPropNameInRow="PoolNo" msprop:Generator_ColumnVarNameInTable="columnPoolNo" msprop:Generator_ColumnPropNameInTable="PoolNoColumn" minOccurs="0">
+                <xs:simpleType>
+                  <xs:restriction base="xs:string">
+                    <xs:maxLength value="45" />
+                  </xs:restriction>
+                </xs:simpleType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
+    </xs:complexType>
+    <xs:unique name="Constraint1">
+      <xs:selector xpath=".//mstns:view_membertogroupmaster" />
+      <xs:field xpath="mstns:GrpMemberID" />
+    </xs:unique>
+    <xs:unique name="Constraint2" msdata:PrimaryKey="true">
+      <xs:selector xpath=".//mstns:view_membertogroupmaster" />
+      <xs:field xpath="mstns:SlNo" />
+    </xs:unique>
+  </xs:element>
+</xs:schema>

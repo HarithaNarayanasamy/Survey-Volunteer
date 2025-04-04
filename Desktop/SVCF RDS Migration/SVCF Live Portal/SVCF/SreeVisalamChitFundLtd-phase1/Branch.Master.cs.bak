@@ -1,0 +1,312 @@
+﻿using System;
+using System.Collections;
+using System.Configuration;
+using System.Data;
+using System.Linq;
+using System.Web;
+using System.Web.Security;
+using System.Web.UI;
+using System.Web.UI.HtmlControls;
+using System.Web.UI.WebControls;
+using System.Web.UI.WebControls.WebParts;
+using System.Xml.Linq;
+using SVCF_BusinessAccessLayer;
+using SVCF_TransactionLayer;
+using SVCF_DataAccessLayer;
+namespace SreeVisalamChitFundLtd_phase1
+{
+    public partial class Branch : System.Web.UI.MasterPage
+    {
+        //CommonClassFile objcls = new CommonClassFile();
+        #region VarDeclaration
+        BusinessLayer balayer = new BusinessLayer();
+        TransactionLayer tranlayer = new TransactionLayer();
+
+        #endregion
+
+        protected DataTable GetData(int iFlag)
+        {
+            return balayer.GetDataTable("SELECT t2.Node as BranchName,(case when(Trans_Medium=0) then 'Cash' else 'Cheque' end) as Type, date_format( t1.ChoosenDate,'%d/%m/%Y') as ChoosenDate,t1.Amount,t1.Narration as Description,insertkey_from_bin(t1.DualTransactionKey) as DualTransactionKey,t1.BranchID as CollectedBranchID,t1.Voucher_Type FROM `svcf`.`voucher` as t1 left join headstree as t2  on  t1.BranchID=t2.NodeID  where t1.Voucher_Type='D' and t1.Other_Trans_Type=1 and t1.Head_Id=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + "");
+        }
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            try
+            {
+                #region Notification
+                string str = string.Empty;
+                int len = 0;
+                string text;
+                string font;
+                string colorName;
+                System.Drawing.Color color;
+                var query = "select * from notifications where Active=1";
+                var messages = balayer.GetDataTable(query);
+                if (messages.Rows.Count > 0)
+                {
+                    //for (int i = 0; i < messages.Rows.Count; i++)
+                    //{
+                    //    if (string.IsNullOrEmpty(str))
+                    //    {
+                    //        //str = messages.Rows[i].ToString();
+                    //        str = messages.Rows[i]["Message"].ToString();
+                    //    }
+                    //    else
+                    //    {
+                    //        str = str + "." + messages.Rows[i]["Message"].ToString();
+                    //    }
+                    try
+                    {
+                        Literal lit = new Literal();
+                        lit.Text = "<MARQUEE OnMouseOver='this.stop();' OnMouseOut='this.start();'>";
+                        Literal lit1 = new Literal();
+                        lit1.Text= "</MARQUEE>";
+                        panel1.Controls.Add(lit);
+                        for (int i = 0; i < messages.Rows.Count; i++)
+                        {
+                            Label lblMessage = new Label();
+                            font = messages.Rows[i]["Font"].ToString();
+                            colorName = messages.Rows[i]["Color"].ToString();
+                            color = System.Drawing.Color.FromName(colorName);
+                            //lblMessage.Text = messages.Rows[i]["Message"].ToString();
+                            str = messages.Rows[i]["Message"].ToString();
+                            lblMessage.ForeColor = color;
+                            if (font == "Tamil")
+                                lblMessage.Font.Name = "Bamini";
+                            //text = "<MARQUEE OnMouseOver='this.stop();' OnMouseOut='this.start();'>" + str + "</MARQUEE>";
+                            lblMessage.Text = str;
+                            lblMessage.CssClass = "ScrollLabel";
+                           
+                            panel1.Controls.Add(lblMessage);
+                        }
+                        panel1.Controls.Add(lit1);
+                    }
+                    catch(Exception ex)
+                    { }
+                    //text = "<MARQUEE OnMouseOver='this.stop();' OnMouseOut='this.start();'>" + str + "</MARQUEE>";
+                    //lblScroll.Text = text;
+                }
+                #endregion
+                //lblBranchName.Text = CommonClassFile.BranchName;
+                lblUserName.Text = balayer.ToobjectstrEvenNull(Session["UserName"]);
+                lblBranchName.Text = balayer.ToobjectstrEvenNull(Session["BranchName"]);
+
+                int branch = Convert.ToInt32(Session["Branchid"]);
+
+                //if (lblBranchName.Text != "Pallathur")
+                //{
+                //    palaccounts.Visible = false;
+                //}
+                var userinfo = HttpContext.Current.User.Identity.Name;
+                var qry = "select rs.name from roles as rs inner join rights as rt on (rt.roleid=rs.id) where memberid=" + userinfo + "";
+                var usrRole = balayer.GetSingleValue(qry);
+                if (usrRole == "Report")
+                {
+                    receiptMenu.Visible = false;
+                    paymentMenu.Visible = false;
+                    v1Menu.Visible = false;
+                    v2Menu.Visible = false;
+                    v3Menu.Visible = false;
+                    v4Menu.Visible = false;
+                    v5Menu.Visible = false;
+                    v6Menu.Visible = false;
+                    v7Menu.Visible = false;
+                    v8Menu.Visible = false;
+                    v9Menu.Visible = false;
+                    v10Menu.Visible = false;
+                    v11Menu.Visible = false;
+                    v12Menu.Visible = false;
+                    v14Menu.Visible = false;
+                    adjustMenu.Visible = false;
+                    suggestMenu.Visible = false;
+                    approvalMenu.Visible = false;
+                    otherMenu.Visible = false;
+                    groupMenu.Visible = false;
+                    chitAddMenu.Visible = false;
+                    chitviewMenu.Visible = false;
+                    auctionMenu.Visible = false;
+                    newGroupMenu.Visible = false;
+                    transferMenu.Visible = false;
+                    removalMenu.Visible = false;
+                    subsAddMenu.Visible = false;
+                    subsEditMenu.Visible = false;
+                    subsMCMenu.Visible = false;
+                    subsPaidMenu.Visible = false;
+                    intimationMenu.Visible = false;
+                    branchMenu.Visible = false;
+                    BCMenu.Visible = false;
+                    empMenu.Visible = false;
+                    bankMenu.Visible = false;
+                    usersMenu.Visible = false;
+                    commiMenu.Visible = false;
+                    headsMenu.Visible = false;
+                    blockMenu.Visible = false;
+
+                }
+
+                if (branch != 161)
+                {
+                    pal1.Visible = false;
+                    pal2.Visible = false;
+                    pal3.Visible = false;
+                    billCollector.Visible = false;
+                    PandL.Visible = false;
+                }
+
+                ReceivedAdvices rv = new ReceivedAdvices();
+
+                DataTable dtAdvises = rv.GetData(1);
+                DataTable dtAdjustments = GetData(1);
+                //DataTable dtPayments = balayer.GetDataTable("select Node from headstree where NodeID in (SELECT ChitNumber FROM svcf.branchpayment where Status=0 and GroupID in (select Head_Id from groupmaster where BranchId=" + Session["Branchid"] + "))");
+                DataTable dtPayments = balayer.GetDataTable("select Node,NodeID,mg.GroupId,mg.Head_ID from headstree join membertogroupmaster as mg on (mg.Head_Id=headstree.NodeID) " +
+                                       "where NodeID in (SELECT ChitNumber FROM svcf.branchpayment where Status=0 and GroupID in (select Head_Id from groupmaster where BranchId=" + Session["Branchid"] + "))");
+
+                datecount.InnerText = dtAdvises.Rows.Count.ToString();
+                count.InnerText = dtAdjustments.Rows.Count.ToString();
+                idcount.InnerText = dtPayments.Rows.Count.ToString();
+                DateTime AprvdDt = System.DateTime.Now;
+
+                DataTable dtApproval = balayer.GetDataTable("select distinct g1.GROUPNO from groupmaster as g1 join membersuggestion as m1 on (m1.GroupNo=g1.Head_Id) where date(m1.ApprovedDate)='" + balayer.GetChangeDatFormat(AprvdDt, 2) + "'");
+                // <div id="ntf_comments_panel1" style="display:none">
+                //        <p class="sticky-title">Group Approval </p>
+                //    <ul class="sticky-list">
+                //       <li runat="server" id="pn1_li1">
+                //            <a href="MembertoGroupApproval.aspx"><asp:Label runat="server" ID="lblmtog1"></asp:Label></a>
+                //        </li>
+                //        <li runat="server" id="pn1_li2">
+                //            <a href="MembertoGroupApproval.aspx"><asp:Label runat="server" ID="lblmtog2"></asp:Label></a>
+                //        </li>
+                //    </ul>
+                //    <a href="MembertoGroupApproval.aspx" class="gh_button btn-small">Show all </a>
+                //</div>
+
+                if (dtApproval.Rows.Count > 0)
+                {
+                    pn1_li1.Visible = true;
+                    lblmtog1.Text = Convert.ToString(dtApproval.Rows[0]["GROUPNO"]);
+                    pn1_li2.Visible = false;
+                }
+                else if (dtApproval.Rows.Count >= 1)
+                {
+                    pn1_li1.Visible = true;
+                    lblmtog1.Text = Convert.ToString(dtApproval.Rows[0]["GROUPNO"]);
+                }
+                else
+                {
+                    pn1_li1.Visible = false;
+                    pn1_li2.Visible = false;
+                }
+
+
+                if (dtAdvises.Rows.Count > 1)
+                {
+                    rv1.Visible = true;
+                    rv2.Visible = true;
+
+                    lblrv1.Text = Convert.ToString(dtAdvises.Rows[0]["Description"]);
+                    lblrv2.Text = Convert.ToString(dtAdvises.Rows[1]["Description"]);
+
+                }
+                else if (dtAdvises.Rows.Count == 1)
+                {
+                    rv1.Visible = true;
+                    lblrv1.Text = Convert.ToString(dtAdvises.Rows[0]["Description"]);
+                    rv2.Visible = false;
+                }
+                else
+                {
+                    rv1.Visible = false;
+                    rv2.Visible = false;
+                }
+
+                if (dtAdjustments.Rows.Count > 1)
+                {
+                    ra1.Visible = true;
+                    rv2.Visible = true;
+
+                    lblra1.Text = Convert.ToString(dtAdjustments.Rows[0]["BranchName"]);
+                    lblra2.Text = Convert.ToString(dtAdjustments.Rows[1]["BranchName"]);
+
+                }
+                else if (dtAdjustments.Rows.Count == 1)
+                {
+                    ra1.Visible = true;
+                    lblra1.Text = Convert.ToString(dtAdjustments.Rows[0]["BranchName"]);
+                    ra2.Visible = false;
+                }
+                else
+                {
+                    ra1.Visible = false;
+                    ra2.Visible = false;
+                }
+
+                if (dtPayments.Rows.Count > 1)
+                {
+                    pa1.Visible = true;
+                    pa2.Visible = true;
+
+                    lnkpa11.Text = Convert.ToString(dtPayments.Rows[0]["Node"]);
+                    lnkpal2.Text = Convert.ToString(dtPayments.Rows[1]["Node"]);
+
+                    HD_lnkpa11.Value = Convert.ToString(dtPayments.Rows[0]["GroupId"]);
+                    HD_lnkpal2.Value = Convert.ToString(dtPayments.Rows[1]["GroupId"]);
+
+                    HD_HeadId1.Value = Convert.ToString(dtPayments.Rows[0]["Head_ID"]);
+                    HD_HeadId2.Value = Convert.ToString(dtPayments.Rows[0]["Head_ID"]);
+
+                }
+                else if (dtPayments.Rows.Count == 1)
+                {
+                    pa1.Visible = true;
+                    lnkpa11.Text = Convert.ToString(dtPayments.Rows[0]["Node"]);
+                    pa2.Visible = false;
+                }
+                else
+                {
+                    pa1.Visible = false;
+                    pa2.Visible = false;
+                }
+
+            }
+            catch (Exception) { }
+        }
+        protected void btn_Logout_Click(object sender, EventArgs e)
+        {
+            FormsAuthentication.SignOut();
+            ClsSession objSession = (ClsSession)Session["objSession"];
+            string query = "";
+            query = "update svcf.LoginSession set LogoutTime='" + balayer.changedateformat(DateTime.Now, 1) + "' where BranchId=" + objSession.BranchId + " and SessionKey=" + objSession.SessionKey + "";
+            balayer.ExecuteQuery(query);
+            Session.Abandon();
+            HttpContext.Current.Session.Clear();
+            HttpContext.Current.Session.Abandon();
+            HttpContext.Current.Response.Cookies.Add(new HttpCookie("ASP.NET_SessionId", ""));
+            Response.Redirect("Login.aspx", true);
+        }
+
+        protected override void Render(HtmlTextWriter writer)
+        {
+            try
+            {
+                string validatorOverrideScripts = "<script src=\"/Scripts/validators.js\" type=\"text/javascript\"></script>";
+                this.Page.ClientScript.RegisterStartupScript(this.GetType(), "ValidatorOverrideScripts", validatorOverrideScripts, false);
+                base.Render(writer);
+            }
+            catch (Exception e) { }
+        }
+
+        protected void lnkpa11_Click(object sender, EventArgs e)
+        {
+            Response.Redirect("OtherBranchPaymentPermanent.aspx?groupname=" + HD_lnkpa11.Value + "&Hdid=" + HD_HeadId1.Value + "", false);
+        }
+
+        protected void lnkpal2_Click(object sender, EventArgs e)
+        {
+            Response.Redirect("OtherBranchPaymentPermanent.aspx?groupname=" + HD_lnkpal2.Value + "&Hdid=" + HD_HeadId2.Value + "", false);
+        }
+
+        protected void BtnSalaryAdvice_Click(object sender, EventArgs e)
+        {
+            Response.Redirect("SalaryAdvices.aspx");
+        }
+    }
+}

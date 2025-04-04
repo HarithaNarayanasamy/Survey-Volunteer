@@ -1,0 +1,6 @@
+INFO  2019-03-30 12:28:07,183 182484ms Home                   Page_Load          - Logged into Site at: 30-03-2019 12:28:07
+INFO  2019-03-30 12:42:29,222 1044522ms paymentnew             btn_ok             - paymentnew.aspx - btn_ok():  Completed: 30/03/2019 12:42:29 by: admin@svcf.com
+INFO  2019-03-30 12:42:57,503 1072804ms paymentnew             btn_ok             - paymentnew.aspx - btn_ok():  Error: Thread was being aborted.: 30/03/2019 12:42:57 by: admin@svcf.com
+INFO  2019-03-30 12:55:03,017 143444ms Home                   Page_Load          - Logged into Site at: 30-03-2019 12:55:03
+INFO  2019-03-30 12:57:12,203 272631ms Home                   Page_Load          - Logged into Site at: 30-03-2019 12:57:12
+INFO  2019-03-30 13:01:14,471 514899ms paymentnew             btn_ok             - paymentnew.aspx - btn_ok():  Completed: 30/03/2019 13:01:14 by: admin@svcf.com

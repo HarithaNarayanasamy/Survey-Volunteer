@@ -1,0 +1,1753 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+using System.Data;
+using System.Web.Services;
+using System.IO;
+using System.Web.Script.Serialization;
+using MySql.Data.MySqlClient;
+using SVCF_BusinessAccessLayer;
+using SVCF_TransactionLayer;
+using SVCF_DataAccessLayer;
+using System.Drawing;
+using log4net;
+using log4net.Config;
+namespace SreeVisalamChitFundLtd_phase1
+{
+    public partial class crrnew : System.Web.UI.Page
+    {
+        #region VarDeclaration
+        Dictionary<string, string> Tempdic = new Dictionary<string, string>();
+        List<string> TempList = new List<string>();
+        List<string> TL = new List<string>();      
+        string  maxdt;
+        static string[] ddltooltip;
+        
+        #endregion
+
+        #region ObjectDecl
+        BusinessLayer balayer = new BusinessLayer();
+        TransactionLayer trn = new TransactionLayer();
+        #endregion
+
+        string userinfo = "";
+        string qry = "";
+        string usrRole = "";
+
+        ILog logger = log4net.LogManager.GetLogger(typeof(crrnew));
+
+        protected void Page_PreInit(object sender, EventArgs e)
+        {
+            if (Session["UserName"] == null || Session["Branchid"] == null || Session["BranchName"] == null)
+            {
+                Response.Redirect(Page.ResolveUrl("~/Login.aspx"), true);
+            }
+        }
+        protected void Page_Init(object sender, EventArgs e)
+        {
+            img16List.ImageUrl = Page.ResolveUrl("~/pertho_admin_v1.3/img/ico/icSw2/16-List.png");         
+        }
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            pnlmsg.Visible = false;
+            Pnlgendrate.Visible = false;
+            rvDate.MinimumValue = balayer.GetSingleValue("SELECT DATE_FORMAT( MinimumDate, '%d/%m/%Y') MinimumDate FROM svcf.restrictionmaster where BranchID=" + Session["Branchid"]);
+            rvDate.MaximumValue = DateTime.Now.ToString("dd/MM/yyyy");
+            if (!Page.IsPostBack)
+            {
+                try
+                {
+                    // maxdt = DateTime.Now.ToString("dd/MM/yyyy");
+                    userinfo = HttpContext.Current.User.Identity.Name;
+                    qry = "select rs.name from roles as rs inner join rights as rt on (rt.roleid=rs.id) where memberid=" + userinfo + "";
+                    usrRole = balayer.GetSingleValue(qry);
+                    if (usrRole == "Report")
+                    {
+                        Response.Redirect("Home.aspx", false);
+                    }
+                    Session["CheckRefresh"] = System.Guid.NewGuid().ToString();
+                    SetInitialRow();
+                    LoadDropDownList();
+                    CollectorName();
+                    ddlColloctorName.Focus();
+                    fillEmployee();
+                    string Choosendate = balayer.GetSingleValue("SELECT DATE_FORMAT(ChoosenDate,'%d/%m/%Y') from `svcf`.`voucher`where BranchID=" + Session["Branchid"] + " and ChoosenDate<>'0000-00-00' order by CurrDate desc limit 1");
+                    txtReceivedDate.Text = "";
+                    lblcancelmsg.Text = "";
+
+
+                }
+                catch (Exception) { }
+            }
+            logger.Info("CRR - current page- at: " + DateTime.Now);
+        }
+
+        public void LoadDropDownList()
+        {            
+            FillDropDownList(ddlMisc, 2, "");
+            FillDropDownList(ddlTokennew, 3, "");
+        }
+
+        void fillEmployee()
+        {
+            Tempdic.Clear();
+
+            TempList = balayer.RetrveList("SELECT Emp_Name FROM svcf.employee_details where BranchID=" + Session["Branchid"]);
+            ddlEmployee.DataSource = TempList;
+            ddlEmployee.DataBind();
+            ddlEmployee.Items.Insert(0, new ListItem("--Select--"));
+            if (TempList.Count > 0)
+            {
+                ddlEmployee.SelectedValue = ddlEmployee.Items[0].Text;
+            }
+
+        }
+        protected void Page_PreRender(object sender, EventArgs e)
+        {
+            ViewState["CheckRefresh"] = Session["CheckRefresh"];
+        }
+        protected void OrderGrid_RowDataBound(object sender, GridViewRowEventArgs e)
+        {
+            if (e.Row.RowType == DataControlRowType.Footer)
+            {
+                ImageButton ButtonAdd = (e.Row.FindControl("aDDpAN") as Panel).FindControl("ButtonAdd") as ImageButton;
+                ToolkitScriptManager1.RegisterAsyncPostBackControl(ButtonAdd);
+            }
+        }
+        public bool DecideVisibility(object xcv)
+        {
+            if (balayer.ToobjectstrEvenNull(xcv).Trim() != "")
+            {
+                return true;
+
+            }
+            else
+            {
+                return false;
+            }
+        }
+        protected void ddlToken_IndexChanged(object sender, EventArgs e)
+        {
+            DropDownList ddl = (DropDownList)sender;
+            if (ddl.SelectedItem.Text != "")
+            {
+                ddl.ToolTip = ddl.SelectedItem.Text;
+            }
+            else
+            {
+                ddl.ToolTip = string.Empty;
+            }
+        }
+        public void CollectorName()
+        {
+
+            Tempdic.Clear();
+
+            Tempdic = balayer.CmnList("Select distinct asr.moneycollid,mc.moneycollname from moneycollector as mc join assignreceiptbook as asr " +
+                    "on (asr.moneycollid=mc.moneycollid) where asr.BranchID=" + balayer.ToobjectstrEvenNull(Session["Branchid"]));
+            ddlColloctorName.DataValueField = "Key";
+            ddlColloctorName.DataTextField = "Value";
+            ddlColloctorName.DataSource = Tempdic;
+            ddlColloctorName.DataBind();
+            ddlColloctorName.Items.Insert(0, new ListItem("--Select--", "0"));
+            ddlReceiptSeries.Focus();
+        }
+        protected void ddlReceiptSeries_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            getRecieptBookNO(ddlReceiptSeries.SelectedValue, ddlColloctorName.SelectedValue);
+            ddlEmployee.Focus();
+        }
+        public void getRecieptBookNO(string Series, string CollectorID)
+        {
+            DataTable dtAll = balayer.GetDataTable("SELECT  alreadyusedreceipts,receiptnoto   FROM svcf.assignreceiptbook where  moneycollid=" + ddlColloctorName.SelectedValue + "  and IsFinished=0 and BranchID=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and receiptseries='" + ddlReceiptSeries.SelectedItem.Text + "'");
+            if (dtAll.Rows.Count != 0)
+            {
+                int from = int.Parse(dtAll.Rows[0][0].ToString());
+                int t0 = int.Parse(dtAll.Rows[0][1].ToString());
+                string strQuery = "select ifnull(max(Voucher_No)+1,0) from voucher where BranchID=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and Trans_Type=1 and Voucher_No>=" + from + " and Voucher_No<=" + t0 + " and `Series`='" + ddlReceiptSeries.SelectedItem.Text + "'";
+                int RecNo = int.Parse(balayer.GetSingleValue(strQuery));
+                if (RecNo != 0)
+                {
+                    txtReceiptNumber.Text = RecNo.ToString();
+                }
+                else
+                {
+                    txtReceiptNumber.Text = from.ToString();
+                }
+            }
+            else
+            {
+                txtReceiptNumber.Text = "0";
+                ScriptManager.RegisterStartupScript(this, GetType(), "Warning", "alert(' Please Assign new Reciept Book!!!');", true);
+            }
+        }
+
+        [System.Web.Services.WebMethod]
+        public static string GetCustomername(string hdid)
+        {
+            string custname = "";
+            try
+            {                
+                BusinessLayer blayer = new BusinessLayer();
+                custname = blayer.GetSingleValue("select MemberName from membertogroupmaster where Head_Id=" + hdid + "");
+            }
+            catch (Exception) { }
+            return custname;
+        }
+
+
+        [System.Web.Services.WebMethod]
+        public static string GetMemberid(string hdid)
+        {
+            string custid = "";
+            try
+            {               
+                BusinessLayer blayer = new BusinessLayer();
+                custid = blayer.GetSingleValue("select MemberID from membertogroupmaster where Head_Id=" + hdid + "");
+            }
+            catch (Exception) { }
+            return custid;
+        }
+
+
+        [System.Web.Services.WebMethod]
+        public static string getRcptNumber(string Series, string CollectorID)
+        {
+            string receiptno = "";
+            try
+            {
+                BusinessLayer blayer = new BusinessLayer();
+
+                List<ListItem> TList = new List<ListItem>();
+                TList.Clear();
+                TList = blayer.BindDD_List("Select distinct receiptseries,moneycollid from assignreceiptbook where moneycollid='" + CollectorID + "' and IsFinished=0");
+
+                DataTable dtAll = blayer.GetDataTable("SELECT  alreadyusedreceipts,receiptnoto   FROM svcf.assignreceiptbook where  moneycollid=" + CollectorID + "  and IsFinished=0 and BranchID=" + blayer.ToobjectstrEvenNull(HttpContext.Current.Session["Branchid"]) + " and receiptseries='" + TList[0].Text + "'");
+                if (dtAll.Rows.Count != 0)
+                {
+                    //receiptno = dtAll.Rows[0][1].ToString();
+                    int from = int.Parse(dtAll.Rows[0][0].ToString());
+                    int t0 = int.Parse(dtAll.Rows[0][1].ToString());
+                    string strQuery = "select ifnull(max(Voucher_No)+1,0) from voucher where BranchID=" + blayer.ToobjectstrEvenNull(HttpContext.Current.Session["Branchid"]) + " and Trans_Type=1 and Voucher_No>=" + from + " and Voucher_No<=" + t0 + " and `Series`='" + TList[0].Text + "'";
+                    int RecNo = int.Parse(blayer.GetSingleValue(strQuery));
+                    if (RecNo != 0)
+                    {
+                        receiptno = RecNo.ToString();
+                    }
+                    else
+                    {
+                        receiptno = from.ToString();
+                    }
+                }
+                else
+                {
+                    receiptno = "0";                   
+                }
+
+            }
+            catch (Exception) { }
+            return receiptno;
+        }
+
+        [System.Web.Services.WebMethod]
+        public static string gtRcptBkNumber(string Series, string CollectorID)
+        {
+            string receiptno = "";
+            try
+            {
+                BusinessLayer blayer = new BusinessLayer();
+                DataTable dtAll = blayer.GetDataTable("SELECT  alreadyusedreceipts, receiptnofrom, receiptnoto  FROM svcf.assignreceiptbook where  moneycollid=" + CollectorID + "  and IsFinished=0 and BranchID=" + blayer.ToobjectstrEvenNull(HttpContext.Current.Session["Branchid"]) + " and receiptseries='" + Series + "'");
+                if (dtAll.Rows.Count != 0)
+                {                  
+                    int from = int.Parse(dtAll.Rows[0][0].ToString());
+                    if (from == 0)
+                    {
+                        from = int.Parse(dtAll.Rows[0][1].ToString());
+                    }
+                    int t0 = int.Parse(dtAll.Rows[0][2].ToString());
+                    string strQuery = "select ifnull(max(Voucher_No)+1,0) from voucher where BranchID=" + blayer.ToobjectstrEvenNull(HttpContext.Current.Session["Branchid"]) + " and Trans_Type=1 and Voucher_No>=" + from + " and Voucher_No<=" + t0 + " and `Series`='" + Series + "'";
+                    int RecNo = int.Parse(blayer.GetSingleValue(strQuery));
+                    if (RecNo != 0)
+                    {
+                        receiptno = RecNo.ToString();
+                    }
+                    else
+                    {
+                        receiptno = from.ToString();
+                    }
+                }
+                else
+                {
+                    receiptno = "0";                  
+                }
+
+            }
+            catch (Exception) { }
+            return receiptno;
+        }
+        void series()
+        {
+
+            TempList.Clear();
+            TL = balayer.RetrveList("Select distinct receiptseries from assignreceiptbook where moneycollid='" + ddlColloctorName.SelectedValue + "' and IsFinished=0");
+
+          
+            ddlReceiptSeries.DataSource = TL;          
+            ddlReceiptSeries.DataBind();
+            ddlReceiptSeries.Items.Insert(0, new ListItem("--Select--"));
+            ddlColloctorName.Focus();           
+        }
+
+       
+        [System.Web.Services.WebMethod]
+        public static List<ListItem> PopulateRSeries(string mcid)
+        {           
+            BusinessLayer blayer = new BusinessLayer();
+            List<ListItem> TList = new List<ListItem>();
+            TList.Clear();
+            TList = blayer.BindDD_List("Select distinct receiptseries,moneycollid from assignreceiptbook where moneycollid='" + mcid + "' and IsFinished=0");
+            return TList;
+        }
+
+        [System.Web.Services.WebMethod]
+        public static List<ListItem> PopulateToken(string mcid)
+        {
+            CommonClassFile objcls = new CommonClassFile();
+            List<ListItem> TmpList = new List<ListItem>();
+            TmpList.Clear();
+            TmpList = objcls.BindToken("SELECT GrpMemberID,Head_Id FROM membertogroupmaster where  MemberID=" + mcid + "");
+            return TmpList;
+        }
+
+        protected void ddlColloctorName_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            series();
+            fillEmployee();
+        }
+
+
+        private void FillDropDownList(DropDownList ddl, int iType, string MemberID)
+        {  
+            //chit
+            try
+            {
+                if (iType == 0)
+                {
+                    Tempdic.Clear();
+                 
+                    Tempdic = balayer.CmnList("select MemberIDNew,concat(MemberID,' | ', CustomerName) as 'CustomerName' from membermaster where TypeOfMember<>'Foreman'");
+                    
+                    ddl.DataValueField = "Key";
+                    ddl.DataTextField = "Value";
+                    ddl.DataSource = Tempdic;
+                   
+                    ddl.DataBind();
+
+                    ddl.Items.Insert(0, new ListItem("--Select--", "0"));
+                }
+                //token
+                else if (iType == 1)
+                {
+                    
+                    Tempdic.Clear();                
+                    Tempdic = balayer.CmnList(@"SELECT Head_Id,GrpMemberID FROM membertogroupmaster where  MemberID=" + MemberID);                  
+                    ddl.DataValueField = "Key";
+                    ddl.DataTextField = "Value";
+
+                    ddl.DataSource = Tempdic;
+                    ddl.DataBind();
+
+                    ddl.Items.Insert(0, new ListItem("--Select--", "0"));
+
+                }
+                //misc
+                else if (iType == 2)
+                {
+                    ddl.DataSource = null;
+                    
+                    Tempdic.Clear();
+                    
+                    Tempdic = balayer.CmnList("SELECT concat(cast(TreeID as char),',',cast(RootID as char)) as TreeID,TREE FROM svcf.view_parent where RootID<>5 and (BranchID is null or BranchID=" + Session["Branchid"] + ")");
+                    
+                    ddl.DataValueField = "Key";
+                    ddl.DataTextField = "Value";
+                    ddl.DataSource = Tempdic;
+                    ddl.DataBind();
+                    ddl.Items.Insert(0, new ListItem("--Select--", "0,0"));
+                }
+                else if (iType == 3)
+                {
+                    
+                    Tempdic.Clear();
+                    
+                    Tempdic = balayer.CmnList(@"SELECT Head_Id,GrpMemberID FROM membertogroupmaster where BranchID=" + Session["Branchid"]);
+                    ddl.DataValueField = "Key";
+                    ddl.DataTextField = "Value";
+
+                    ddl.DataSource = Tempdic;
+                    ddl.DataBind();
+
+                    ddl.Items.Insert(0, new ListItem("--Select--", "0"));
+                }
+            }
+            catch (Exception) { }
+        }
+        private void SetInitialRow()
+        {
+            DataTable dt = new DataTable();
+            DataRow dr = null;
+            //Define the Columns
+            dt.Columns.Add(new DataColumn("RowNumber", typeof(string)));
+            dt.Columns.Add(new DataColumn("MemberName", typeof(string)));
+            dt.Columns.Add(new DataColumn("Token", typeof(string)));
+            dt.Columns.Add(new DataColumn("Amount", typeof(string)));
+            dt.Columns.Add(new DataColumn("MiscHead", typeof(string)));
+            dt.Columns.Add(new DataColumn("MiscAmount", typeof(string)));
+            dt.Columns.Add(new DataColumn("Head_Id", typeof(string)));
+            dt.Columns.Add(new DataColumn("MemberId", typeof(string)));
+            dt.Columns.Add(new DataColumn("RcNumber", typeof(string)));
+
+            dt.Columns.Add(new DataColumn("firstmisc", typeof(string)));
+            dt.Columns.Add(new DataColumn("secmisc", typeof(string)));
+
+            //Add a Dummy Data on Initial Load
+            dr = dt.NewRow();
+         
+            dt.Rows.Add(dr);
+            //Store the DataTable in ViewState
+            ViewState["CurrentTable"] = dt;
+         
+            GView_Selected.DataSource = dt;
+            GView_Selected.DataBind();
+         
+        }
+
+
+        private void SetInitialRowold()
+        {
+            DataTable dt = new DataTable();
+            DataRow dr = null;
+            //Define the Columns
+            dt.Columns.Add(new DataColumn("RowNumber", typeof(string)));
+            dt.Columns.Add(new DataColumn("MemberName", typeof(string)));
+            dt.Columns.Add(new DataColumn("Token", typeof(string)));
+            dt.Columns.Add(new DataColumn("Amount", typeof(string)));
+            dt.Columns.Add(new DataColumn("MiscHead", typeof(string)));
+            dt.Columns.Add(new DataColumn("MiscAmount", typeof(string)));
+
+            //Add a Dummy Data on Initial Load
+            dr = dt.NewRow();
+            dr["RowNumber"] = 1;
+            dt.Rows.Add(dr);
+            //Store the DataTable in ViewState
+            ViewState["CurrentTable"] = dt;
+           
+            GView_Selected.DataSource = dt;
+            GView_Selected.DataBind();
+           
+            FillDropDownList(ddlMisc, 2, "");
+           
+        }
+        private void RemoveLastRowToGrid()
+        {
+            if (ViewState["CurrentTable"] != null)
+            {
+                DataTable dtCurrentTable = (DataTable)ViewState["CurrentTable"];
+                DataRow drCurrentRow = null;
+                if (dtCurrentTable.Rows.Count > 1)
+                {
+                    dtCurrentTable.Rows.RemoveAt(dtCurrentTable.Rows.Count - 1);                 
+                    ViewState["CurrentTable"] = dtCurrentTable;
+                }
+            }
+
+            SetPreviousData(true);
+        }
+        private void AddNewRowToGrid()
+        {
+            if (ViewState["CurrentTable"] != null)
+            {
+                DataTable dtCurrentTable = (DataTable)ViewState["CurrentTable"];
+                DataRow drCurrentRow = null;
+                if (dtCurrentTable.Rows.Count > 0)
+                {
+                   
+                    decimal lastAmount = 0.0M;
+                    bool isMisc = decimal.TryParse(txtMisc.Text, out lastAmount);
+                    if ((isMisc == true & lastAmount > 0.0M))
+                    {
+                        isMisc = true;
+                    }
+                    else
+                    {
+                        isMisc = false;
+                    }
+                    if ((ddlMisc.SelectedIndex <= 0) & isMisc == true)
+                    {
+                        ScriptManager.RegisterClientScriptBlock(Page, Page.GetType(), Guid.NewGuid().ToString(), "alert('Please Choose Misc Head Valid Details');", true);
+                     
+                        return;
+                    }
+                    if (ddlMisc.SelectedIndex > 0 & isMisc != true)
+                    {
+                        ScriptManager.RegisterClientScriptBlock(Page, Page.GetType(), Guid.NewGuid().ToString(), "alert('Please Provide Misc Amount Details');", true);
+                        return;
+                     
+                    }
+                    drCurrentRow = dtCurrentTable.NewRow();
+                    drCurrentRow["RowNumber"] = dtCurrentTable.Rows.Count + 1;
+                    //add new row to DataTable
+                    dtCurrentTable.Rows.Add(drCurrentRow);
+                    //Store the current data to ViewState
+                    ViewState["CurrentTable"] = dtCurrentTable;
+                    for (int i = 0; i < dtCurrentTable.Rows.Count - 1; i++)
+                    {
+                        //extract the DropDownList Selected Items
+                       
+                        // Update the DataRow with the DDL Selected Items
+                        dtCurrentTable.Rows[i]["MemberName"] = TxtMemberName.Text;
+                        dtCurrentTable.Rows[i]["Token"] = ddlTokennew.SelectedValue;
+                        dtCurrentTable.Rows[i]["Amount"] = txtAmount.Text;
+                        dtCurrentTable.Rows[i]["MiscHead"] = ddlMisc.SelectedValue;
+                        dtCurrentTable.Rows[i]["MiscAmount"] = txtMisc.Text;
+                    }               
+                    FillDropDownList(ddlMisc, 2, "");
+                }
+            }
+
+            SetPreviousData(false);
+        }
+
+        private void SetPreviousData(bool isRemove)
+        {
+            int rowIndex = 0;
+            if (ViewState["CurrentTable"] != null)
+            {
+                DataTable dt = (DataTable)ViewState["CurrentTable"];
+                if (dt.Rows.Count > 0)
+                {
+                    for (int i = 0; i < dt.Rows.Count; i++)
+                    {
+                        //Set the Previous Selected Items on Each DropDownList on Postbacks                        
+                        FillDropDownList(ddlMisc, 2, "");
+                        //FillDropDownList(ddl3);
+                        if (i < dt.Rows.Count)
+                        {
+                            if (isRemove == false & i == dt.Rows.Count - 1)
+                            {
+                                break;
+                            }                        
+                            ddlTokennew.ClearSelection();
+                            ddlTokennew.Items.FindByValue(dt.Rows[i]["Token"].ToString()).Selected = true;
+                            ddlMisc.ClearSelection();
+                            ddlMisc.Items.FindByValue(dt.Rows[i]["MiscHead"].ToString()).Selected = true;
+                            txtAmount.Text = dt.Rows[i]["Amount"].ToString();
+                            txtMisc.Text = dt.Rows[i]["MiscAmount"].ToString();                           
+                        }
+                        rowIndex++;
+                    }
+                }
+            }
+        }
+        protected void ddlMemberName_SelectedIndexChanged(object sender, EventArgs e)
+        {
+          
+        }
+        public List<string> Code
+        {
+            get
+            {
+                if (HttpContext.Current.Session["Code"] == null)
+                {
+                    HttpContext.Current.Session["Code"] = new List<string>();
+                }
+                return HttpContext.Current.Session["Code"] as List<string>;
+            }
+            set
+            {
+                HttpContext.Current.Session["Code"] = value;
+            }
+
+        }
+        protected void ButtonRemove_Click(object sender, ImageClickEventArgs e)
+        {
+          
+        }
+
+        public void PopulateDropDownList(List<ListItem> list, DropDownList ddl)
+        {
+            ddl.DataSource = list;
+            ddl.DataTextField = "Text";
+            ddl.DataValueField = "Value";
+            ddl.DataBind();
+        }
+
+
+        protected void btnConfirmationNo_Click(object sender, EventArgs e)
+        {
+            gvConfirm.DataSource = null;
+            gvConfirm.DataBind();
+            ModalPopupExtender1.Hide();
+            pnlConfirmation.Visible = false;
+            ViewState["CurrentTable"] = null;
+            GView_Selected.DataSource = (DataTable)ViewState["CurrentTable"];
+            GView_Selected.DataBind();
+            Response.Redirect(Request.Url.AbsoluteUri);
+        }
+        protected void btnConfirmationYes_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                ClsSession objSession = (ClsSession)Session["objSession"];
+                string receivedby = "";
+                if (Session["CheckRefresh"].ToString() != ViewState["CheckRefresh"].ToString())
+                {
+                    return;
+                }
+                lblcancelmsg.Text = "";
+                string selectedRSeries = "";
+                string LoadedSeries = "";
+
+                long RCNumber = 0;
+
+                selectedRSeries = Request.Form[ddlColloctorName.UniqueID];
+
+                LoadedSeries = HD_RSeriesid.Value;
+                PopulateDropDownList(PopulateRSeries(selectedRSeries), ddlReceiptSeries);
+                LoadedSeries.Trim();
+
+                ddlReceiptSeries.Items.FindByText(LoadedSeries).Selected = true;
+               // GetRcBookno(LoadedSeries, selectedRSeries);
+
+                string TransactionKeyDue = "";
+                gvConfirm.DataSource = null;
+                gvConfirm.DataBind();
+                System.Guid guid = Guid.NewGuid();
+
+                //stored procedure for DualTransactionKey
+                string DualTransactionKey = Convert.ToString(balayer.sp_gendratedt_key());
+
+
+                try
+                {
+                    DateTime dtChoosenDate = DateTime.Parse(txtReceivedDate.Text);
+                    string CashOrBankID = "";
+                    string trans_medium = "";
+                    if (CheckBox1.Checked != true)
+                    {
+                        CashOrBankID = "12";
+                        trans_medium = "0";
+                    }
+                    string memname, tokentxt, txtamnt, ddlmisc, txtmisc, tokenhid;
+                    string MemberID, TokenNo, RootID;
+                    string mischd1 = "", mischd2 = "";
+
+                    RCNumber = Convert.ToInt32(txtReceiptNumber.Text);
+
+                    if (HD_Empname.Value != null && HD_Empname.Value != "")
+                    {
+                        receivedby = HD_Empname.Value;
+
+                    }
+                    else
+                    {
+                        receivedby = ddlEmployee.SelectedItem.Text;
+                    }
+                    for (int i = 0; i <= GView_Selected.Rows.Count - 1; i++)
+                    {
+
+                        memname = GView_Selected.Rows[i].Cells[1].Text;
+                        if (memname.Contains("&amp;"))
+                        {
+                            memname = memname.Replace("&amp;", "&");
+                        }
+                        tokentxt = GView_Selected.Rows[i].Cells[2].Text;
+                        Label tokenid = (Label)GView_Selected.Rows[i].FindControl("lblheadid");
+                        tokenhid = tokenid.Text;
+                        txtamnt = GView_Selected.Rows[i].Cells[3].Text;
+                        ddlmisc = GView_Selected.Rows[i].Cells[4].Text;
+                        ddlmisc = ddlmisc.Replace("&gt;&gt;", ">>");
+                        //&gt;&gt;                    
+
+                        if (ddlmisc!="--Select--")
+                        {
+                            Label r1 =(Label) GView_Selected.Rows[i].FindControl("lblref1");
+                            Label r2 = (Label)GView_Selected.Rows[i].FindControl("lblref2");
+
+                            mischd1 = r1.Text;
+                            mischd2 = r2.Text;
+                        }
+                        if (ddlmisc == "--Select--")
+                        {
+                            ddlmisc = "";
+                        }
+
+                        txtmisc = GView_Selected.Rows[i].Cells[5].Text;
+
+                        if (txtmisc == "&nbsp;")
+                        {
+                            txtmisc = "0.0";
+                        }
+                        string GroupID = balayer.GetSingleValue("select GroupID from membertogroupmaster where Head_Id=" + tokenhid);
+                        string ChitsBranchID = balayer.GetSingleValue("SELECT BranchID FROM `svcf`.`groupmaster` where Head_Id=" + GroupID);
+                        Label Memberid = (Label)GView_Selected.Rows[i].FindControl("lblmemberid");
+                        Label TID = (Label)GView_Selected.Rows[i].FindControl("lblheadid");
+                        MemberID = Memberid.Text;
+                        TokenNo = TID.Text;
+                        RootID = "";
+                        if (CheckBox1.Checked != true)
+                        {
+                            RootID = "12";
+                        }
+                        //if (ChitsBranchID == balayer.ToobjectstrEvenNull(Session["Branchid"]))
+                        if (ChitsBranchID == balayer.TostrEvenNull(Convert.ToString(Session["Branchid"])))
+                        {
+                            if (decimal.Parse(txtamnt) != 0.00M)
+                            {
+                                if (RCNumber > 0)
+                                {                                    
+                                    //string strChitHeadQuery = "INSERT INTO `svcf`.`voucher` (`DualTransactionKey`,`BranchID`,`CurrDate`,`Voucher_No`,`Voucher_Type`,`Head_Id`,`ChoosenDate`,`Narration`,`Amount`,`Series`,`ReceievedBy`,`Trans_Type`,`T_Day`,`T_Month`,`T_Year`,`MemberID`,`Trans_Medium`,`RootID`,`ChitGroupId`) VALUES (" + DualTransactionKey + "," + balayer.ToobjectstrEvenNull(Session["Branchid"]) + ",'" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "'," + RCNumber + ",'C'," + TokenNo + ",'" + dtChoosenDate.ToString("yyyy-MM-dd") + "','" + "Recd From:" + memname + " For DrawNo:" + ddltooltip[i] + "'," + txtamnt + ",'" + ddlReceiptSeries.SelectedItem.Text + "','" + ddlEmployee.SelectedItem.Text + "',1," + dtChoosenDate.Day + "," + dtChoosenDate.Month + "," + dtChoosenDate.Year + "," + MemberID + "," + trans_medium + ",5," + GroupID + ") ";
+                                    //Changed Employee dropdown selected value to hidden value
+                                    string strChitHeadQuery = "INSERT INTO `svcf`.`voucher` (`DualTransactionKey`,`BranchID`,`CurrDate`,`Voucher_No`,`Voucher_Type`,`Head_Id`,`ChoosenDate`,`Narration`,`Amount`,`Series`,`ReceievedBy`,`Trans_Type`,`T_Day`,`T_Month`,`T_Year`,`MemberID`,`Trans_Medium`,`RootID`,`ChitGroupId`,`M_Id`,LoginIP) VALUES (" + DualTransactionKey + "," + balayer.ToobjectstrEvenNull(Session["Branchid"]) + ",'" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "'," + RCNumber + ",'C'," + TokenNo + ",'" + dtChoosenDate.ToString("yyyy-MM-dd") + "','" + "Recd From:" + memname + ":" + tokentxt + ":" + RCNumber + " For DrawNo:" + ddltooltip[i] + "'," + txtamnt + ",'" + ddlReceiptSeries.SelectedItem.Text + "','" + receivedby + "',1," + dtChoosenDate.Day + "," + dtChoosenDate.Month + "," + dtChoosenDate.Year + "," + MemberID + "," + trans_medium + ",5," + GroupID + "," + ddlColloctorName.SelectedItem.Value + ",'" + objSession.LoginIp + "') ";
+
+                                    //Changed Employee dropdown selected value to hidden value
+                                    string strCashHeadQuery = "INSERT INTO `svcf`.`voucher` (`DualTransactionKey`,`BranchID`,`CurrDate`,`Voucher_No`,`Voucher_Type`,`Head_Id`,`ChoosenDate`,`Narration`,`Amount`,`Series`,`ReceievedBy`,`Trans_Type`,`T_Day`,`T_Month`,`T_Year`,`MemberID`,`Trans_Medium`,`RootID`,`ChitGroupId`,`M_Id`,LoginIP) VALUES (" + DualTransactionKey + "," + balayer.ToobjectstrEvenNull(Session["Branchid"]) + ",'" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "'," + RCNumber + ",'D'," + CashOrBankID + ",'" + dtChoosenDate.ToString("yyyy-MM-dd") + "','" + "Recd From:" + memname + ":" + tokentxt + ":" + RCNumber + " For DrawNo:" + ddltooltip[i] + "'," + txtamnt + ",'" + ddlReceiptSeries.SelectedItem.Text + "','" + receivedby + "',1," + dtChoosenDate.Day + "," + dtChoosenDate.Month + "," + dtChoosenDate.Year + "," + MemberID + "," + trans_medium + "," + RootID + "," + GroupID + "," + ddlColloctorName.SelectedItem.Value + ",'" + objSession.LoginIp + "') ";
+                                    long strChitHead = trn.insertorupdateTrn(strChitHeadQuery);
+                                    long strCashHead = trn.insertorupdateTrn(strCashHeadQuery);
+
+                                    if (CheckBox1.Checked == true)
+                                    {
+                                        TransactionKeyDue = strCashHead.ToString();
+                                    }
+                                }
+                            }
+                            if (ddlmisc != "")   //SelectedIndex > 0)
+                            {
+                                if (decimal.Parse(txtmisc) != 0.00M)
+                                {
+                                    //if (Convert.ToInt32(ddlmisc.Split(',')[1]) == 1)
+                                    if (Convert.ToInt32(mischd2) == 1)
+                                    {
+                                        if (RCNumber > 0)
+                                        {
+                                            string strChitmISCHeadQuery = "INSERT INTO `svcf`.`voucher` (`Other_Trans_Type`,`DualTransactionKey`,`BranchID`,`CurrDate`,`Voucher_No`,`Voucher_Type`,`Head_Id`,`ChoosenDate`,`Narration`,`Amount`,`Series`,`ReceievedBy`,`Trans_Type`,`T_Day`,`T_Month`,`T_Year`,`MemberID`,`Trans_Medium`,`RootID`,`ChitGroupId`,`M_Id`,LoginIP) VALUES (1," + DualTransactionKey + "," + balayer.ToobjectstrEvenNull(Session["Branchid"]) + ",'" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "'," + RCNumber + ",'C'," + mischd1 + ",'" + dtChoosenDate.ToString("yyyy-MM-dd") + "','" + "Ref No:" + mischd1 + " |Recd From:" + memname + ":" + tokentxt + ":" + RCNumber + " For " + ddlmisc + "  Received By: " + balayer.ToobjectstrEvenNull(Session["BranchName"]) + "'," + txtmisc + ",'" + ddlReceiptSeries.SelectedItem.Text + "','" + balayer.ToobjectstrEvenNull(Session["UserName"]) + "',1," + dtChoosenDate.Day + "," + dtChoosenDate.Month + "," + dtChoosenDate.Year + "," + MemberID + "," + trans_medium + "," + mischd2 + "," + GroupID + "," + ddlColloctorName.SelectedItem.Value + ",'" + objSession.LoginIp + "') ";
+                                            string strCashmISCHeadQuery = "INSERT INTO `svcf`.`voucher` (`Other_Trans_Type`,`DualTransactionKey`,`BranchID`,`CurrDate`,`Voucher_No`,`Voucher_Type`,`Head_Id`,`ChoosenDate`,`Narration`,`Amount`,`Series`,`ReceievedBy`,`Trans_Type`,`T_Day`,`T_Month`,`T_Year`,`MemberID`,`Trans_Medium`,`RootID`,`ChitGroupId`,`M_Id`,LoginIP) VALUES (1," + DualTransactionKey + "," + balayer.ToobjectstrEvenNull(Session["Branchid"]) + ",'" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "'," + RCNumber + ",'D'," + CashOrBankID + ",'" + dtChoosenDate.ToString("yyyy-MM-dd") + "','" + "Ref No:" + mischd1 + " |Recd From:" + memname + ":" + tokentxt + ":" + RCNumber + " For " + ddlmisc + "  Received By: " + balayer.ToobjectstrEvenNull(Session["BranchName"]) + "'," + txtmisc + ",'" + ddlReceiptSeries.SelectedItem.Text + "','" + balayer.ToobjectstrEvenNull(Session["UserName"]) + "',1," + dtChoosenDate.Day + "," + dtChoosenDate.Month + "," + dtChoosenDate.Year + "," + MemberID + "," + trans_medium + "," + RootID + "," + GroupID + "," + ddlColloctorName.SelectedItem.Value + ",'" + objSession.LoginIp + "') ";
+
+                                            long strChitMiscHead = trn.insertorupdateTrn(strChitmISCHeadQuery);
+                                            long strCashHeadMisc = trn.insertorupdateTrn(strCashmISCHeadQuery);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        if (RCNumber > 0)
+                                        {
+                                            string strChitMiscHeadQuery = "INSERT INTO `svcf`.`voucher` (`DualTransactionKey`,`BranchID`,`CurrDate`,`Voucher_No`,`Voucher_Type`,`Head_Id`,`ChoosenDate`,`Narration`,`Amount`,`Series`,`ReceievedBy`,`Trans_Type`,`T_Day`,`T_Month`,`T_Year`,`MemberID`,`Trans_Medium`,`RootID`,`ChitGroupId`,`M_Id`,LoginIP) VALUES (" + DualTransactionKey + "," + balayer.ToobjectstrEvenNull(Session["Branchid"]) + ",'" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "'," + RCNumber + ",'C'," + mischd1 + ",'" + dtChoosenDate.ToString("yyyy-MM-dd") + "','" + ddlmisc + " Recd from " + memname + ":" + tokentxt + ":" + RCNumber + "'," + txtmisc + ",'" + ddlReceiptSeries.SelectedItem.Text + "','" + balayer.ToobjectstrEvenNull(Session["UserName"]) + "',1," + dtChoosenDate.Day + "," + dtChoosenDate.Month + "," + dtChoosenDate.Year + "," + MemberID + "," + trans_medium + "," + mischd2 + "," + GroupID + "," + ddlColloctorName.SelectedItem.Value + ",'" + objSession.LoginIp + "') ";
+
+                                            string strCashHeadMiscQuery = "INSERT INTO `svcf`.`voucher` (`DualTransactionKey`,`BranchID`,`CurrDate`,`Voucher_No`,`Voucher_Type`,`Head_Id`,`ChoosenDate`,`Narration`,`Amount`,`Series`,`ReceievedBy`,`Trans_Type`,`T_Day`,`T_Month`,`T_Year`,`MemberID`,`Trans_Medium`,`RootID`,`ChitGroupId`,`M_Id`,LoginIP) VALUES (" + DualTransactionKey + "," + balayer.ToobjectstrEvenNull(Session["Branchid"]) + ",'" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "'," + RCNumber + ",'D'," + CashOrBankID + ",'" + dtChoosenDate.ToString("yyyy-MM-dd") + "','" + ddlmisc + " Recd from " + memname + ":" + tokentxt + ":" + RCNumber + "'," + txtmisc + ",'" + ddlReceiptSeries.SelectedItem.Text + "','" + balayer.ToobjectstrEvenNull(Session["UserName"]) + "',1," + dtChoosenDate.Day + "," + dtChoosenDate.Month + "," + dtChoosenDate.Year + "," + MemberID + "," + trans_medium + "," + RootID + "," + GroupID + "," + ddlColloctorName.SelectedItem.Value + ",'" + objSession.LoginIp + "') ";
+                                            long strChitMiscHead = trn.insertorupdateTrn(strChitMiscHeadQuery);
+                                            long strCashHeadMisc = trn.insertorupdateTrn(strCashHeadMiscQuery);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        // Other branch entries
+
+                        //else
+                        //{
+                        //    if (RCNumber > 0)
+                        //    {
+                        //        string strChitHeadQuery = "INSERT INTO `svcf`.`voucher` (`Other_Trans_Type`,`DualTransactionKey`,`BranchID`,`CurrDate`,`Voucher_No`,`Voucher_Type`,`Head_Id`,`ChoosenDate`,`Narration`,`Amount`,`Series`,`ReceievedBy`,`Trans_Type`,`T_Day`,`T_Month`,`T_Year`,`MemberID`,`Trans_Medium`,`RootID`,`ChitGroupId`) VALUES (1," + DualTransactionKey + "," + balayer.ToobjectstrEvenNull(Session["Branchid"]) + ",'" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "'," + RCNumber + ",'C'," + ChitsBranchID + ",'" + dtChoosenDate.ToString("yyyy-MM-dd") + "','" + "Ref No:" + TokenNo + " |Recd From:" + memname + " For DrawNo:" + ddltooltip[i] + " (aprox) Received By: " + balayer.ToobjectstrEvenNull(Session["BranchName"]) + "'," + txtamnt + ",'" + ddlReceiptSeries.SelectedItem.Text + "','" + balayer.ToobjectstrEvenNull(Session["UserName"]) + "',1," + dtChoosenDate.Day + "," + dtChoosenDate.Month + "," + dtChoosenDate.Year + "," + MemberID + "," + trans_medium + ",1," + GroupID + ")";
+
+                        //        string strCashHeadQuery = "INSERT INTO `svcf`.`voucher` (`Other_Trans_Type`,`DualTransactionKey`,`BranchID`,`CurrDate`,`Voucher_No`,`Voucher_Type`,`Head_Id`,`ChoosenDate`,`Narration`,`Amount`,`Series`,`ReceievedBy`,`Trans_Type`,`T_Day`,`T_Month`,`T_Year`,`MemberID`,`Trans_Medium`,`RootID`,`ChitGroupId`) VALUES (1," + DualTransactionKey + "," + balayer.ToobjectstrEvenNull(Session["Branchid"]) + ",'" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "'," + RCNumber + ",'D'," + CashOrBankID + ",'" + dtChoosenDate.ToString("yyyy-MM-dd") + "','" + "Ref No:" + TokenNo + " |Recd From" + memname + " For DrawNo:" + ddltooltip[i] + " (aprox) Received By: " + balayer.ToobjectstrEvenNull(Session["BranchName"]) + "'," + txtamnt + ",'" + ddlReceiptSeries.SelectedItem.Text + "','" + balayer.ToobjectstrEvenNull(Session["UserName"]) + "',1," + dtChoosenDate.Day + "," + dtChoosenDate.Month + "," + dtChoosenDate.Year + "," + MemberID + "," + trans_medium + "," + RootID + "," + GroupID + ")";
+
+                        //        long strChitHead = trn.insertorupdateTrn(strChitHeadQuery);
+                        //        long strCashHead = trn.insertorupdateTrn(strCashHeadQuery);
+                        //        if (CheckBox1.Checked == true)
+                        //        {
+                        //            TransactionKeyDue = strCashHead.ToString();
+                        //        }
+                        //    }
+                        //    if (ddlmisc != "")
+                        //    {
+                        //        if (decimal.Parse(txtmisc) != 0.00M)
+                        //        {
+                        //            if (Convert.ToInt32(mischd2) == 1)
+                        //            {
+                        //                if (RCNumber > 0)
+                        //                {
+                        //                    string strChitmISCHeadQuery = "INSERT INTO `svcf`.`voucher` (`Other_Trans_Type`,`DualTransactionKey`,`BranchID`,`CurrDate`,`Voucher_No`,`Voucher_Type`,`Head_Id`,`ChoosenDate`,`Narration`,`Amount`,`Series`,`ReceievedBy`,`Trans_Type`,`T_Day`,`T_Month`,`T_Year`,`MemberID`,`Trans_Medium`,`RootID`,`ChitGroupId`) VALUES (1," + DualTransactionKey + "," + balayer.ToobjectstrEvenNull(Session["Branchid"]) + ",'" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "'," + RCNumber + ",'C'," + mischd1 + ",'" + dtChoosenDate.ToString("yyyy-MM-dd") + "','" + "Ref No:" + mischd1 + " |Recd From:" + memname + " For " + ddlmisc + "  Received By: " + balayer.ToobjectstrEvenNull(Session["BranchName"]) + "'," + txtmisc + ",'" + ddlReceiptSeries.SelectedItem.Text + "','" + balayer.ToobjectstrEvenNull(Session["UserName"]) + "',1," + dtChoosenDate.Day + "," + dtChoosenDate.Month + "," + dtChoosenDate.Year + "," + MemberID + "," + trans_medium + ",1," + GroupID + ") ";
+
+
+                        //                    string strCashmISCHeadQuery = "INSERT INTO `svcf`.`voucher` (`Other_Trans_Type`,`DualTransactionKey`,`BranchID`,`CurrDate`,`Voucher_No`,`Voucher_Type`,`Head_Id`,`ChoosenDate`,`Narration`,`Amount`,`Series`,`ReceievedBy`,`Trans_Type`,`T_Day`,`T_Month`,`T_Year`,`MemberID`,`Trans_Medium`,`RootID`,`ChitGroupId`) VALUES (1," + DualTransactionKey + "," + balayer.ToobjectstrEvenNull(Session["Branchid"]) + ",'" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "'," + RCNumber + ",'D'," + CashOrBankID + ",'" + dtChoosenDate.ToString("yyyy-MM-dd") + "','" + "Ref No:" + mischd1 + " |Recd From:" + memname + " For " + ddlmisc + "  Received By: " + balayer.ToobjectstrEvenNull(Session["BranchName"]) + "'," + txtmisc + ",'" + ddlReceiptSeries.SelectedItem.Text + "','" + balayer.ToobjectstrEvenNull(Session["UserName"]) + "',1," + dtChoosenDate.Day + "," + dtChoosenDate.Month + "," + dtChoosenDate.Year + "," + MemberID + "," + trans_medium + "," + RootID + "," + GroupID + ") ";
+
+                        //                    long strChitMiscHead = trn.insertorupdateTrn(strChitmISCHeadQuery);
+                        //                    long strCashHeadMisc = trn.insertorupdateTrn(strCashmISCHeadQuery);
+                        //                }
+                        //            }
+                        //            else
+                        //            {
+                        //                if (RCNumber > 0)
+                        //                {
+                        //                    string strChitMiscHeadQuery = "INSERT INTO `svcf`.`voucher` (`DualTransactionKey`,`BranchID`,`CurrDate`,`Voucher_No`,`Voucher_Type`,`Head_Id`,`ChoosenDate`,`Narration`,`Amount`,`Series`,`ReceievedBy`,`Trans_Type`,`T_Day`,`T_Month`,`T_Year`,`MemberID`,`Trans_Medium`,`RootID`,`ChitGroupId`) VALUES (" + DualTransactionKey + "," + balayer.ToobjectstrEvenNull(Session["Branchid"]) + ",'" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "'," + RCNumber + ",'C'," + mischd1 + ",'" + dtChoosenDate.ToString("yyyy-MM-dd") + "','" + ddlmisc + " Recd from " + memname + "'," + txtmisc + ",'" + ddlReceiptSeries.SelectedItem.Text + "','" + balayer.ToobjectstrEvenNull(Session["UserName"]) + "',1," + dtChoosenDate.Day + "," + dtChoosenDate.Month + "," + dtChoosenDate.Year + "," + MemberID + "," + trans_medium + "," + mischd2 + "," + GroupID + ") ";
+
+                        //                    string strCashHeadMiscQuery = "INSERT INTO `svcf`.`voucher` (`DualTransactionKey`,`BranchID`,`CurrDate`,`Voucher_No`,`Voucher_Type`,`Head_Id`,`ChoosenDate`,`Narration`,`Amount`,`Series`,`ReceievedBy`,`Trans_Type`,`T_Day`,`T_Month`,`T_Year`,`MemberID`,`Trans_Medium`,`RootID`,`ChitGroupId`) VALUES (" + DualTransactionKey + "," + balayer.ToobjectstrEvenNull(Session["Branchid"]) + ",'" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "'," + RCNumber + ",'D'," + CashOrBankID + ",'" + dtChoosenDate.ToString("yyyy-MM-dd") + "','" + ddlmisc + " Recd from " + memname + "'," + txtmisc + ",'" + ddlReceiptSeries.SelectedItem.Text + "','" + balayer.ToobjectstrEvenNull(Session["UserName"]) + "',1," + dtChoosenDate.Day + "," + dtChoosenDate.Month + "," + dtChoosenDate.Year + "," + MemberID + "," + trans_medium + "," + RootID + "," + GroupID + ") ";
+                        //                    long strChitMiscHead = trn.insertorupdateTrn(strChitMiscHeadQuery);
+                        //                    long strCashHeadMisc = trn.insertorupdateTrn(strCashHeadMiscQuery);
+                        //                }
+                        //            }
+                        //        }
+                        //    }
+                        //}
+                    }
+                    if (ddlColloctorName.ToolTip.ToString().Trim() != "")
+                    {
+                        //put  the  query to check all the numbers used or not 
+                        trn.insertorupdateTrn("update svcf.assignreceiptbook set IsFinished=1,alreadyusedReceipts=" + ddlColloctorName.ToolTip.ToString() + " where receiptseries='" + ddlReceiptSeries.SelectedItem.Text + "' and receiptnoto in(" + ddlColloctorName.ToolTip.ToString().Trim() + ") and BranchID=" + balayer.ToobjectstrEvenNull(Session["Branchid"]));
+                    }
+                    else
+                    {
+                        //update last used receipt no. in assignreceiptbook
+                        //string ToRange = balayer.GetSingleValue("SELECT receiptnoto FROM svcf.assignreceiptbook where  moneycollid=" + ddlColloctorName.SelectedValue + " and BranchID=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and receiptseries='" + ddlReceiptSeries.SelectedItem.Text + "' and IsFinished=0");
+                        trn.insertorupdateTrn("update svcf.assignreceiptbook set alreadyusedReceipts=" + RCNumber + " where receiptseries='" + ddlReceiptSeries.SelectedItem.Text + "' and receiptnoto in(" + rcpttorange.Value + ") and BranchID=" + balayer.ToobjectstrEvenNull(Session["Branchid"]));
+                    }
+
+                    ViewState["CurrentTable"] = null;
+                    GView_Selected.DataSource = (DataTable)ViewState["CurrentTable"];
+                    GView_Selected.DataBind();
+                    SetInitialRow();
+                    RCNumber = 0;               
+                    mischd1 = "";
+                    mischd2 = "";
+                    trn.CommitTrn();
+                    logger.Info("crrnew.aspx - btnConfirmationYes_click() - Completed: " + DateTime.Now + " by: " + Convert.ToString(Session["UserName"]) + "");
+                    Response.Redirect("crrnew.aspx", false);
+                }
+                catch (Exception ex)
+                {
+                    try
+                    {
+                        trn.RollbackTrn();
+                        trn.DisposeTrn();
+                        logger.Info("crrnew.aspx - btnConfirmationYes_click() - Error: " + ex.Message + ": " + DateTime.Now + " by: " + Convert.ToString(Session["UserName"]) + "");
+                    }
+                    catch (Exception error)
+                    {
+                        trn.DisposeTrn();
+
+                    }
+                    finally
+                    {
+                        ModalPopupExtender1.PopupControlID = "Pnlgendrate";
+                        ModalPopupExtender1.Show();
+                        Pnlgendrate.Visible = true;
+                        lblHD.Text = "Status";
+                        lblContent.Text = "Problem with Your Transaction Please Contact Administrator!!!";
+                        lblContent.ForeColor = System.Drawing.Color.Red;
+                        ViewState["CurrentTable"] = null;
+                        GView_Selected.DataSource = (DataTable)ViewState["CurrentTable"];
+                        GView_Selected.DataBind();
+                        trn.DisposeTrn();
+
+                
+                    }
+                }
+                finally
+                {
+                    trn.DisposeTrn();
+                    RCNumber = 0;
+                    ddlColloctorName.ClearSelection();
+                    ddlReceiptSeries.Items.Clear();
+                    txtReceiptNumber.Text = "";
+                    //ddlEmployee.ClearSelection();
+                    txtTotalAmount.Text = "";
+                    rcpttorange.Value = "";
+                    rcptfrmrange.Value = "";
+                    
+                }
+                pnlConfirmation.Visible = false;
+                //Response.Redirect(Request.Url.AbsoluteUri);
+            }
+            catch (Exception ex) {
+              //  this.LogError(ex);
+                trn.DisposeTrn();
+
+            }
+        }
+
+
+        private void LogError(Exception ex)
+        {
+            string message = string.Format("Time: {0}", DateTime.Now.ToString("dd/MM/yyyy hh:mm:ss tt"));
+            message += Environment.NewLine;
+            message += "-----------------------------------------------------------";
+            message += Environment.NewLine;
+            message += string.Format("Message: {0}", ex.Message);
+            message += Environment.NewLine;
+            message += string.Format("StackTrace: {0}", ex.StackTrace);
+            message += Environment.NewLine;
+            message += string.Format("Source: {0}", ex.Source);
+            message += Environment.NewLine;
+            message += string.Format("TargetSite: {0}", ex.TargetSite.ToString());
+            message += Environment.NewLine;
+            message += "-----------------------------------------------------------";
+            message += Environment.NewLine;
+            string path = Server.MapPath("~/ErrorLog/ErrorLog.txt");
+            using (StreamWriter writer = new StreamWriter(path, true))
+            {
+                writer.WriteLine(message);
+                writer.Close();
+            }
+        }
+
+
+
+
+        protected void btnConfirmationYes_Clickold(object sender, EventArgs e)
+        {
+            //if (Session["CheckRefresh"].ToString() != ViewState["CheckRefresh"].ToString())
+            //{
+            //    return;
+            //}
+            //TransactionLayer trn = new TransactionLayer();
+            //string TransactionKeyDue = "";
+            //gvConfirm.DataSource = null;
+            //gvConfirm.DataBind();
+            //System.Guid guid = Guid.NewGuid();
+
+            //string hexstring =  BitConverter.ToString(guid.ToByteArray());
+            //string guidForBinary16 = "0x" + hexstring.Replace("-", string.Empty);
+            //string DualTransactionKey = guidForBinary16;
+            //try
+            //{
+            //    DateTime dtChoosenDate = DateTime.Parse(txtReceivedDate.Text);
+            //    string CashOrBankID = "";
+            //    string trans_medium = "";
+            //    if (CheckBox1.Checked != true)
+            //    {
+            //        CashOrBankID = "12";
+            //        trans_medium = "0";
+            //    }
+            //for (int i = 0; i < GridView1.Rows.Count; i++)
+            //{
+            //DropDownList RowddlMemberName = (DropDownList)GridView1.Rows[i].FindControl("ddlMemberName");
+            //DropDownList RowddlToken = (DropDownList)GridView1.Rows[i].FindControl("ddlToken");
+            //TextBox RowtxtAmount = (TextBox)GridView1.Rows[i].FindControl("txtAmount");
+            //DropDownList RowddlMisc = (DropDownList)GridView1.Rows[i].FindControl("ddlMisc");
+            //TextBox RowtxtMisc = (TextBox)GridView1.Rows[i].FindControl("txtMisc");
+            //        string GroupID = balayer.GetSingleValue("select GroupID from membertogroupmaster where Head_Id=" + RowddlToken.SelectedValue);
+            //        string ChitsBranchID = balayer.GetSingleValue("SELECT BranchID FROM `svcf`.`groupmaster` where Head_Id=" + GroupID);
+            //        string MemberID = RowddlMemberName.SelectedValue;
+            //        string TokenNo = RowddlToken.SelectedValue;
+            //        string RootID = "";
+            //        if (CheckBox1.Checked != true)
+            //        {
+            //            RootID = "12";
+            //        }
+            //        //if (ChitsBranchID == balayer.ToobjectstrEvenNull(Session["Branchid"]))
+            //        if (ChitsBranchID == objcls.TostrEvenNull(Convert.ToString(Session["Branchid"])))
+            //        {
+            //            if (decimal.Parse(RowtxtAmount.Text) != 0.00M)
+            //            {
+            //                string strChitHeadQuery = "INSERT INTO `svcf`.`voucher` (`DualTransactionKey`,`BranchID`,`Current_Date`,`Voucher_No`,`Voucher_Type`,`Head_Id`,`ChoosenDate`,`Narration`,`Amount`,`Series`,`ReceievedBy`,`Trans_Type`,`T_Day`,`T_Month`,`T_Year`,`MemberID`,`Trans_Medium`,`RootID`,`ChitGroupId`) VALUES (" + DualTransactionKey + "," + balayer.ToobjectstrEvenNull(Session["Branchid"]) + ",'" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "'," + txtReceiptNumber.Text + ",'C'," + TokenNo + ",'" + dtChoosenDate.ToString("yyyy-MM-dd") + "','" + "Recd From:" + RowddlMemberName.SelectedItem.Text + " For DrawNo:" + RowddlToken.ToolTip.ToString() + "'," + RowtxtAmount.Text + ",'" + ddlReceiptSeries.SelectedItem.Text + "','" + ddlEmployee.SelectedItem.Text + "',1," + dtChoosenDate.Day + "," + dtChoosenDate.Month + "," + dtChoosenDate.Year + "," + MemberID + "," + trans_medium + ",5," + GroupID + ") ";
+            //                string strCashHeadQuery = "INSERT INTO `svcf`.`voucher` (`DualTransactionKey`,`BranchID`,`Current_Date`,`Voucher_No`,`Voucher_Type`,`Head_Id`,`ChoosenDate`,`Narration`,`Amount`,`Series`,`ReceievedBy`,`Trans_Type`,`T_Day`,`T_Month`,`T_Year`,`MemberID`,`Trans_Medium`,`RootID`,`ChitGroupId`) VALUES (" + DualTransactionKey + "," + balayer.ToobjectstrEvenNull(Session["Branchid"]) + ",'" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "'," + txtReceiptNumber.Text + ",'D'," + CashOrBankID + ",'" + dtChoosenDate.ToString("yyyy-MM-dd") + "','" + "Recd From:" + RowddlMemberName.SelectedItem.Text + " For DrawNo:" + RowddlToken.ToolTip.ToString() + "'," + RowtxtAmount.Text + ",'" + ddlReceiptSeries.SelectedItem.Text + "','" + ddlEmployee.SelectedItem.Text + "',1," + dtChoosenDate.Day + "," + dtChoosenDate.Month + "," + dtChoosenDate.Year + "," + MemberID + "," + trans_medium + "," + RootID + "," + GroupID + ") ";
+            //                long strChitHead = trn.insertorupdateTrn(strChitHeadQuery);
+            //                long strCashHead = trn.insertorupdateTrn(strCashHeadQuery);
+            //                if (CheckBox1.Checked == true)
+            //                {
+            //                    TransactionKeyDue = strCashHead.ToString();
+            //                }
+            //            }
+            //            if (RowddlMisc.SelectedIndex > 0)
+            //            {
+            //                if (decimal.Parse(RowtxtMisc.Text) != 0.00M)
+            //                {
+            //                    if (Convert.ToInt32(RowddlMisc.SelectedItem.Value.Split(',')[1]) == 1)
+            //                    {
+            //                        string strChitmISCHeadQuery = "INSERT INTO `svcf`.`voucher` (`Other_Trans_Type`,`DualTransactionKey`,`BranchID`,`Current_Date`,`Voucher_No`,`Voucher_Type`,`Head_Id`,`ChoosenDate`,`Narration`,`Amount`,`Series`,`ReceievedBy`,`Trans_Type`,`T_Day`,`T_Month`,`T_Year`,`MemberID`,`Trans_Medium`,`RootID`,`ChitGroupId`) VALUES (1," + DualTransactionKey + "," + balayer.ToobjectstrEvenNull(Session["Branchid"]) + ",'" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "'," + txtReceiptNumber.Text + ",'C'," + RowddlMisc.SelectedItem.Value.Split(',')[0] + ",'" + dtChoosenDate.ToString("yyyy-MM-dd") + "','" + "Ref No:" + RowddlMisc.SelectedValue.Split(',')[0] + " |Recd From:" + RowddlMemberName.SelectedItem.Text + " For " + RowddlMisc.SelectedItem.Text + "  Received By: " + balayer.ToobjectstrEvenNull(Session["BranchName"]) + "'," + RowtxtMisc.Text + ",'" + ddlReceiptSeries.SelectedItem.Text + "','" + balayer.ToobjectstrEvenNull(Session["UserName"]) + "',1," + dtChoosenDate.Day + "," + dtChoosenDate.Month + "," + dtChoosenDate.Year + "," + MemberID + "," + trans_medium + ",1," + GroupID + ") ";
+            //                        string strCashmISCHeadQuery = "INSERT INTO `svcf`.`voucher` (`Other_Trans_Type`,`DualTransactionKey`,`BranchID`,`Current_Date`,`Voucher_No`,`Voucher_Type`,`Head_Id`,`ChoosenDate`,`Narration`,`Amount`,`Series`,`ReceievedBy`,`Trans_Type`,`T_Day`,`T_Month`,`T_Year`,`MemberID`,`Trans_Medium`,`RootID`,`ChitGroupId`) VALUES (1," + DualTransactionKey + "," + balayer.ToobjectstrEvenNull(Session["Branchid"]) + ",'" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "'," + txtReceiptNumber.Text + ",'D'," + CashOrBankID + ",'" + dtChoosenDate.ToString("yyyy-MM-dd") + "','" + "Ref No:" + RowddlMisc.SelectedValue.Split(',')[0] + " |Recd From:" + RowddlMemberName.SelectedItem.Text + " For " + RowddlMisc.SelectedItem.Text + "  Received By: " + balayer.ToobjectstrEvenNull(Session["BranchName"]) + "'," + RowtxtMisc.Text + ",'" + ddlReceiptSeries.SelectedItem.Text + "','" + balayer.ToobjectstrEvenNull(Session["UserName"]) + "',1," + dtChoosenDate.Day + "," + dtChoosenDate.Month + "," + dtChoosenDate.Year + "," + MemberID + "," + trans_medium + "," + RootID + "," + GroupID + ") ";
+
+            //                        long strChitMiscHead = trn.insertorupdateTrn(strChitmISCHeadQuery);
+            //                        long strCashHeadMisc = trn.insertorupdateTrn(strCashmISCHeadQuery);
+            //                    }
+            //                    else
+            //                    {
+            //                        string strChitMiscHeadQuery = "INSERT INTO `svcf`.`voucher` (`DualTransactionKey`,`BranchID`,`Current_Date`,`Voucher_No`,`Voucher_Type`,`Head_Id`,`ChoosenDate`,`Narration`,`Amount`,`Series`,`ReceievedBy`,`Trans_Type`,`T_Day`,`T_Month`,`T_Year`,`MemberID`,`Trans_Medium`,`RootID`,`ChitGroupId`) VALUES (" + DualTransactionKey + "," + balayer.ToobjectstrEvenNull(Session["Branchid"]) + ",'" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "'," + txtReceiptNumber.Text + ",'C'," + RowddlMisc.SelectedItem.Value.Split(',')[0] + ",'" + dtChoosenDate.ToString("yyyy-MM-dd") + "','" + RowddlMisc.SelectedItem.Text + " Recd from " + RowddlMemberName.SelectedItem.Text + "'," + RowtxtMisc.Text + ",'" + ddlReceiptSeries.SelectedItem.Text + "','" + balayer.ToobjectstrEvenNull(Session["UserName"]) + "',1," + dtChoosenDate.Day + "," + dtChoosenDate.Month + "," + dtChoosenDate.Year + "," + MemberID + "," + trans_medium + "," + RowddlMisc.SelectedItem.Value.Split(',')[1] + "," + GroupID + ") ";
+            //                        string strCashHeadMiscQuery = "INSERT INTO `svcf`.`voucher` (`DualTransactionKey`,`BranchID`,`Current_Date`,`Voucher_No`,`Voucher_Type`,`Head_Id`,`ChoosenDate`,`Narration`,`Amount`,`Series`,`ReceievedBy`,`Trans_Type`,`T_Day`,`T_Month`,`T_Year`,`MemberID`,`Trans_Medium`,`RootID`,`ChitGroupId`) VALUES (" + DualTransactionKey + "," + balayer.ToobjectstrEvenNull(Session["Branchid"]) + ",'" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "'," + txtReceiptNumber.Text + ",'D'," + CashOrBankID + ",'" + dtChoosenDate.ToString("yyyy-MM-dd") + "','" + RowddlMisc.SelectedItem.Text + " Recd from " + RowddlMemberName.SelectedItem.Text + "'," + RowtxtMisc.Text + ",'" + ddlReceiptSeries.SelectedItem.Text + "','" + balayer.ToobjectstrEvenNull(Session["UserName"]) + "',1," + dtChoosenDate.Day + "," + dtChoosenDate.Month + "," + dtChoosenDate.Year + "," + MemberID + "," + trans_medium + "," + RootID + "," + GroupID + ") ";
+            //                        long strChitMiscHead = trn.insertorupdateTrn(strChitMiscHeadQuery);
+            //                        long strCashHeadMisc = trn.insertorupdateTrn(strCashHeadMiscQuery);
+            //                    }
+            //                }
+            //            }
+            //        }
+            //        else
+            //        {
+            //            string strChitHeadQuery = "INSERT INTO `svcf`.`voucher` (`Other_Trans_Type`,`DualTransactionKey`,`BranchID`,`Current_Date`,`Voucher_No`,`Voucher_Type`,`Head_Id`,`ChoosenDate`,`Narration`,`Amount`,`Series`,`ReceievedBy`,`Trans_Type`,`T_Day`,`T_Month`,`T_Year`,`MemberID`,`Trans_Medium`,`RootID`,`ChitGroupId`) VALUES (1," + DualTransactionKey + "," + balayer.ToobjectstrEvenNull(Session["Branchid"]) + ",'" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "'," + txtReceiptNumber.Text + ",'C'," + ChitsBranchID + ",'" + dtChoosenDate.ToString("yyyy-MM-dd") + "','" + "Ref No:" + TokenNo + " |Recd From:" + RowddlMemberName.SelectedItem.Text + " For DrawNo:" + RowddlToken.ToolTip.ToString() + " (aprox) Received By: " + balayer.ToobjectstrEvenNull(Session["BranchName"]) + "'," + RowtxtAmount.Text + ",'" + ddlReceiptSeries.SelectedItem.Text + "','" + balayer.ToobjectstrEvenNull(Session["UserName"]) + "',1," + dtChoosenDate.Day + "," + dtChoosenDate.Month + "," + dtChoosenDate.Year + "," + MemberID + "," + trans_medium + ",1," + GroupID + ")";
+            //            string strCashHeadQuery = "INSERT INTO `svcf`.`voucher` (`Other_Trans_Type`,`DualTransactionKey`,`BranchID`,`Current_Date`,`Voucher_No`,`Voucher_Type`,`Head_Id`,`ChoosenDate`,`Narration`,`Amount`,`Series`,`ReceievedBy`,`Trans_Type`,`T_Day`,`T_Month`,`T_Year`,`MemberID`,`Trans_Medium`,`RootID`,`ChitGroupId`) VALUES (1," + DualTransactionKey + "," + balayer.ToobjectstrEvenNull(Session["Branchid"]) + ",'" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "'," + txtReceiptNumber.Text + ",'D'," + CashOrBankID + ",'" + dtChoosenDate.ToString("yyyy-MM-dd") + "','" + "Ref No:" + TokenNo + " |Recd From" + RowddlMemberName.SelectedItem.Text + " For DrawNo:" + RowddlToken.ToolTip.ToString() + " (aprox) Received By: " + balayer.ToobjectstrEvenNull(Session["BranchName"]) + "'," + RowtxtAmount.Text + ",'" + ddlReceiptSeries.SelectedItem.Text + "','" + balayer.ToobjectstrEvenNull(Session["UserName"]) + "',1," + dtChoosenDate.Day + "," + dtChoosenDate.Month + "," + dtChoosenDate.Year + "," + MemberID + "," + trans_medium + "," + RootID + "," + GroupID + ")";
+            //            long strChitHead = trn.insertorupdateTrn(strChitHeadQuery);
+            //            long strCashHead = trn.insertorupdateTrn(strCashHeadQuery);
+            //            if (CheckBox1.Checked == true)
+            //            {
+            //                TransactionKeyDue = strCashHead.ToString();
+            //            }
+            //            if (RowddlMisc.SelectedIndex > 0)
+            //            {
+            //                if (decimal.Parse(RowtxtMisc.Text) != 0.00M)
+            //                {
+            //                    if (Convert.ToInt32(RowddlMisc.SelectedItem.Value.Split(',')[1]) == 1)
+            //                    {
+            //                        string strChitmISCHeadQuery = "INSERT INTO `svcf`.`voucher` (`Other_Trans_Type`,`DualTransactionKey`,`BranchID`,`Current_Date`,`Voucher_No`,`Voucher_Type`,`Head_Id`,`ChoosenDate`,`Narration`,`Amount`,`Series`,`ReceievedBy`,`Trans_Type`,`T_Day`,`T_Month`,`T_Year`,`MemberID`,`Trans_Medium`,`RootID`,`ChitGroupId`) VALUES (1," + DualTransactionKey + "," + balayer.ToobjectstrEvenNull(Session["Branchid"]) + ",'" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "'," + txtReceiptNumber.Text + ",'C'," + RowddlMisc.SelectedItem.Value.Split(',')[0] + ",'" + dtChoosenDate.ToString("yyyy-MM-dd") + "','" + "Ref No:" + RowddlMisc.SelectedValue.Split(',')[0] + " |Recd From:" + RowddlMemberName.SelectedItem.Text + " For " + RowddlMisc.SelectedItem.Text + "  Received By: " + balayer.ToobjectstrEvenNull(Session["BranchName"]) + "'," + RowtxtMisc.Text + ",'" + ddlReceiptSeries.SelectedItem.Text + "','" + balayer.ToobjectstrEvenNull(Session["UserName"]) + "',1," + dtChoosenDate.Day + "," + dtChoosenDate.Month + "," + dtChoosenDate.Year + "," + MemberID + "," + trans_medium + ",1," + GroupID + ") ";
+            //                        string strCashmISCHeadQuery = "INSERT INTO `svcf`.`voucher` (`Other_Trans_Type`,`DualTransactionKey`,`BranchID`,`Current_Date`,`Voucher_No`,`Voucher_Type`,`Head_Id`,`ChoosenDate`,`Narration`,`Amount`,`Series`,`ReceievedBy`,`Trans_Type`,`T_Day`,`T_Month`,`T_Year`,`MemberID`,`Trans_Medium`,`RootID`,`ChitGroupId`) VALUES (1," + DualTransactionKey + "," + balayer.ToobjectstrEvenNull(Session["Branchid"]) + ",'" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "'," + txtReceiptNumber.Text + ",'D'," + CashOrBankID + ",'" + dtChoosenDate.ToString("yyyy-MM-dd") + "','" + "Ref No:" + RowddlMisc.SelectedValue.Split(',')[0] + " |Recd From:" + RowddlMemberName.SelectedItem.Text + " For " + RowddlMisc.SelectedItem.Text + "  Received By: " + balayer.ToobjectstrEvenNull(Session["BranchName"]) + "'," + RowtxtMisc.Text + ",'" + ddlReceiptSeries.SelectedItem.Text + "','" + balayer.ToobjectstrEvenNull(Session["UserName"]) + "',1," + dtChoosenDate.Day + "," + dtChoosenDate.Month + "," + dtChoosenDate.Year + "," + MemberID + "," + trans_medium + "," + RootID + "," + GroupID + ") ";
+
+            //                        long strChitMiscHead = trn.insertorupdateTrn(strChitmISCHeadQuery);
+            //                        long strCashHeadMisc = trn.insertorupdateTrn(strCashmISCHeadQuery);
+            //                    }
+            //                    else
+            //                    {
+            //                        string strChitMiscHeadQuery = "INSERT INTO `svcf`.`voucher` (`DualTransactionKey`,`BranchID`,`Current_Date`,`Voucher_No`,`Voucher_Type`,`Head_Id`,`ChoosenDate`,`Narration`,`Amount`,`Series`,`ReceievedBy`,`Trans_Type`,`T_Day`,`T_Month`,`T_Year`,`MemberID`,`Trans_Medium`,`RootID`,`ChitGroupId`) VALUES (" + DualTransactionKey + "," + balayer.ToobjectstrEvenNull(Session["Branchid"]) + ",'" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "'," + txtReceiptNumber.Text + ",'C'," + RowddlMisc.SelectedItem.Value.Split(',')[0] + ",'" + dtChoosenDate.ToString("yyyy-MM-dd") + "','" + RowddlMisc.SelectedItem.Text + " Recd from " + RowddlMemberName.SelectedItem.Text + "'," + RowtxtMisc.Text + ",'" + ddlReceiptSeries.SelectedItem.Text + "','" + balayer.ToobjectstrEvenNull(Session["UserName"]) + "',1," + dtChoosenDate.Day + "," + dtChoosenDate.Month + "," + dtChoosenDate.Year + "," + MemberID + "," + trans_medium + "," + RowddlMisc.SelectedItem.Value.Split(',')[1] + "," + GroupID + ") ";
+            //                        string strCashHeadMiscQuery = "INSERT INTO `svcf`.`voucher` (`DualTransactionKey`,`BranchID`,`Current_Date`,`Voucher_No`,`Voucher_Type`,`Head_Id`,`ChoosenDate`,`Narration`,`Amount`,`Series`,`ReceievedBy`,`Trans_Type`,`T_Day`,`T_Month`,`T_Year`,`MemberID`,`Trans_Medium`,`RootID`,`ChitGroupId`) VALUES (" + DualTransactionKey + "," + balayer.ToobjectstrEvenNull(Session["Branchid"]) + ",'" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "'," + txtReceiptNumber.Text + ",'D'," + CashOrBankID + ",'" + dtChoosenDate.ToString("yyyy-MM-dd") + "','" + RowddlMisc.SelectedItem.Text + " Recd from " + RowddlMemberName.SelectedItem.Text + "'," + RowtxtMisc.Text + ",'" + ddlReceiptSeries.SelectedItem.Text + "','" + balayer.ToobjectstrEvenNull(Session["UserName"]) + "',1," + dtChoosenDate.Day + "," + dtChoosenDate.Month + "," + dtChoosenDate.Year + "," + MemberID + "," + trans_medium + "," + RootID + "," + GroupID + ") ";
+            //                        long strChitMiscHead = trn.insertorupdateTrn(strChitMiscHeadQuery);
+            //                        long strCashHeadMisc = trn.insertorupdateTrn(strCashHeadMiscQuery);
+            //                    }
+            //                }
+            //            }
+            //        }
+            //    }
+            //    if (ddlColloctorName.ToolTip.ToString().Trim() != "")
+            //    {
+            //        //put  the  query to check all the numbers used or not 
+            //        trn.insertorupdateTrn("update svcf.assignreceiptbook set IsFinished=1 where receiptseries='" + ddlReceiptSeries.SelectedItem.Text + "' and receiptnoto in(" + ddlColloctorName.ToolTip.ToString().Trim() + ") and BranchID=" + balayer.ToobjectstrEvenNull(Session["Branchid"]));
+            //    }
+            //    ModalPopupExtender1.PopupControlID = "pnlmsg";
+            //    BtnOK.Focus();
+            //    ModalPopupExtender1.Show();
+            //    BtnOK.Focus();
+            //    pnlmsg.Visible = true;
+            //    lblh.Text = "Status";
+            //    lblcon.Text = "Your Transaction Processed Successfully!!!";
+            //    lblcon.ForeColor = System.Drawing.Color.Green;
+            //    trn.CommitTrn();
+            //}
+            //catch (Exception ex)
+            //{
+            //    try
+            //    {
+            //       trn.RollbackTrn();
+            //    }
+            //    catch (Exception error)
+            //    { }
+            //    finally
+            //    {
+            //        ModalPopupExtender1.PopupControlID = "Pnlgendrate";
+            //        ModalPopupExtender1.Show();
+            //        Pnlgendrate.Visible = true;
+            //        lblHD.Text = "Status";
+            //        lblContent.Text = "Problem with Your Transaction Please Contact Administrator!!!";
+            //        lblContent.ForeColor = System.Drawing.Color.Red;
+            //    }
+            //}
+            //finally
+            //{
+            //    trn.DisposeTrn();
+            //}
+            //pnlConfirmation.Visible = false;
+        }
+
+        public void GetRcBookno(string Series, string CollectorID)
+        {
+            try
+            {
+                DataTable dtAll = balayer.GetDataTable("SELECT  alreadyusedreceipts,receiptnoto   FROM svcf.assignreceiptbook where  moneycollid=" + CollectorID + "  and IsFinished=0 and BranchID=" + balayer.ToobjectstrEvenNull(HttpContext.Current.Session["Branchid"]) + " and receiptseries='" + Series + "'");
+                if (dtAll.Rows.Count != 0)
+                {
+                    //receiptno = dtAll.Rows[0][1].ToString();
+                    int from = int.Parse(dtAll.Rows[0][0].ToString());
+                    int t0 = int.Parse(dtAll.Rows[0][1].ToString());
+                    string strQuery = "select ifnull(max(Voucher_No)+1,0) from voucher where BranchID=" + balayer.ToobjectstrEvenNull(HttpContext.Current.Session["Branchid"]) + " and Trans_Type=1 and Voucher_No>=" + from + " and Voucher_No<=" + t0 + " and `Series`='" + Series + "'";
+                    int RecNo = int.Parse(balayer.GetSingleValue(strQuery));
+                    if (RecNo != 0)
+                    {
+                        txtReceiptNumber.Text = RecNo.ToString();
+                    }
+                    else
+                    {
+                        txtReceiptNumber.Text = from.ToString();
+                    }
+                }
+                else
+                {
+                    txtReceiptNumber.Text = "0";
+                    //ScriptManager.RegisterStartupScript(this, GetType(), "Warning", "alert(' Please Assign new Reciept Book!!!');", true);
+                }
+
+            }
+            catch (Exception) { }
+        }
+
+        protected void btnGenerate_Click(object sender, EventArgs e)
+        {
+            btnGenerate.Style.Add("background-color", "#c2c2c2");
+            lblcancelmsg.Text = "";
+            Page.Validate("a");
+            Page.Validate("GrpRow");
+            Page.Validate("b");
+            if (!Page.IsValid)
+            {
+                return;
+            }
+            if (Session["CheckRefresh"].ToString() != ViewState["CheckRefresh"].ToString())
+            {
+                return;
+            }
+            if (Page.IsValid == true)
+            {
+                decimal dblTotalAmount = decimal.Parse(txtTotalAmount.Text);
+                decimal dblDueAmount = 0.0M;
+                bool isMiscIssue = false;
+
+                string selectedRSeries = "";
+                string LoadedSeries = "";
+                 long RCNumber = 0;
+                //long RCNumber = 0;
+                // RCNumber = Convert.ToInt32(txtReceiptNumber.Text);
+                RCNumber = Convert.ToInt32(txtReceiptNumber.Text);
+                LoadedSeries = HD_RSeriesid.Value;
+
+
+                selectedRSeries = Request.Form[ddlColloctorName.UniqueID];
+                LoadedSeries = HD_RSeriesid.Value;
+                PopulateDropDownList(PopulateRSeries(selectedRSeries), ddlReceiptSeries);
+                LoadedSeries.Trim();
+                if (ddlReceiptSeries.Items.FindByText(LoadedSeries).ToString()==LoadedSeries)
+                {
+                    if (ddlReceiptSeries.Items.FindByText(LoadedSeries).Selected == false)
+                    {
+                        ddlReceiptSeries.Items.FindByText(LoadedSeries).Selected = true;
+                    }
+                }
+                else
+                {
+                    ddlReceiptSeries.Items.Add(LoadedSeries);
+                    ddlReceiptSeries.Items.FindByText(LoadedSeries).Selected = true;
+                }
+
+                //txtReceiptNumber.Text = RCNumber.ToString();
+                //GetRcBookno(LoadedSeries, selectedRSeries);               
+                foreach (GridViewRow gvRow in GView_Selected.Rows)
+                {
+                    //decimal dblDueTemp = decimal.Parse(((TextBox)gvRow.FindControl("txtAmount")).Text);
+                    decimal dblDueTemp = decimal.Parse(gvRow.Cells[3].Text);
+                    decimal dblMiscTemp = 0.0M;
+                    bool isMisc = decimal.TryParse(gvRow.Cells[5].Text, out dblMiscTemp);
+                    //bool isMisc = decimal.TryParse(((TextBox)gvRow.FindControl("txtMisc")).Text, out dblMiscTemp);
+                    dblDueAmount += dblDueTemp + dblMiscTemp;
+                    string ddlMisc = gvRow.Cells[4].Text;
+                    //DropDownList ddlMisc = ((DropDownList)gvRow.FindControl("ddlMisc"));
+                    if (isMisc == true & ddlMisc != "")
+                    {
+                        isMiscIssue = true;
+                    }
+                    else if (isMisc == false & ddlMisc != "")
+                    {
+                        isMiscIssue = true;
+                    }
+                }
+                if (dblTotalAmount != dblDueAmount)
+                {
+                    ModalPopupExtender1.PopupControlID = "Pnlgendrate";
+                    ModalPopupExtender1.Show();
+                    Pnlgendrate.Visible = true;
+                    lblHD.Text = "Status";
+                    if (isMiscIssue == false)
+                    {
+                        lblContent.Text = "Total Amount Not Tally With Due Amount and Misc Amount!!!";
+                    }
+                    else
+                    {
+                        lblContent.Text = "Total Amount Not Tally With Due Amount and Misc Amount!!!<br><br>Please  Check Misc Area!!!";
+                    }
+                    lblContent.ForeColor = System.Drawing.Color.Red;
+                    return;
+                }
+                string finishedReceiptNo = "";
+                string strErrorMessage = "";
+                string strExistMessage = "";
+
+                DataTable dtAll = balayer.GetDataTable("SELECT  (receiptnoto-total),receiptnoto,receiptnofrom FROM svcf.assignreceiptbook where  moneycollid=" + ddlColloctorName.SelectedValue + "  and BranchID=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and receiptseries='" + ddlReceiptSeries.SelectedItem.Text + "' and IsFinished=0");
+              
+                for (int j = 0; j < dtAll.Rows.Count; j++)
+                {
+                    int ReceiptNo = Convert.ToInt32(RCNumber);
+                    int FromRange = int.Parse(dtAll.Rows[j][0].ToString());
+                    rcptfrmrange.Value = Convert.ToString(FromRange);
+                   
+                    int toRange = int.Parse(dtAll.Rows[j][1].ToString());
+                    if (FromRange == toRange)
+                    {
+                        FromRange = int.Parse(dtAll.Rows[j][2].ToString());
+                    }
+                    rcpttorange.Value = Convert.ToString(toRange);
+
+                    if (ReceiptNo >= FromRange & ReceiptNo <= toRange)
+                    {
+                        if (ReceiptNo == toRange)
+                        {
+                            finishedReceiptNo = ReceiptNo + ",";
+                        }
+                        if (0 != int.Parse(balayer.GetSingleValue("select ifnull(Count(*),0) from voucher where BranchID=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and  Voucher_No=" + ReceiptNo + " and Series='" + ddlReceiptSeries.SelectedItem.Text + "'")))
+                        {
+                            if (strExistMessage == "")
+                            {
+                                strErrorMessage = "";
+                                strExistMessage = "Following ReceiptNo Already Exist In Series " + ddlReceiptSeries.SelectedItem.Text + " :<br><br>" + ReceiptNo;
+                                break;
+                            }
+                            else
+                            {
+                                strExistMessage += "<br>" + ReceiptNo;
+                            }
+                        }
+                        else
+                        {
+                            strExistMessage = "";
+                            strErrorMessage = "";
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        if (strErrorMessage == "")
+                        {
+                            strErrorMessage = "Following ReceiptNo Not Resides inside The Allocated Range In Series " + ddlReceiptSeries.SelectedItem.Text + ":<br><br> " + ReceiptNo;
+                        }
+                        else
+                        {
+                            strErrorMessage += "<br>" + ReceiptNo;
+                        }
+                        //error message 
+                    }
+                }
+                //}
+                ddlColloctorName.ToolTip = finishedReceiptNo.Trim().Trim(',');
+                if (strErrorMessage.Trim() != "" || strExistMessage.Trim() != "")
+                {
+                    ModalPopupExtender1.PopupControlID = "Pnlgendrate";
+                    ModalPopupExtender1.Show();
+                    Pnlgendrate.Visible = true;
+                    lblHD.Text = "Status";
+                    string finalError = "";
+                    if (strErrorMessage.Trim() != "")
+                    {
+                        finalError += strErrorMessage + "<br><br>";
+                    }
+                    if (strExistMessage.Trim() != "")
+                    {
+                        finalError += strExistMessage + "<br>";
+                    }
+                    lblContent.Text = finalError;
+                    lblContent.ForeColor = System.Drawing.Color.Red;
+                    return;
+                }
+                //validation end
+                DataTable dtConfirmation = new DataTable();
+                dtConfirmation.Columns.Add("Member Name");
+                dtConfirmation.Columns.Add("Amount Paying");
+                dtConfirmation.Columns.Add("Draw Details");
+                string memname, memtoken, txtamnt, miscamnt, txtmiscamnt, memtokentxt, qry;
+                string tonarration = "";
+                //for (int i = 0; i < GridView1.Rows.Count; i++)
+                ddltooltip = new string[GView_Selected.Rows.Count];
+                for (int i = 0; i <= GView_Selected.Rows.Count - 1; i++)
+                {
+                    try
+                    {
+                        dtConfirmation.Rows.Add();
+                        
+                        memname = GView_Selected.Rows[i].Cells[1].Text;
+                        memtokentxt = GView_Selected.Rows[i].Cells[2].Text;
+                        Label tokenid = (Label)GView_Selected.Rows[i].FindControl("lblheadid");
+                        memtoken = tokenid.Text;
+                        txtamnt = GView_Selected.Rows[i].Cells[3].Text;
+                        miscamnt = GView_Selected.Rows[i].Cells[4].Text;
+                        miscamnt = miscamnt.Replace("&gt;&gt;", ">>");
+                        //&gt;&gt;
+                        txtmiscamnt = GView_Selected.Rows[i].Cells[5].Text;
+
+                        decimal dblMiscTemp = 0.0M;
+                        bool isMisc = decimal.TryParse(txtmiscamnt, out dblMiscTemp);
+                        //new change
+                        if ((isMisc == true & dblMiscTemp > 0.0M))
+                        {
+                            isMisc = true;
+                        }
+                        else
+                        {
+                            isMisc = false;
+                        }
+                        //new change
+                        string GroupID = balayer.GetSingleValue("select GroupID from membertogroupmaster where Head_Id=" + memtoken);
+                        dtConfirmation.Rows[i]["Member Name"] = memname;   //memtoken;
+                        dtConfirmation.Rows[i]["Amount Paying"] = txtamnt; //txtmiscamnt;
+                        decimal TotalPaidAmount = decimal.Parse(balayer.GetSingleValue("SELECT ifnull( (sum(IF(Voucher_Type = 'C',Amount,0.00)) -sum(IF(Voucher_Type = 'D',Amount,0.00)) ),0.00) AS TransactionAmount FROM `svcf`.`voucher` where  Head_Id=" + memtoken + " and  (Trans_Type<>2) and Other_Trans_Type<>5"));
+                        decimal AddTotalPaidAmount = TotalPaidAmount;
+                        string FromNarration = "";
+                        string ToNarration = "";
+                        int FromDraw = 0;
+                        int ToDraw = 0;
+                        if (TotalPaidAmount == 0.00M)
+                        {
+                            FromNarration = "1";
+                            FromDraw = 1;
+                            TotalPaidAmount = TotalPaidAmount + decimal.Parse(txtamnt);
+                            qry = "SELECT DrawNO,CurrentDueAmount FROM `svcf`.`auctiondetails` where GroupID=" + GroupID + " and CurrentDueAmount<>'0.00' order by DrawNO";
+                            DataTable dtAuction = balayer.GetDataTable(qry);
+                            for (int iAuc = 0; iAuc < dtAuction.Rows.Count; iAuc++)
+                            {
+                                decimal currentDueAmount = decimal.Parse(dtAuction.Rows[iAuc]["CurrentDueAmount"].ToString());
+                                TotalPaidAmount = TotalPaidAmount - currentDueAmount;
+                                decimal tempDueAmount = TotalPaidAmount;
+                                if (tempDueAmount == 0.00M)
+                                {
+                                    ToNarration = (iAuc + 1).ToString();
+                                    ToDraw = iAuc + 1;
+                                    break;
+                                }
+                                else if (tempDueAmount < 0.00M)
+                                {
+                                    ToDraw = iAuc + 1;
+                                    ToNarration = iAuc + 1 + " Part Payment";
+                                    break;
+                                }
+                            }
+                            if (ToNarration == "")
+                            {
+                                FromNarration += " To " + (int.Parse(dtAuction.Rows[dtAuction.Rows.Count - 1]["DrawNO"].ToString()) + 1).ToString() + "+ Excess Payment";
+                            }
+                            if (FromDraw != ToDraw)
+                            {
+                                FromNarration += " To " + ToNarration;
+                            }
+                            //RowddlToken.ToolTip = FromNarration;
+                            dtConfirmation.Rows[i]["Misc Head"] = FromNarration; //RowddlMemberName.ToolTip.ToString();                            
+                            ddltooltip[i] = FromNarration;
+                        }
+                        else
+                        {
+                            DataTable dtAuction = balayer.GetDataTable("SELECT DrawNO,CurrentDueAmount FROM `svcf`.`auctiondetails` where GroupID=" + GroupID + " and CurrentDueAmount<>'0.00' order by DrawNO");
+                            TotalPaidAmount = AddTotalPaidAmount;
+                            for (int iAuc = 0; iAuc < dtAuction.Rows.Count; iAuc++)
+                            {
+                                decimal currentDueAmount = decimal.Parse(dtAuction.Rows[iAuc]["CurrentDueAmount"].ToString());
+                                TotalPaidAmount = TotalPaidAmount - currentDueAmount;
+                                decimal tempDueAmount = TotalPaidAmount;
+                                if (tempDueAmount == 0.00M)
+                                {
+                                    FromNarration = (iAuc + 2).ToString();
+                                    FromDraw = iAuc + 2;
+                                    break;
+                                }
+                                else if (tempDueAmount < 0.00M)
+                                {
+                                    FromNarration = iAuc + 1 + " Part Payment";
+                                    FromDraw = iAuc + 1;
+                                    break;
+                                }
+                            }
+                            if (FromNarration == "")
+                            {
+                                if (dtAuction.Rows.Count > 0)
+                                {
+                                    FromNarration = (int.Parse(dtAuction.Rows[dtAuction.Rows.Count - 1]["DrawNO"].ToString()) + 1).ToString() + "+ Excess Payment";
+                                }
+                            }
+                            else
+                            {
+                                TotalPaidAmount = AddTotalPaidAmount;
+                                TotalPaidAmount = TotalPaidAmount + decimal.Parse(txtamnt);
+                                for (int iAuc = 0; iAuc < dtAuction.Rows.Count; iAuc++)
+                                {
+                                    decimal currentDueAmount = decimal.Parse(dtAuction.Rows[iAuc]["CurrentDueAmount"].ToString());
+                                    TotalPaidAmount = TotalPaidAmount - currentDueAmount;
+                                    decimal tempDueAmount = TotalPaidAmount;
+                                    if (tempDueAmount == 0.00M)
+                                    {
+                                        ToNarration = (iAuc + 1).ToString();
+                                        ToDraw = iAuc + 1;
+                                        break;
+                                    }
+                                    else if (tempDueAmount < 0.00M)
+                                    {
+                                        ToDraw = iAuc + 1;
+                                        ToNarration = iAuc + 1 + " Part Payment";
+                                        break;
+                                    }
+                                }
+                                if (ToNarration == "")
+                                {
+                                    ToNarration = "+ Excess Payment";
+                                }
+                            }
+                            if (ToNarration != "")
+                            {
+                                if (FromDraw != ToDraw)
+                                {
+                                    //RowddlToken.ToolTip = FromNarration + " To " + ToNarration;
+                                    tonarration = FromNarration + " To " + ToNarration;
+                                    ddltooltip[i] = tonarration;
+                                }
+                                else
+                                {
+                                    //RowddlToken.ToolTip = ToNarration;
+                                    tonarration = ToNarration;
+                                    ddltooltip[i] = ToNarration;
+                                }
+                            }
+                            else
+                            {
+                                //RowddlToken.ToolTip = FromNarration;
+                                tonarration = FromNarration;
+                                ddltooltip[i] = FromNarration;
+                            }
+                        }
+                        dtConfirmation.Rows[i]["Draw Details"] = tonarration;      //RowddlToken.ToolTip.ToString();                        
+                        if (isMisc == true)
+                        {
+                            if (!dtConfirmation.Columns.Contains("Misc Head"))
+                            {
+                                dtConfirmation.Columns.Add("Misc Head");
+                                dtConfirmation.Columns.Add("Misc Amount");
+                            }
+                            dtConfirmation.Rows[i]["Misc Head"] = miscamnt;
+                            dtConfirmation.Rows[i]["Misc Amount"] = txtmiscamnt;
+                        }
+                    }
+                    catch
+                    {
+                    }
+                    finally
+                    {
+                    }
+                }
+
+                // txtReceiptNumber.Text = RCNumber.ToString();
+                gvConfirm.DataSource = dtConfirmation;
+                gvConfirm.DataBind();
+                lblHeadingConfirmation.Text = "Confirmation";
+                ModalPopupExtender1.PopupControlID = "pnlConfirmation";
+                ModalPopupExtender1.Show();
+                pnlConfirmation.Visible = true;
+                Button1.Focus();
+                lblcancelmsg.Text = "";
+
+            }
+        }
+        protected void btnyes_Click(object sender, EventArgs e)
+        {
+            ModalPopupExtender1.Hide();
+        }
+        protected void btnNo_Click(object sender, EventArgs e)
+        {
+            ModalPopupExtender1.Hide();
+        }
+        protected void btnOK_Click(object sender, EventArgs e)
+        {
+            Response.Redirect(Request.Url.AbsolutePath);
+        }
+        protected void ResetPage()
+        {
+            Response.Redirect(Request.Url.AbsolutePath);
+        }
+
+        protected void GView_Selected_RowDeleting(object sender, GridViewDeleteEventArgs e)
+        {
+            try
+            {
+                int index = Convert.ToInt32(e.RowIndex);
+                DataTable dtable = ViewState["CurrentTable"] as DataTable;
+                dtable.Rows[index].Delete();
+                ViewState["CurrentTable"] = dtable;
+                GView_Selected.DataSource = ViewState["CurrentTable"];
+                GView_Selected.DataBind();
+
+                //RefNo.RemoveAt(index);
+                //RefNo1.RemoveAt(index);
+
+                if (GView_Selected.Rows.Count == 0)
+                {
+                    SetInitialRow();
+                }
+            }
+            catch (Exception)
+            {
+
+            }
+            finally
+            {
+
+            }
+        }
+
+        protected void ImgAdd_Click(object sender, ImageClickEventArgs e)
+        {
+            try
+            {
+
+                if (ViewState["CurrentTable"] != null)
+                {
+                    DataTable dtCurrentTable = (DataTable)ViewState["CurrentTable"];
+                    DataRow drCurrentRow = null;
+                    if (dtCurrentTable.Rows.Count > 0)
+                    {
+                        //DropDownList ddlMiscVal = (DropDownList)GridView1.Rows[0].FindControl("ddlMisc");
+                        //TextBox txtMiscVal = (TextBox)GridView1.Rows[0].FindControl("txtMisc");
+                        decimal lastAmount = 0.0M;
+                        bool isMisc = decimal.TryParse(txtMisc.Text, out lastAmount);
+                        if ((isMisc == true & lastAmount > 0.0M))
+                        {
+                            isMisc = true;
+                        }
+                        else
+                        {
+                            isMisc = false;
+                        }
+                        if ((ddlMisc.SelectedIndex <= 0) & isMisc == true)
+                        {
+                            ScriptManager.RegisterClientScriptBlock(Page, Page.GetType(), Guid.NewGuid().ToString(), "alert('Please Choose Misc Head Valid Details');", true);
+                            //Response.Write("<script>alert('Please Provide Valid Details');</script>");
+                            return;
+                        }
+                        if (ddlMisc.SelectedIndex > 0 & isMisc != true)
+                        {
+                            ScriptManager.RegisterClientScriptBlock(Page, Page.GetType(), Guid.NewGuid().ToString(), "alert('Please Provide Misc Amount Details');", true);
+                            return;
+                            //Response.Write("<script>alert('Please Provide Valid Details');</script>");
+                        }
+
+
+                        //add new row to DataTable
+
+                        //Store the current data to ViewState
+                        ViewState["CurrentTable"] = dtCurrentTable;
+                        for (int i = 1; i <= dtCurrentTable.Rows.Count; i++)
+                        {
+                            //extract the DropDownList Selected Items
+                            drCurrentRow = dtCurrentTable.NewRow();
+                            //DropDownList ddlMemberName = (DropDownList)GridView1.Rows[0].FindControl("ddlMemberName");
+                            //DropDownList ddlTokennew = (DropDownList)GridView1.Rows[0].FindControl("ddlTokennew");
+                            //TextBox txtAmount = (TextBox)GridView1.Rows[0].FindControl("txtAmount");
+                            //DropDownList ddlMisc = (DropDownList)GridView1.Rows[0].FindControl("ddlMisc");
+                            //TextBox txtMisc = (TextBox)GridView1.Rows[0].FindControl("txtMisc");
+                            // Update the DataRow with the DDL Selected Items
+                            //
+                            drCurrentRow["MemberName"] = TxtMemberName.Text;
+                            drCurrentRow["Token"] = ddlTokennew.SelectedItem;
+                            drCurrentRow["Amount"] = txtAmount.Text;
+                            drCurrentRow["MiscHead"] = ddlMisc.SelectedItem;
+                            drCurrentRow["MiscAmount"] = txtMisc.Text;
+                        }
+                        //Remove initial blank row
+                        if (dtCurrentTable.Rows[0][0].ToString() == "")
+                        {
+                            dtCurrentTable.Rows[0].Delete();
+                            dtCurrentTable.AcceptChanges();
+                        }
+                        drCurrentRow["RowNumber"] = dtCurrentTable.Rows.Count + 1;
+                        dtCurrentTable.Rows.Add(drCurrentRow);
+                        ViewState["CurrentTable"] = dtCurrentTable;
+                        //Rebind the Grid with the current data
+                        GView_Selected.DataSource = dtCurrentTable;
+                        GView_Selected.DataBind();
+                        //DropDownList ddlMemberNameNew = (DropDownList)GridView1.Rows[GridView1.Rows.Count - 1].FindControl("ddlMemberName");
+                        //DropDownList ddlMiscnew = (DropDownList)GridView1.Rows[GridView1.Rows.Count - 1].FindControl("ddlMisc");
+                        //FillDropDownList(ddlMemberNameNew, 0, "");
+                        //FillDropDownList(ddlMiscnew, 2, "");
+                    }
+                }
+            }
+            catch (Exception) { }
+        }
+
+        protected void ImgCancelRcpt_Click(object sender, ImageClickEventArgs e)
+        {
+            try
+            {
+
+                TransactionLayer trn = new TransactionLayer();
+
+                string qry = "";
+                string selectedRSeries = "";
+                string LoadedSeries = "";
+
+                //System.Guid guid = Guid.NewGuid();
+                //string hexstring = BitConverter.ToString(guid.ToByteArray());
+                //string guidForBinary16 = "0x" + hexstring.Replace("-", string.Empty);
+                //string DualTransactionKey = guidForBinary16;
+
+
+                //stored procedure for DualTransactionKey
+
+                string DualTransactionKey = Convert.ToString(balayer.sp_gendratedt_key());
+
+
+                DateTime dtChoosenDate = DateTime.Parse(txtReceivedDate.Text);
+                qry = "INSERT INTO svcf.`voucher` (`DualTransactionKey`,`BranchID`,`CurrDate`,`Voucher_No`,`Voucher_Type`,`Head_Id`,`ChoosenDate`,`Narration`," +
+                    "`Amount`,`Series`,`ReceievedBy`,`Trans_Type`,`T_Day`,`T_Month`,`T_Year`,`MemberID`,`Trans_Medium`,`RootID`,`ChitGroupId`,`App_Voucher_No`) VALUES (" + DualTransactionKey + "," +
+                    "" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + ",'" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "'," + txtReceiptNumber.Text + "," +
+                    "'C',0,'" + dtChoosenDate.ToString("yyyy-MM-dd") + "','" + "Cancelled Receipt',0,'VOUCHER'," +
+                    "'admin',1," + dtChoosenDate.Day + "," + dtChoosenDate.Month + "," + dtChoosenDate.Year + ",0," +
+                    " 0,0,0,'0')";
+
+                long strChitHead = trn.insertorupdateTrn(qry);
+
+                lblcancelmsg.Text = "Selected Receipt Deleted successfully!!!";
+
+                selectedRSeries = Request.Form[ddlColloctorName.UniqueID];
+                LoadedSeries = HD_RSeriesid.Value;
+                PopulateDropDownList(PopulateRSeries(selectedRSeries), ddlReceiptSeries);
+                ddlReceiptSeries.Items.FindByText(LoadedSeries).Selected = true;
+
+            }
+            catch (Exception) { }
+        }
+
+        protected void ButtonAdd_Click1(object sender, EventArgs e)
+        {
+            try
+            {
+
+                string selectedMemId = "";
+                string selectedRSeries = "";
+
+                string LoadedSeries = "";
+
+                long RCNumber = 0;
+
+
+                selectedRSeries = Request.Form[ddlColloctorName.UniqueID];
+                selectedMemId = hiddenmemberid.Value;
+
+                LoadedSeries = HD_RSeriesid.Value;
+                LoadedSeries.Replace(System.Environment.NewLine, string.Empty);
+
+                LoadedSeries.Trim();
+
+                PopulateDropDownList(PopulateRSeries(selectedRSeries), ddlReceiptSeries);
+
+                if (ddlReceiptSeries.Items.Count > 0)
+                {
+                    ddlReceiptSeries.Items.FindByText(LoadedSeries).Selected = true;
+                }
+
+
+                if (ViewState["CurrentTable"] != null)
+                {
+                    DataTable dtCurrentTable = (DataTable)ViewState["CurrentTable"];
+                    DataRow drCurrentRow = null;
+                    if (dtCurrentTable.Rows.Count > 0)
+                    {
+                        string[] split1;
+                        
+                        decimal lastAmount = 0.0M;
+                        bool isMisc = decimal.TryParse(txtMisc.Text, out lastAmount);
+                        if ((isMisc == true & lastAmount > 0.0M))
+                        {
+                            isMisc = true;
+                        }
+                        else
+                        {
+                            isMisc = false;
+                        }
+                        if ((ddlMisc.SelectedIndex <= 0) & isMisc == true)
+                        {
+                            ScriptManager.RegisterClientScriptBlock(Page, Page.GetType(), Guid.NewGuid().ToString(), "alert('Please Choose Misc Head Valid Details');", true);
+                            //Response.Write("<script>alert('Please Provide Valid Details');</script>");
+                            return;
+                        }
+                        if (ddlMisc.SelectedIndex > 0 & isMisc != true)
+                        {
+                            ScriptManager.RegisterClientScriptBlock(Page, Page.GetType(), Guid.NewGuid().ToString(), "alert('Please Provide Misc Amount Details');", true);
+                            return;
+                            //Response.Write("<script>alert('Please Provide Valid Details');</script>");
+                        }
+
+                            RCNumber = Convert.ToInt32(txtReceiptNumber.Text);
+                      
+                        //add new row to DataTable
+
+                        for (int i = 1; i <= dtCurrentTable.Rows.Count; i++)
+                        {
+
+                            drCurrentRow = dtCurrentTable.NewRow();
+
+                            //                           
+                            drCurrentRow["MemberName"] = TxtMemberName.Text;
+                            drCurrentRow["Token"] = ddlTokennew.SelectedItem;
+                            drCurrentRow["Amount"] = txtAmount.Text;
+                            drCurrentRow["MiscHead"] = ddlMisc.SelectedItem;
+                            drCurrentRow["MiscAmount"] = txtMisc.Text;
+                            drCurrentRow["Head_Id"] = ddlTokennew.SelectedValue;
+                            drCurrentRow["MemberId"] = selectedMemId;
+                            drCurrentRow["RcNumber"] = RCNumber;
+                            if ((ddlMisc.SelectedValue != null) && (ddlMisc.SelectedValue != "0,0"))
+                            {
+                                if (ddlMisc.SelectedValue.Contains(','))
+                                {
+                                    split1 = ddlMisc.SelectedValue.Split(',');
+                                    drCurrentRow["firstmisc"] = split1[0];
+                                    drCurrentRow["secmisc"] = split1[1];
+                                }
+                                else
+                                {
+                                    drCurrentRow["firstmisc"] = "0";
+                                    drCurrentRow["secmisc"] = "0";
+                                }
+                            }
+                            else
+                            {
+                                drCurrentRow["firstmisc"] = "0";
+                                drCurrentRow["secmisc"] = "0";
+                            }
+                        }
+                        //Remove initial blank row
+                        if (dtCurrentTable.Rows[0][0].ToString() == "")
+                        {
+                            dtCurrentTable.Rows[0].Delete();
+                            dtCurrentTable.AcceptChanges();
+                        }
+                        drCurrentRow["RowNumber"] = dtCurrentTable.Rows.Count + 1;
+                        //if (ddlMisc.SelectedValue != null)
+                        //{
+                        //    RefNo.Add(ddlMisc.SelectedValue.Split(',')[0]);
+                        //    RefNo1.Add(ddlMisc.SelectedItem.Value.Split(',')[1]);
+                        //}
+                        dtCurrentTable.Rows.Add(drCurrentRow);
+                        ViewState["CurrentTable"] = dtCurrentTable;
+                        //Rebind the Grid with the current data
+                        GView_Selected.DataSource = dtCurrentTable;
+                        GView_Selected.DataBind();
+
+                        //Clear Existing Values
+                        txtMisc.Text = "";
+                        txtAmount.Text = "";
+                        TxtMemberName.Text = "";
+                        ddlTokennew.ClearSelection();
+
+                        ddlMisc.ClearSelection();
+                        btnGenerate.Focus();
+
+                    }
+
+                }
+
+                //GView_Selected.Focus();
+            }
+            catch (Exception err)
+            {
+
+            }
+        }
+    }
+}

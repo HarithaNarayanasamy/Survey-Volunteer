@@ -1,0 +1,132 @@
+﻿
+.bubblenew
+ {
+ 
+   border: 2px solid #D8D8D8;
+   padding: 5px;
+   border-radius: 5px;
+   font-family: Arial;
+   font-size: 11px;
+   text-transform: uppercase;
+   background-color: #ffffe1;
+   color: rgb(211, 0, 0);
+   text-align: center;
+   border: 1px solid red;
+   
+   
+ }
+.bubble
+ {
+ 	width:auto;
+border: 1px solid red;
+min-height:40px; /*min height of DIV should be set to at least 2x the width of the arrow*/
+background: #fed !important;
+color:Red;
+padding:5px;
+position:relative;
+white-space:nowrap;
+-moz-border-radius:5px; /*add some nice CSS3 round corners*/
+-webkit-border-radius:5px;
+border-radius:5px;
+
+margin-bottom:2em;
+}
+
+
+
+
+
+.bubble:after{ /*arrow added to leftarrowdiv DIV*/
+content:'';
+
+display:block;
+border: 1px solid red;
+position:absolute;
+top:5px;
+left:-20px; /*should be set to -border-width x 2 */
+width:0;
+height:0;
+border-color: transparent RED transparent transparent; /*border color should be same as div div background color*/
+border-style: solid;
+border-width: 10px;
+}
+
+
+ 
+
+
+span.tooltip:after {
+      content: "";
+      position: absolute;
+      width: 0;
+      height: 0;
+      border-width: 10px;
+      border-style: solid;
+      border-color: #FFFFFF transparent transparent transparent;
+      top: 44px;
+      left: 50px;
+}
+  textarea.error { background: #fed !important; border: 1px solid red !important; }
+   div.error  { background: #fed !important; border: 1px solid red !important; }
+  div.error  a{ background: #fed !important; border: 1px solid red !important; }
+ 
+  input.error  { background: #fed !important; border: 1px solid red !important; }
+
+  select.error { background: #fed !important; border: 1px solid red !important; }
+
+  label.error, .form-side-labels label.error, .form-top-labels label.error
+
+  {
+
+  	display: block;
+
+ 	margin: 0 0 0 5px;
+
+ 	padding: 3px;
+
+  	width: auto;
+
+   	font-weight: bold;
+
+  	color: #fff;
+
+  	background: red;
+
+  }
+
+ .form-top-labels label.error
+
+  {
+
+   	margin: 3px 0 0;
+
+  	width: 416px;
+
+  }
+
+  .form-top-labels .side-by-side label.error, .form-top-labels .side-by-side-last label.error { width: 200px; }
+
+  .wd-title{
+	width:1061px;
+	font-weight:bold;
+	color:#000000;	
+	font-size:16px;	
+	height:31px;
+	margin-top:4px;
+	margin-left:0px;
+	padding-left:0px;
+}
+
+.floatLeft{float:left;
+	width: 431px;
+	height: 48px;
+}
+
+.floatRight{float:right;}
+
+.lblstyle
+{
+  font-size:medium;
+  font-style:normal;
+  font-weight:bold;
+}

@@ -1,0 +1,257 @@
+﻿<%@ Page Language="C#" Culture="en-GB" MasterPageFile="~/Branch.Master" AutoEventWireup="true" CodeBehind="BranchArrears.aspx.cs" 
+Inherits="SreeVisalamChitFundLtd_phase1.BranchArrears" %>
+
+
+<%@ Register Assembly="DevExpress.Web.v11.1, Version=11.1.12.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a"
+    Namespace="DevExpress.Web.ASPxMenu" TagPrefix="dx" %>
+<%@ Register Assembly="DevExpress.Web.ASPxGridView.v11.1, Version=11.1.12.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a"
+    Namespace="DevExpress.Web.ASPxGridView" TagPrefix="dx" %>
+<%@ Register Assembly="DevExpress.Web.ASPxGridView.v11.1.Export, Version=11.1.12.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a"
+    Namespace="DevExpress.Web.ASPxGridView.Export" TagPrefix="dx" %>
+<%@ Register Assembly="DevExpress.Web.ASPxEditors.v11.1, Version=11.1.12.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a"
+    Namespace="DevExpress.Web.ASPxEditors" TagPrefix="dx" %>
+<%@ Register assembly="DevExpress.Web.v11.1" namespace="DevExpress.Web.ASPxMenu" tagprefix="dx" %>
+<%@ Register assembly="DevExpress.Web.ASPxEditors.v11.1" namespace="DevExpress.Web.ASPxEditors" tagprefix="dx" %>
+<%@ Register assembly="DevExpress.Web.ASPxGridView.v11.1" namespace="DevExpress.Web.ASPxGridView" tagprefix="dx" %>
+<asp:Content ID="Content2" ContentPlaceHolderID="cphHead" runat="server">
+    <style type="text/css">
+        .chzn-results
+        {
+            text-align: center;
+        }
+        #ctl00_cphMainContent_ddlChit_chzn .chzn-drop .chzn-search input[type="text"]
+        {
+            height: 16px;
+        }
+    </style>
+</asp:Content>
+<asp:Content ID="Content3" ContentPlaceHolderID="cphMainContent" runat="server">
+    <ajax:ToolkitScriptManager ID="ToolkitScriptManager1" runat="server">
+    </ajax:ToolkitScriptManager>
+    <div class="row">
+        <div class="twelve columns">
+            <div class="box_c">
+                <div class="box_c_heading cf noprint">
+                    <p class="sepV_a">
+                        Branch Arrear</p>
+                </div>
+                <div class="box_c_content">
+                    <div class="row">
+                        <div class="noprint" style="margin-top: -0.5em; margin-bottom: 0.6em;">
+                            <asp:Panel ID="Panel1" runat="server" DefaultButton="BtnStatisticsGo">
+                                <div style="display: table-cell; padding-right: 5px !important;">
+                                    <asp:Label ID="Label1" runat="server" Text="Branch Name">
+                                    </asp:Label>
+                                </div>
+                                <div style="display: table-cell; padding-right: 5px !important;">
+                                    <asp:DropDownList ID="ddlBranch" runat="server" Width="150px" Class="chzn-select">
+                                    </asp:DropDownList>
+                                </div>
+                               
+                                 <div style="display: table-cell; padding-right: 5px;">
+                                    <asp:Label ID="Label7" runat="server" Text="To Date : "></asp:Label>
+                                </div>
+                                <div style="display: table-cell; padding-right: 5px;">
+                                    <asp:TextBox TabIndex="2" Width="100px" class="input-text maskdate" ID="txtToDate"
+                                        placeholder="To Date" runat="server"></asp:TextBox>
+                                                      </div>
+
+                                  <div style="display: table-cell; padding-right: 5px; vertical-align: top;">
+                                    <asp:Button ID="BtnStatisticsGo" runat="server" Text="Go!" ValidationGroup="twelvehead"
+                                        TabIndex="3" CssClass="GreenyPushButton" class="btn" 
+                                          onclick="BtnStatisticsGo_Click"  />
+                                </div>
+                                 <div style="display: table-cell; vertical-align: top; float: right; padding-right: 5px;
+                                    text-align: right; margin-top: -35px;">
+                                    <div>
+                                        <dx:ASPxMenu OnItemClick="Export_click" ID="mMain" runat="server" AllowSelectItem="True"
+                                            ShowPopOutImages="True">
+                                            <Items>
+                                                <dx:MenuItem Text="Export">
+                                                    <Items>
+                                                        <dx:MenuItem Text="PDF">
+                                                        </dx:MenuItem>
+                                                    </Items>
+                                                </dx:MenuItem>
+                                            </Items>
+                                        </dx:ASPxMenu>
+                                    </div>
+                                </div>
+                            </asp:Panel>
+                        </div>
+                         <div id="printdiv" class="printable">
+                            <dx:ASPxGridView OnCustomUnboundColumnData="grid_CustomUnboundColumnData" OnCustomSummaryCalculate="grid_CustomSummaryCalculate" 
+                                OnCustomCallback="grid_CustomCallback" Style="margin: 0 auto; width: 100%;" runat="server" ID="grid" 
+                                ClientInstanceName="grid" KeyFieldName="TransactionKey" AutoGenerateColumns="False">
+                                <Styles Footer-HorizontalAlign="Left" Cell-HorizontalAlign="Left" Header-VerticalAlign="Middle"
+                                    Header-HorizontalAlign="Center" Header-Wrap="True">
+                                    <GroupPanel Wrap="True" HorizontalAlign="Left">
+                                    </GroupPanel>
+                                    <GroupRow Wrap="True" HorizontalAlign="Left" >
+                                    </GroupRow>
+                                </Styles>
+                                <TotalSummary>
+                                     <dx:ASPxSummaryItem  FieldName="Prizedarrear" SummaryType="sum"  DisplayFormat="{0}" />
+                                     <dx:ASPxSummaryItem  FieldName="NonPrizedarrear"  SummaryType="sum" DisplayFormat="{0}" />
+                                    <dx:ASPxSummaryItem  FieldName="Date"  SummaryType="Custom" />
+                                     <%--<dx:ASPxSummaryItem  FieldName="Collected"  SummaryType="Custom" />--%>
+                                </TotalSummary>
+                                <GroupSummary>
+                                    <dx:ASPxSummaryItem  FieldName="Prizedarrear"  ShowInGroupFooterColumn="Prizedarrear" SummaryType="Custom" />
+                                    <dx:ASPxSummaryItem  FieldName="NonPrizedarrear" ShowInGroupFooterColumn="NonPrizedarrear" SummaryType="Custom" />
+                                   <%-- <dx:ASPxSummaryItem  FieldName="Prizedarrear" SummaryType="Sum" />
+                                    <dx:ASPxSummaryItem  FieldName="NonPrizedarrear" SummaryType="Sum" />--%>
+                                </GroupSummary>
+                                <Columns>
+                                    <dx:GridViewDataTextColumn FieldName="slno" VisibleIndex="1" ExportWidth="30"  Caption="S. No." CellStyle-HorizontalAlign="Left">
+<CellStyle HorizontalAlign="Left"></CellStyle>
+                                    </dx:GridViewDataTextColumn>
+                                    <dx:GridViewDataColumn FieldName="GrpMemberID" VisibleIndex="2"  CellStyle-HorizontalAlign="Left"
+                                        Caption="Ticket No">
+<CellStyle HorizontalAlign="Left"></CellStyle>
+                                    </dx:GridViewDataColumn>
+                                    <dx:GridViewDataColumn VisibleIndex="3" FieldName="MemberName" CellStyle-Wrap="false" Width="9%" Caption="Name of the Subscriber">
+                                    </dx:GridViewDataColumn>
+                                    <dx:GridViewDataColumn VisibleIndex="4" FieldName="DrawNO"  Caption="Call No">
+                                    </dx:GridViewDataColumn>
+                                    <dx:GridViewDataColumn VisibleIndex="7" FieldName="Amount" Width="10%" Visible="false" Caption="Arrears Amt"
+                                        CellStyle-HorizontalAlign="Right">
+<CellStyle HorizontalAlign="Right"></CellStyle>
+                                        <FooterTemplate>
+                                            <asp:Label ID="tot" runat="server" Text=""  ></asp:Label>                                      
+                                        </FooterTemplate>
+                                    </dx:GridViewDataColumn>
+                                     <dx:GridViewDataTextColumn FieldName="Prizedarrear" VisibleIndex="6"  ExportWidth="48" Caption="Prized Arrear">
+                                    </dx:GridViewDataTextColumn>
+                                       <dx:GridViewDataTextColumn FieldName="NonPrizedarrear" VisibleIndex="5"  ExportWidth="47" Caption="NonPrized Arrear">
+                                    </dx:GridViewDataTextColumn>
+                                    <dx:GridViewDataTextColumn FieldName="Date" VisibleIndex="8" Caption="Date of Last Realization"
+                                        ExportWidth="60">
+                                    </dx:GridViewDataTextColumn>
+                                    <dx:GridViewDataTextColumn VisibleIndex="9" FieldName="Collected" ExportWidth="70" Caption="Amount Collected">
+                                    </dx:GridViewDataTextColumn>
+                                    <dx:GridViewDataTextColumn VisibleIndex="10" FieldName="" ExportWidth="70" Caption="Arrear Realized Date">
+                                    </dx:GridViewDataTextColumn>
+                                    <dx:GridViewDataTextColumn VisibleIndex="11" FieldName="" ExportWidth="70" Caption="Arrear Amount Collected">
+                                    </dx:GridViewDataTextColumn>
+                                    <dx:GridViewDataTextColumn VisibleIndex="12" FieldName="" ExportWidth="70" Caption="Default Interest">
+                                    </dx:GridViewDataTextColumn>                                  
+                                    <dx:GridViewDataTextColumn VisibleIndex="13" FieldName="" ExportWidth="70" Caption="Report">
+                                    </dx:GridViewDataTextColumn>
+                                      <dx:GridViewDataTextColumn VisibleIndex="14" FieldName="MobileNumber" ExportWidth="50" Caption="MobileNo">
+                                    </dx:GridViewDataTextColumn>                                    
+                                </Columns>
+                                <SettingsPager Mode="ShowAllRecords">
+                                </SettingsPager>
+                                <Settings ShowTitlePanel="true" ShowHeaderFilterButton="true" ShowFilterBar="Visible" GroupFormat="{1}{2}"
+                                    ShowFilterRow="true" ShowGroupFooter="VisibleAlways" ShowGroupPanel="false" ShowGroupedColumns="true" ShowFilterRowMenu="true" ShowFooter="true" />
+                                <SettingsText Title="Arrears Statement" />
+                                <Styles Cell-HorizontalAlign="Left" Header-VerticalAlign="Middle" Header-HorizontalAlign="Center"
+                                    Header-Wrap="True">
+                                    <Header Wrap="True">
+                                    </Header>
+<GroupRow HorizontalAlign="Left" Wrap="True"></GroupRow>
+
+<Cell HorizontalAlign="Left"></Cell>
+
+<Footer HorizontalAlign="Left"></Footer>
+
+<GroupPanel HorizontalAlign="Left" Wrap="True"></GroupPanel>
+                                </Styles>
+                            </dx:ASPxGridView>
+                        </div>
+                        <asp:Panel ID="Panel2" runat="server">
+                            <asp:Label ID="Label4" runat="server" Text="Prized Arrear :"></asp:Label>
+                             <asp:Label ID="Pr" runat="server" Text=""></asp:Label>
+                             <br /><br />
+                               <asp:Label ID="Label5" runat="server" Text="Non Prized Arrear :"></asp:Label>
+                                <asp:Label ID="Non" runat="server" Text=""></asp:Label><br /><br />
+                         
+                        </asp:Panel>
+
+                         <dx:ASPxGridViewExporter ID="gridExport" runat="server" GridViewID="grid" MaxColumnWidth="80" >
+                            <Styles>
+                                <Header Wrap="True" HorizontalAlign="Center" Font-Size="8" Font-Bold="false" Paddings-PaddingBottom="2px" Paddings-PaddingLeft="9px" Paddings-PaddingRight="7px" >
+                                </Header>
+                                <Cell  Font-Size="6" HorizontalAlign="Right" Wrap="True"    Paddings-PaddingBottom="4px" Paddings-PaddingTop="4px"  Paddings-PaddingLeft="2px" Paddings-PaddingRight="0px" >
+                                </Cell>
+                                <Footer Font-Size="8" HorizontalAlign="Right" Wrap="false">
+                                </Footer>
+                                
+                                <Title Font-Size="10" VerticalAlign="Middle" HorizontalAlign="Center" Paddings-PaddingBottom="2px" Paddings-PaddingTop="2px" Paddings-PaddingLeft="2px" Paddings-PaddingRight="2px">
+                                </Title>
+                            </Styles>
+                        </dx:ASPxGridViewExporter>
+
+                     <%--   <dx:ASPxGridViewExporter ID="gridExport" runat="server" GridViewID="grid" MaxColumnWidth="120" >
+                            <Styles>
+                                <Header Wrap="True" HorizontalAlign="Center" Font-Size="8" Font-Bold="false" Paddings-PaddingBottom="2px" Paddings-PaddingLeft="9px" Paddings-PaddingRight="7px" >
+                                </Header>
+                                <Cell  Font-Size="7" HorizontalAlign="Center"   Wrap="false"  Paddings-PaddingBottom="4px" Paddings-PaddingTop="4px"  Paddings-PaddingLeft="2px" Paddings-PaddingRight="0px" >
+                                </Cell>
+                                <Footer Font-Size="8" HorizontalAlign="Right" Wrap="false">
+                                </Footer>
+                                
+                                <Title Font-Size="10" VerticalAlign="Middle" HorizontalAlign="Center" Paddings-PaddingBottom="2px" Paddings-PaddingTop="2px" Paddings-PaddingLeft="2px" Paddings-PaddingRight="2px">
+                                </Title>
+                            </Styles>
+                        </dx:ASPxGridViewExporter>--%>
+                         
+                        
+                        <%--<asp:SqlDataSource runat="server" ID="AccessDataSource1" ProviderName="MySql.Data.MySqlClient" />--%>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        function printDiv(divname) {
+            debugger;
+            var printContents = document.getElementById(divname).innerHTML;
+            var originalContents = document.body.innerHTML;
+            document.body.innerHTML = printContents;
+            window.print();
+            document.body.innerHTML = originalContents;
+        }
+     
+    </script>
+    <script type="text/javascript">
+        function htmlDecode(value) {
+            var returnDecoadedValue = $('<div />').html(value).text();
+            return returnDecodedValue;
+        }
+        $(document).ready(function () {
+            $(".chzn-select").chosen({ search_contains: true });
+            prth_mask_input.init();
+        });
+        var prm = Sys.WebForms.PageRequestManager.getInstance();
+        prm.add_endRequest(function () {
+            $(".chzn-select").chosen({ search_contains: true });
+        });
+        $(document).ready(function () {
+            $("#btnExport").click(function (e) {
+                printDiv('printdiv');
+                e.preventDefault();
+            });
+        });
+
+       
+    </script>
+    <style type="text/css">
+        @media print
+        {
+            header
+            {
+                display: none;
+            }
+            .noprint
+            {
+                display: none;
+            }
+            div
+            {
+                border: none !important;
+            }
+        }
+    </style>
+</asp:Content>

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="f09e000c263746308cbca41fea68a06e" Name="Diagram1">
+        <EntityTypeShape EntityType="svcfModel.arbitratinnotice" Width="1.5" PointX="0.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="svcfModel.assignreceiptbook" Width="1.5" PointX="2.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="svcfModel.bankdetail" Width="1.5" PointX="2.75" PointY="5.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="svcfModel.beforeremovalnotice" Width="1.5" PointX="4.75" PointY="5.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="svcfModel.branchdetail" Width="1.5" PointX="6.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="svcfModel.afterremovalnotice" Width="1.5" PointX="7.75" PointY="4.75" />
+        <EntityTypeShape EntityType="svcfModel.appvoucher" Width="1.5" PointX="9.75" PointY="0.75" />
+        <EntityTypeShape EntityType="svcfModel.branchpayment" Width="1.5" PointX="9.75" PointY="3.75" />
+        <EntityTypeShape EntityType="svcfModel.branchsuboffice" Width="1.5" PointX="7.75" PointY="9.75" />
+        <EntityTypeShape EntityType="svcfModel.cashcollection" Width="1.5" PointX="9.75" PointY="8.75" />
+        <EntityTypeShape EntityType="svcfModel.chithead" Width="1.5" PointX="0.75" PointY="10.75" />
+        <EntityTypeShape EntityType="svcfModel.chitpaymentmaster" Width="1.5" PointX="11.75" PointY="0.75" />
+        <EntityTypeShape EntityType="svcfModel.customerbank" Width="1.5" PointX="2.75" PointY="11.75" />
+        <EntityTypeShape EntityType="svcfModel.dailyactivity" Width="1.5" PointX="4.75" PointY="11.75" />
+        <EntityTypeShape EntityType="svcfModel.dar" Width="1.5" PointX="11.75" PointY="6.75" />
+        <EntityTypeShape EntityType="svcfModel.darcheque" Width="1.5" PointX="6.75" PointY="12.75" />
+        <EntityTypeShape EntityType="svcfModel.depositpayment" Width="1.5" PointX="13.75" PointY="0.75" />
+        <EntityTypeShape EntityType="svcfModel.documentdetail" Width="1.5" PointX="13.75" PointY="5.75" />
+        <EntityTypeShape EntityType="svcfModel.employee_details" Width="1.5" PointX="13.75" PointY="9.75" />
+        <EntityTypeShape EntityType="svcfModel.employeedesignation" Width="1.5" PointX="0.75" PointY="14.75" />
+        <EntityTypeShape EntityType="svcfModel.empsalarydetail" Width="1.5" PointX="15.75" PointY="0.75" />
+        <EntityTypeShape EntityType="svcfModel.fd" Width="1.5" PointX="2.75" PointY="15.75" />
+        <EntityTypeShape EntityType="svcfModel.filingfee" Width="1.5" PointX="15.75" PointY="5.75" />
+        <EntityTypeShape EntityType="svcfModel.guarantormaster" Width="1.5" PointX="11.75" PointY="15.75" />
+        <EntityTypeShape EntityType="svcfModel.head" Width="1.5" PointX="4.75" PointY="16.75" />
+        <EntityTypeShape EntityType="svcfModel.headstree" Width="1.5" PointX="6.75" PointY="16.75" />
+        <EntityTypeShape EntityType="svcfModel.jointpronote" Width="1.5" PointX="17.75" PointY="0.75" />
+        <EntityTypeShape EntityType="svcfModel.loanpronote" Width="1.5" PointX="17.75" PointY="7.75" />
+        <EntityTypeShape EntityType="svcfModel.login" Width="1.5" PointX="8.75" PointY="17.75" />
+        <EntityTypeShape EntityType="svcfModel.membermaster" Width="1.5" PointX="17.75" PointY="11.75" />
+        <EntityTypeShape EntityType="svcfModel.membersdocument" Width="1.5" PointX="0.75" PointY="18.75" />
+        <EntityTypeShape EntityType="svcfModel.appvoucherapproval" Width="1.5" PointX="13.75" PointY="18.75" />
+        <EntityTypeShape EntityType="svcfModel.cashcollectionamount" Width="1.5" PointX="19.75" PointY="0.75" />
+        <EntityTypeShape EntityType="svcfModel.commissionandservicetax" Width="1.5" PointX="2.75" PointY="19.75" />
+        <EntityTypeShape EntityType="svcfModel.commissiondetail" Width="1.5" PointX="19.75" PointY="3.75" />
+        <EntityTypeShape EntityType="svcfModel.membersuggestion" Width="1.5" PointX="5.375" PointY="20.75" />
+        <EntityTypeShape EntityType="svcfModel.membertogroupmaster" Width="1.5" PointX="20.375" PointY="6.75" />
+        <EntityTypeShape EntityType="svcfModel.mobileappvoucher" Width="1.5" PointX="20.375" PointY="13.75" />
+        <EntityTypeShape EntityType="svcfModel.moneycollector" Width="1.5" PointX="14.375" PointY="21.75" />
+        <EntityTypeShape EntityType="svcfModel.nomineetable" Width="1.5" PointX="20.375" PointY="21.75" />
+        <EntityTypeShape EntityType="svcfModel.PasswordChangeHistory" Width="1.5" PointX="22.375" PointY="0.75" />
+        <EntityTypeShape EntityType="svcfModel.pdrr" Width="1.5" PointX="22.375" PointY="4.75" />
+        <EntityTypeShape EntityType="svcfModel.petrolconsumption" Width="1.5" PointX="22.375" PointY="9.75" />
+        <EntityTypeShape EntityType="svcfModel.relisation" Width="1.5" PointX="22.75" PointY="13.75" />
+        <EntityTypeShape EntityType="svcfModel.removal_approval" Width="1.5" PointX="16.75" PointY="22.75" />
+        <EntityTypeShape EntityType="svcfModel.removedmaster" Width="1.5" PointX="22.75" PointY="17.75" />
+        <EntityTypeShape EntityType="svcfModel.restrictionmaster" Width="1.5" PointX="22.75" PointY="20.75" />
+        <EntityTypeShape EntityType="svcfModel.right" Width="1.5" PointX="0.75" PointY="23.75" />
+        <EntityTypeShape EntityType="svcfModel.role" Width="1.5" PointX="2.75" PointY="23.75" />
+        <EntityTypeShape EntityType="svcfModel.transfer_approval" Width="1.5" PointX="22.375" PointY="23.75" />
+        <EntityTypeShape EntityType="svcfModel.transfermaster" Width="1.5" PointX="24.375" PointY="0.75" />
+        <EntityTypeShape EntityType="svcfModel.transloan" Width="1.5" PointX="24.375" PointY="5.75" />
+        <EntityTypeShape EntityType="svcfModel.transprofitandloss" Width="1.5" PointX="24.375" PointY="23.75" />
+        <EntityTypeShape EntityType="svcfModel.VoucherSer" Width="1.5" PointX="25.375" PointY="19.75" />
+        <EntityTypeShape EntityType="svcfModel.voucherdeleted" Width="1.5" PointX="19.375" PointY="25.75" />
+        <EntityTypeShape EntityType="svcfModel.subscriber" Width="1.5" PointX="0.75" PointY="26.75" />
+        <EntityTypeShape EntityType="svcfModel.SubscriberDetail" Width="1.5" PointX="26.75" PointY="0.75" />
+        <EntityTypeShape EntityType="svcfModel.substitutedmaster" Width="1.5" PointX="2.75" PointY="26.75" />
+        <EntityTypeShape EntityType="svcfModel.tablemaster" Width="1.5" PointX="4.75" PointY="26.75" />
+        <EntityTypeShape EntityType="svcfModel.transadvance" Width="1.5" PointX="26.75" PointY="5.75" />
+        <EntityTypeShape EntityType="svcfModel.transcourt" Width="1.5" PointX="27.75" PointY="11.75" />
+        <EntityTypeShape EntityType="svcfModel.singlepronote" Width="1.5" PointX="27.375" PointY="16.75" />
+        <EntityTypeShape EntityType="svcfModel.receiptmaster" Width="1.5" PointX="29.375" PointY="0.75" />
+        <EntityTypeShape EntityType="svcfModel.rejectedmember" Width="1.5" PointX="5.375" PointY="29.75" />
+        <EntityTypeShape EntityType="svcfModel.relation" Width="1.5" PointX="7.375" PointY="29.75" />
+        <EntityTypeShape EntityType="svcfModel.salarytransbank" Width="1.5" PointX="14.375" PointY="29.75" />
+        <EntityTypeShape EntityType="svcfModel.reauctionparticular" Width="1.5" PointX="29.375" PointY="16.75" />
+        <EntityTypeShape EntityType="svcfModel.prospect" Width="1.5" PointX="16.375" PointY="29.75" />
+        <EntityTypeShape EntityType="svcfModel.auctiondetail" Width="1.5" PointX="29.375" PointY="20.75" />
+        <EntityTypeShape EntityType="svcfModel.groupmaster" Width="1.5" PointX="29.375" PointY="27.75" />
+        <EntityTypeShape EntityType="svcfModel.voucher" Width="1.5" PointX="30.375" PointY="8.75" />
+        <EntityTypeShape EntityType="svcfModel.trans_payment" Width="1.5" PointX="21.375" PointY="30.75" />
+        <EntityTypeShape EntityType="svcfModel.transbank" Width="1.5" PointX="26.375" PointY="22.75" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

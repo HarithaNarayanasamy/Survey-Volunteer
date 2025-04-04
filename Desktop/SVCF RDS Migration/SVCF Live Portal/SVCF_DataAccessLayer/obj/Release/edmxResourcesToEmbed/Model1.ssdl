@@ -1,0 +1,436 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="svcfModel2.Store" Provider="MySql.Data.MySqlClient" ProviderManifestToken="5.6" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/02/edm/ssdl">
+  <!--Errors Found During Generation:
+warning 6005: The data type 'udecimal' is currently not supported for the target Entity Framework version; the column 'PrizedAmount' in the table 'def.svcf.auctiondetails' was excluded.
+warning 6005: The data type 'udecimal' is currently not supported for the target Entity Framework version; the column 'TotalCommission' in the table 'def.svcf.auctiondetails' was excluded.
+warning 6005: The data type 'udecimal' is currently not supported for the target Entity Framework version; the column 'DefaultInterest' in the table 'def.svcf.auctiondetails' was excluded.
+warning 6005: The data type 'udecimal' is currently not supported for the target Entity Framework version; the column 'Dividend' in the table 'def.svcf.auctiondetails' was excluded.
+warning 6005: The data type 'udecimal' is currently not supported for the target Entity Framework version; the column 'KasarAmount' in the table 'def.svcf.auctiondetails' was excluded.
+warning 6005: The data type 'udecimal' is currently not supported for the target Entity Framework version; the column 'CurrentDueAmount' in the table 'def.svcf.auctiondetails' was excluded.
+warning 6005: The data type 'udecimal' is currently not supported for the target Entity Framework version; the column 'NextDueAmount' in the table 'def.svcf.auctiondetails' was excluded.
+warning 6005: The data type 'udecimal' is currently not supported for the target Entity Framework version; the column 'AdditionalKasarAmount' in the table 'def.svcf.auctiondetails' was excluded.-->
+  <EntityType Name="auctiondetails">
+    <Key>
+      <PropertyRef Name="inccolumn" />
+    </Key>
+    <Property Name="inccolumn" Type="uint" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="BranchID" Type="uint" Nullable="false" />
+    <Property Name="GroupID" Type="uint" Nullable="false" />
+    <Property Name="AuctionDate" Type="date" />
+    <Property Name="ReBidNO" Type="uint" />
+    <Property Name="DrawNO" Type="uint" />
+    <Property Name="PrizedMemberID" Type="uint" />
+    <Property Name="MemberID" Type="uint" />
+    <Property Name="IsPrized" Type="char" MaxLength="1" />
+    <Property Name="IsReAuction" Type="bit" />
+    <Property Name="CreatedDate" Type="datetime" Precision="0" />
+    <Property Name="ModifiedDate" Type="datetime" Precision="0" />
+    <Property Name="ISActive" Type="varchar" MaxLength="45" />
+  </EntityType>
+  <!--Errors Found During Generation:
+warning 6005: The data type 'udecimal' is currently not supported for the target Entity Framework version; the column 'ChitValue' in the table 'def.svcf.groupmaster' was excluded.
+warning 6005: The data type 'udecimal' is currently not supported for the target Entity Framework version; the column 'SDP_RateofInterest' in the table 'def.svcf.groupmaster' was excluded.
+warning 6005: The data type 'udecimal' is currently not supported for the target Entity Framework version; the column 'SDP_Amount' in the table 'def.svcf.groupmaster' was excluded.-->
+  <EntityType Name="groupmaster">
+    <Key>
+      <PropertyRef Name="aid" />
+      <PropertyRef Name="Head_Id" />
+      <PropertyRef Name="GROUPNO" />
+    </Key>
+    <Property Name="aid" Type="uint" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="Head_Id" Type="uint" Nullable="false" />
+    <Property Name="BranchID" Type="uint" Nullable="false" />
+    <Property Name="GROUPNO" Type="varchar" MaxLength="50" Nullable="false" />
+    <Property Name="PSOOrderNo" Type="varchar" MaxLength="13" Nullable="false" />
+    <Property Name="PSOOrderDate" Type="date" Nullable="false" />
+    <Property Name="PSODROffice" Type="varchar" MaxLength="30" Nullable="false" />
+    <Property Name="ChitAgreementNo" Type="varchar" MaxLength="13" Nullable="false" />
+    <Property Name="ChitAgreementYear" Type="uint" Nullable="false" />
+    <Property Name="AgreementDate" Type="date" Nullable="false" />
+    <Property Name="ChitPeriod" Type="uint" Nullable="false" />
+    <Property Name="ChitCategory" Type="varchar" MaxLength="10" Nullable="false" />
+    <Property Name="ChitStartDate" Type="date" Nullable="false" />
+    <Property Name="ChitEndDate" Type="date" Nullable="false" />
+    <Property Name="NoofMembers" Type="uint" Nullable="false" />
+    <Property Name="AuctionDate" Type="date" />
+    <Property Name="AuctionTime" Type="time" Precision="0" Nullable="false" />
+    <Property Name="AuctionEndTime" Type="varchar" MaxLength="30" Nullable="false" />
+    <Property Name="DueDate" Type="date" />
+    <Property Name="PriorIntimationDate" Type="date" />
+    <Property Name="SDP_FDRNO" Type="varchar" MaxLength="45" Nullable="false" />
+    <Property Name="SDP_Bank" Type="varchar" MaxLength="45" Nullable="false" />
+    <Property Name="SDP_BankPlace" Type="varchar" MaxLength="45" Nullable="false" />
+    <Property Name="SDP_Commencement" Type="date" Nullable="false" />
+    <Property Name="SDP_Maturity" Type="date" Nullable="false" />
+    <Property Name="SDP_PeriodinMonths" Type="uint" Nullable="false" />
+    <Property Name="IsFinished" Type="utinyint" Nullable="false" />
+    <Property Name="IsDeleted" Type="bit" />
+    <Property Name="CreatedDate" Type="datetime" Precision="0" />
+    <Property Name="ModifiedDate" Type="datetime" Precision="0" />
+    <Property Name="ISActive" Type="varchar" MaxLength="45" />
+  </EntityType>
+  <EntityType Name="headstree">
+    <Key>
+      <PropertyRef Name="NodeID" />
+    </Key>
+    <Property Name="NodeID" Type="uint" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="ParentID" Type="uint" Nullable="false" />
+    <Property Name="Node" Type="varchar" MaxLength="255" Nullable="false" />
+    <Property Name="TreeHint" Type="varchar" MaxLength="255" />
+    <Property Name="Branchid" Type="uint" />
+    <Property Name="App_Branchid" Type="uint" />
+    <Property Name="CreatedDate" Type="datetime" Precision="0" />
+    <Property Name="ModifiedDate" Type="datetime" Precision="0" />
+    <Property Name="ISActive" Type="varchar" MaxLength="45" />
+  </EntityType>
+  <!--Errors Found During Generation:
+warning 6005: The data type 'udecimal' is currently not supported for the target Entity Framework version; the column 'MonthlyIncome' in the table 'def.svcf.membermaster' was excluded.-->
+  <EntityType Name="membermaster">
+    <Key>
+      <PropertyRef Name="MemberIDNew" />
+    </Key>
+    <Property Name="MemberIDNew" Type="uint" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="BranchId" Type="uint" Nullable="false" />
+    <Property Name="CustomerName" Type="longtext" Nullable="false" />
+    <Property Name="TypeOfMember" Type="longtext" Nullable="false" />
+    <Property Name="Gender" Type="longtext" />
+    <Property Name="Age" Type="uint" />
+    <Property Name="DOB" Type="date" />
+    <Property Name="FatherHusbandName" Type="longtext" />
+    <Property Name="MotherWifeName" Type="longtext" />
+    <Property Name="ProprietorName" Type="longtext" />
+    <Property Name="PartnersName" Type="longtext" />
+    <Property Name="DateOfPartnershipWithAmendment" Type="date" />
+    <Property Name="compxerox" Type="longtext" />
+    <Property Name="dateofResol" Type="date" />
+    <Property Name="ProfessionBusiness" Type="longtext" Nullable="false" />
+    <Property Name="NatureofProfessionBusiness" Type="longtext" />
+    <Property Name="ResidentialAddress" Type="text" />
+    <Property Name="AddressForCommunication" Type="text" />
+    <Property Name="ProofofResidence" Type="longtext" />
+    <Property Name="AddressProfessionBusiness" Type="longtext" />
+    <Property Name="TelephoneNoProfessionBusiness" Type="longtext" />
+    <Property Name="TelephoneNoResidence" Type="longtext" />
+    <Property Name="MobileNo" Type="longtext" Nullable="false" />
+    <Property Name="SalesTaxRegistrationNoTNGST" Type="longtext" />
+    <Property Name="CSTRegistrationNumber" Type="longtext" />
+    <Property Name="IncomeTaxPANoWardandCircle" Type="longtext" />
+    <Property Name="BankName" Type="varchar" MaxLength="40" />
+    <Property Name="BranchName" Type="varchar" MaxLength="40" />
+    <Property Name="SavingsCurrentAccountNo" Type="varchar" MaxLength="20" />
+    <Property Name="ProspectID" Type="varchar" MaxLength="10" />
+    <Property Name="MemberID" Type="varchar" MaxLength="20" Nullable="false" />
+    <Property Name="Title" Type="varchar" MaxLength="5" />
+    <Property Name="ApprovedStatus" Type="int" />
+    <Property Name="ReffererDetails" Type="text" />
+    <Property Name="ApprovedorRejectedDate" Type="datetime" Precision="0" />
+    <Property Name="ProspectDate" Type="datetime" Precision="0" />
+    <Property Name="IsDeleted" Type="bit" />
+    <Property Name="CreatedDate" Type="datetime" Precision="0" />
+    <Property Name="ModifiedDate" Type="datetime" Precision="0" />
+    <Property Name="ISActive" Type="varchar" MaxLength="45" />
+  </EntityType>
+  <EntityType Name="membertogroupmaster">
+    <Key>
+      <PropertyRef Name="Head_Id" />
+      <PropertyRef Name="GrpMemberID" />
+    </Key>
+    <Property Name="BranchID" Type="uint" Nullable="false" />
+    <Property Name="MemberName" Type="varchar" MaxLength="100" Nullable="false" />
+    <Property Name="MemberID" Type="uint" Nullable="false" />
+    <Property Name="MemberAddress" Type="text" Nullable="false" />
+    <Property Name="Head_Id" Type="uint" Nullable="false" />
+    <Property Name="GroupID" Type="uint" Nullable="false" />
+    <Property Name="GrpMemberID" Type="varchar" MaxLength="13" Nullable="false" />
+    <Property Name="NomineeName" Type="varchar" MaxLength="100" />
+    <Property Name="NomineeAddress" Type="text" />
+    <Property Name="card" Type="bit" Nullable="false" />
+    <Property Name="Isremoved" Type="utinyint" Nullable="false" />
+    <Property Name="B_Id" Type="uint" Nullable="false" />
+    <Property Name="M_Id" Type="uint" Nullable="false" />
+    <Property Name="EstCallNoOfAuction" Type="varchar" MaxLength="100" />
+    <Property Name="EstSuretyDocument" Type="text" />
+    <Property Name="PoolNo" Type="varchar" MaxLength="45" />
+    <Property Name="Flag" Type="bit" />
+    <Property Name="headofficesuggession" Type="text" />
+    <Property Name="aid" Type="uint" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="SuggestDate" Type="date" />
+    <Property Name="CreatedDate" Type="datetime" Precision="0" />
+    <Property Name="ModifiedDate" Type="datetime" Precision="0" />
+    <Property Name="ISActive" Type="varchar" MaxLength="45" />
+  </EntityType>
+  <!--Errors Found During Generation:
+warning 6005: The data type 'udecimal' is currently not supported for the target Entity Framework version; the column 'ChitAmount' in the table 'def.svcf.trans_payment' was excluded.
+warning 6005: The data type 'udecimal' is currently not supported for the target Entity Framework version; the column 'PrizedAmount' in the table 'def.svcf.trans_payment' was excluded.
+warning 6005: The data type 'udecimal' is currently not supported for the target Entity Framework version; the column 'NextDueAmount' in the table 'def.svcf.trans_payment' was excluded.
+warning 6005: The data type 'udecimal' is currently not supported for the target Entity Framework version; the column 'CurrentDueAmount' in the table 'def.svcf.trans_payment' was excluded.-->
+  <EntityType Name="trans_payment">
+    <Key>
+      <PropertyRef Name="autoid" />
+    </Key>
+    <Property Name="TransactionKey_Bank" Type="uint" />
+    <Property Name="TransactionKey" Type="uint" Nullable="false" />
+    <Property Name="DualTransactionKey" Type="guid" Nullable="false" />
+    <Property Name="BranchID" Type="uint" Nullable="false" />
+    <Property Name="ChitGroupID" Type="uint" Nullable="false" />
+    <Property Name="TokenNumber" Type="uint" Nullable="false" />
+    <Property Name="DrawNo" Type="uint" Nullable="false" />
+    <Property Name="NextDrawNo" Type="uint" />
+    <Property Name="PaymentApplyedOn" Type="date" Nullable="false" />
+    <Property Name="ApprovedOn" Type="date" Nullable="false" />
+    <Property Name="PaymentDate" Type="date" Nullable="false" />
+    <Property Name="GuarantorID" Type="varchar" MaxLength="45" />
+    <Property Name="Description" Type="text" Nullable="false" />
+    <Property Name="AuctionDate" Type="date" />
+    <Property Name="AOSanctionNo" Type="uint" Nullable="false" />
+    <Property Name="GuarantorName" Type="varchar" MaxLength="45" Nullable="false" />
+    <Property Name="autoid" Type="uint" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="Flags" Type="int" Nullable="false" />
+    <Property Name="IsDeleted" Type="uint" Nullable="false" />
+    <Property Name="CreatedDate" Type="datetime" Precision="0" />
+    <Property Name="ModifiedDate" Type="datetime" Precision="0" />
+    <Property Name="ISActive" Type="varchar" MaxLength="45" />
+  </EntityType>
+  <!--Errors Found During Generation:
+warning 6005: The data type 'udecimal' is currently not supported for the target Entity Framework version; the column 'Amount' in the table 'def.svcf.voucher' was excluded.-->
+  <EntityType Name="voucher">
+    <Key>
+      <PropertyRef Name="TransactionKey" />
+    </Key>
+    <Property Name="TransactionKey" Type="uint" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="DualTransactionKey" Type="guid" Nullable="false" />
+    <Property Name="BranchID" Type="uint" Nullable="false" />
+    <Property Name="CurrDate" Type="datetime" Precision="0" Nullable="false" />
+    <Property Name="Voucher_No" Type="int" Nullable="false" />
+    <Property Name="Voucher_Type" Type="enum" Nullable="false" />
+    <Property Name="Head_Id" Type="uint" Nullable="false" />
+    <Property Name="ChoosenDate" Type="date" Nullable="false" />
+    <Property Name="Narration" Type="text" Nullable="false" />
+    <Property Name="Series" Type="varchar" MaxLength="45" Nullable="false" />
+    <Property Name="ReceievedBy" Type="varchar" MaxLength="50" Nullable="false" />
+    <Property Name="Trans_Type" Type="bool" Nullable="false" />
+    <Property Name="T_Day" Type="uint" Nullable="false" />
+    <Property Name="T_Month" Type="uint" Nullable="false" />
+    <Property Name="T_Year" Type="uint" Nullable="false" />
+    <Property Name="MemberID" Type="uint" />
+    <Property Name="Trans_Medium" Type="bool" Nullable="false" />
+    <Property Name="RootID" Type="uint" Nullable="false" />
+    <Property Name="ChitGroupId" Type="uint" />
+    <Property Name="Other_Trans_Type" Type="uint" Nullable="false" />
+    <Property Name="IsDeleted" Type="uint" Nullable="false" />
+    <Property Name="IsAccepted" Type="int" Nullable="false" />
+    <Property Name="ApprovedDate" Type="datetime" Precision="0" />
+    <Property Name="CreatedDate" Type="datetime" Precision="0" />
+    <Property Name="ModifiedDate" Type="datetime" Precision="0" />
+    <Property Name="ISActive" Type="varchar" MaxLength="45" />
+    <Property Name="AppReceiptno" Type="longtext" />
+  </EntityType>
+  <!--Errors Found During Generation:
+warning 6002: The table/view 'def.svcf.unpaidprizedmoney' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+  <EntityType Name="unpaidprizedmoney">
+    <Key>
+      <PropertyRef Name="Head_Id" />
+      <PropertyRef Name="GrpMemberID" />
+    </Key>
+    <Property Name="Head_Id" Type="uint" Nullable="false" />
+    <Property Name="GrpMemberID" Type="varchar" MaxLength="13" Nullable="false" />
+    <Property Name="Credit" Type="decimal" Precision="32" Scale="2" />
+    <Property Name="Debit" Type="decimal" Precision="32" Scale="2" />
+    <Property Name="AmountActuallyremittedbytheParty" Type="decimal" Precision="33" Scale="2" />
+  </EntityType>
+  <!--Errors Found During Generation:
+warning 6002: The table/view 'def.svcf.view_groupwisedue' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+  <EntityType Name="view_groupwisedue">
+    <Key>
+      <PropertyRef Name="GroupIDOriginal" />
+      <PropertyRef Name="IsFinished" />
+      <PropertyRef Name="GroupId" />
+    </Key>
+    <Property Name="GroupIDOriginal" Type="varchar" MaxLength="50" Nullable="false" />
+    <Property Name="IsFinished" Type="utinyint" Nullable="false" />
+    <Property Name="GroupId" Type="uint" Nullable="false" />
+    <Property Name="TotaldueAmount" Type="decimal" Precision="34" Scale="2" />
+  </EntityType>
+  <!--Errors Found During Generation:
+warning 6002: The table/view 'def.svcf.view_parent' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+  <EntityType Name="view_parent">
+    <Key>
+      <PropertyRef Name="RootID" />
+      <PropertyRef Name="TREE" />
+    </Key>
+    <Property Name="RootID" Type="uint" Nullable="false" />
+    <Property Name="BranchID" Type="ubigint" />
+    <Property Name="TREE" Type="text" Nullable="false" />
+    <Property Name="TreeID" Type="ubigint" />
+  </EntityType>
+  <!--Errors Found During Generation:
+warning 6002: The table/view 'def.svcf.view_tree' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+  <EntityType Name="view_tree">
+    <Key>
+      <PropertyRef Name="NodeId_1" />
+      <PropertyRef Name="T1" />
+    </Key>
+    <Property Name="NodeId_1" Type="uint" Nullable="false" />
+    <Property Name="BranchID" Type="ubigint" />
+    <Property Name="T1" Type="varchar" MaxLength="255" Nullable="false" />
+    <Property Name="NodeId_2" Type="uint" />
+    <Property Name="T2" Type="varchar" MaxLength="255" />
+    <Property Name="NodeId_3" Type="uint" />
+    <Property Name="T3" Type="varchar" MaxLength="255" />
+    <Property Name="NodeId_4" Type="uint" />
+    <Property Name="T4" Type="varchar" MaxLength="255" />
+  </EntityType>
+  <!--Errors Found During Generation:
+warning 6005: The data type 'udecimal' is currently not supported for the target Entity Framework version; the column 'MonthlyIncome' in the table 'def.svcf.view_unapprovedtoken' was excluded.
+warning 6002: The table/view 'def.svcf.view_unapprovedtoken' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+  <EntityType Name="view_unapprovedtoken">
+    <Key>
+      <PropertyRef Name="SuggestedBranchId" />
+      <PropertyRef Name="slno" />
+      <PropertyRef Name="M_ID" />
+      <PropertyRef Name="BranchName" />
+      <PropertyRef Name="CustomerName" />
+      <PropertyRef Name="GroupNo" />
+      <PropertyRef Name="PoolNo" />
+      <PropertyRef Name="EstSuretyDocument" />
+      <PropertyRef Name="EstCallNoOfAuction" />
+      <PropertyRef Name="NoofTokens" />
+      <PropertyRef Name="TypeOfMember" />
+      <PropertyRef Name="ProfessionBusiness" />
+      <PropertyRef Name="MobileNo" />
+      <PropertyRef Name="MemberID" />
+    </Key>
+    <Property Name="SuggestedBranchId" Type="uint" Nullable="false" />
+    <Property Name="slno" Type="uint" Nullable="false" />
+    <Property Name="M_ID" Type="uint" Nullable="false" />
+    <Property Name="NoofTokensApproved" Type="uint" />
+    <Property Name="BranchName" Type="varchar" MaxLength="100" Nullable="false" />
+    <Property Name="CustomerName" Type="longtext" Nullable="false" />
+    <Property Name="GroupNo" Type="uint" Nullable="false" />
+    <Property Name="PoolNo" Type="varchar" MaxLength="45" Nullable="false" />
+    <Property Name="EstSuretyDocument" Type="text" Nullable="false" />
+    <Property Name="EstCallNoOfAuction" Type="varchar" MaxLength="100" Nullable="false" />
+    <Property Name="NoofTokens" Type="uint" Nullable="false" />
+    <Property Name="SuggestedDate" Type="datetime" Precision="0" />
+    <Property Name="TypeOfMember" Type="longtext" Nullable="false" />
+    <Property Name="Gender" Type="longtext" />
+    <Property Name="Age" Type="uint" />
+    <Property Name="DOB" Type="date" />
+    <Property Name="FatherHusbandName" Type="longtext" />
+    <Property Name="MotherWifeName" Type="longtext" />
+    <Property Name="ProprietorName" Type="longtext" />
+    <Property Name="PartnersName" Type="longtext" />
+    <Property Name="DateOfPartnershipWithAmendment" Type="date" />
+    <Property Name="compxerox" Type="longtext" />
+    <Property Name="dateofResol" Type="date" />
+    <Property Name="ProfessionBusiness" Type="longtext" Nullable="false" />
+    <Property Name="NatureofProfessionBusiness" Type="longtext" />
+    <Property Name="ResidentialAddress" Type="text" />
+    <Property Name="AddressForCommunication" Type="text" />
+    <Property Name="ProofofResidence" Type="longtext" />
+    <Property Name="AddressProfessionBusiness" Type="longtext" />
+    <Property Name="TelephoneNoProfessionBusiness" Type="longtext" />
+    <Property Name="TelephoneNoResidence" Type="longtext" />
+    <Property Name="MobileNo" Type="longtext" Nullable="false" />
+    <Property Name="SalesTaxRegistrationNoTNGST" Type="longtext" />
+    <Property Name="CSTRegistrationNumber" Type="longtext" />
+    <Property Name="IncomeTaxPANoWardandCircle" Type="longtext" />
+    <Property Name="BankName" Type="varchar" MaxLength="40" />
+    <Property Name="SavingsCurrentAccountNo" Type="varchar" MaxLength="20" />
+    <Property Name="MemberID" Type="uint" Nullable="false" />
+    <Property Name="NoofRemainingTokens" Type="uint" />
+  </EntityType>
+  <Function Name="sp_groupwisedue" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="svcf">
+    <Parameter Name="acfrmdate" Type="date" Mode="In" />
+  </Function>
+  <EntityContainer Name="svcfModel2StoreContainer">
+    <EntitySet Name="auctiondetails" EntityType="Self.auctiondetails" Schema="svcf" store:Type="Tables" />
+    <EntitySet Name="groupmaster" EntityType="Self.groupmaster" Schema="svcf" store:Type="Tables" />
+    <EntitySet Name="headstree" EntityType="Self.headstree" Schema="svcf" store:Type="Tables" />
+    <EntitySet Name="membermaster" EntityType="Self.membermaster" Schema="svcf" store:Type="Tables" />
+    <EntitySet Name="membertogroupmaster" EntityType="Self.membertogroupmaster" Schema="svcf" store:Type="Tables" />
+    <EntitySet Name="trans_payment" EntityType="Self.trans_payment" Schema="svcf" store:Type="Tables" />
+    <EntitySet Name="voucher" EntityType="Self.voucher" Schema="svcf" store:Type="Tables" />
+    <EntitySet Name="unpaidprizedmoney" EntityType="Self.unpaidprizedmoney" store:Type="Views" store:Schema="svcf">
+      <DefiningQuery>SELECT
+`unpaidprizedmoney`.`Head_Id`, 
+`unpaidprizedmoney`.`GrpMemberID`, 
+`unpaidprizedmoney`.`Credit`, 
+`unpaidprizedmoney`.`Debit`, 
+`unpaidprizedmoney`.`AmountActuallyremittedbytheParty`
+FROM `unpaidprizedmoney` AS `unpaidprizedmoney`</DefiningQuery>
+    </EntitySet>
+    <EntitySet Name="view_groupwisedue" EntityType="Self.view_groupwisedue" store:Type="Views" store:Schema="svcf">
+      <DefiningQuery>SELECT
+`view_groupwisedue`.`GroupIDOriginal`, 
+`view_groupwisedue`.`IsFinished`, 
+`view_groupwisedue`.`GroupId`, 
+`view_groupwisedue`.`TotaldueAmount`
+FROM `view_groupwisedue` AS `view_groupwisedue`</DefiningQuery>
+    </EntitySet>
+    <EntitySet Name="view_parent" EntityType="Self.view_parent" store:Type="Views" store:Schema="svcf">
+      <DefiningQuery>SELECT
+`view_parent`.`RootID`, 
+`view_parent`.`BranchID`, 
+`view_parent`.`TREE`, 
+`view_parent`.`TreeID`
+FROM `view_parent` AS `view_parent`</DefiningQuery>
+    </EntitySet>
+    <EntitySet Name="view_tree" EntityType="Self.view_tree" store:Type="Views" store:Schema="svcf">
+      <DefiningQuery>SELECT
+`view_tree`.`NodeId_1`, 
+`view_tree`.`BranchID`, 
+`view_tree`.`T1`, 
+`view_tree`.`NodeId_2`, 
+`view_tree`.`T2`, 
+`view_tree`.`NodeId_3`, 
+`view_tree`.`T3`, 
+`view_tree`.`NodeId_4`, 
+`view_tree`.`T4`
+FROM `view_tree` AS `view_tree`</DefiningQuery>
+    </EntitySet>
+    <EntitySet Name="view_unapprovedtoken" EntityType="Self.view_unapprovedtoken" store:Type="Views" store:Schema="svcf">
+      <DefiningQuery>SELECT
+`view_unapprovedtoken`.`SuggestedBranchId`, 
+`view_unapprovedtoken`.`slno`, 
+`view_unapprovedtoken`.`M_ID`, 
+`view_unapprovedtoken`.`NoofTokensApproved`, 
+`view_unapprovedtoken`.`BranchName`, 
+`view_unapprovedtoken`.`CustomerName`, 
+`view_unapprovedtoken`.`GroupNo`, 
+`view_unapprovedtoken`.`PoolNo`, 
+`view_unapprovedtoken`.`EstSuretyDocument`, 
+`view_unapprovedtoken`.`EstCallNoOfAuction`, 
+`view_unapprovedtoken`.`NoofTokens`, 
+`view_unapprovedtoken`.`SuggestedDate`, 
+`view_unapprovedtoken`.`TypeOfMember`, 
+`view_unapprovedtoken`.`Gender`, 
+`view_unapprovedtoken`.`Age`, 
+`view_unapprovedtoken`.`DOB`, 
+`view_unapprovedtoken`.`FatherHusbandName`, 
+`view_unapprovedtoken`.`MotherWifeName`, 
+`view_unapprovedtoken`.`ProprietorName`, 
+`view_unapprovedtoken`.`PartnersName`, 
+`view_unapprovedtoken`.`DateOfPartnershipWithAmendment`, 
+`view_unapprovedtoken`.`compxerox`, 
+`view_unapprovedtoken`.`dateofResol`, 
+`view_unapprovedtoken`.`ProfessionBusiness`, 
+`view_unapprovedtoken`.`NatureofProfessionBusiness`, 
+`view_unapprovedtoken`.`ResidentialAddress`, 
+`view_unapprovedtoken`.`AddressForCommunication`, 
+`view_unapprovedtoken`.`ProofofResidence`, 
+`view_unapprovedtoken`.`AddressProfessionBusiness`, 
+`view_unapprovedtoken`.`TelephoneNoProfessionBusiness`, 
+`view_unapprovedtoken`.`TelephoneNoResidence`, 
+`view_unapprovedtoken`.`MobileNo`, 
+`view_unapprovedtoken`.`SalesTaxRegistrationNoTNGST`, 
+`view_unapprovedtoken`.`CSTRegistrationNumber`, 
+`view_unapprovedtoken`.`IncomeTaxPANoWardandCircle`, 
+`view_unapprovedtoken`.`BankName`, 
+`view_unapprovedtoken`.`SavingsCurrentAccountNo`, 
+`view_unapprovedtoken`.`MemberID`, 
+`view_unapprovedtoken`.`NoofRemainingTokens`
+FROM `view_unapprovedtoken` AS `view_unapprovedtoken`</DefiningQuery>
+    </EntitySet>
+  </EntityContainer>
+</Schema>

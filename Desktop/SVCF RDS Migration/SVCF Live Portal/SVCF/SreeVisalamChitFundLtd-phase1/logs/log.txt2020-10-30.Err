@@ -1,0 +1,6 @@
+INFO  2020-10-30 15:42:02,431 116910ms Home                   Page_Load          - Logged into Site at: 30-10-2020 3:42:02 PM
+INFO  2020-10-30 15:48:11,852 226819ms Home                   Page_Load          - Logged into Site at: 30-10-2020 3:48:11 PM
+INFO  2020-10-30 15:50:16,982 351950ms Home                   Page_Load          - Logged into Site at: 30-10-2020 3:50:16 PM
+INFO  2020-10-30 15:52:32,848 487815ms Home                   Page_Load          - Logged into Site at: 30-10-2020 3:52:32 PM
+INFO  2020-10-30 15:55:03,094 638062ms Limit                  btnOk_Click        - Limit.aspx - btnOk_click():  Completed: 30-10-2020 3:55:02 PM by: admin@svcf.com
+INFO  2020-10-30 16:24:31,905 2406872ms AccruedVoucherMultiple Page_Load          - Voucher Multiple: 30/10/2020 16:24:31 by: admin@svcf.com

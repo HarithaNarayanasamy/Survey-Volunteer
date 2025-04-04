@@ -1,0 +1,226 @@
+﻿<%@ Page Title="" Language="C#" Culture="en-GB" MasterPageFile="~/Branch.Master" AutoEventWireup="true"
+    CodeBehind="PandLCompilation.aspx.cs" Inherits="SreeVisalamChitFundLtd_phase1.PandLCompilation" %>
+
+<%@ Register Assembly="DevExpress.Web.ASPxGridView.v11.1, Version=11.1.12.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a"
+    Namespace="DevExpress.Web.ASPxGridView" TagPrefix="dx" %>
+<%@ Register Assembly="DevExpress.Web.v11.1, Version=11.1.12.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a"
+    Namespace="DevExpress.Web.ASPxPopupControl" TagPrefix="dx" %>
+<%@ Register Assembly="DevExpress.Web.ASPxEditors.v11.1, Version=11.1.12.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a"
+    Namespace="DevExpress.Web.ASPxEditors" TagPrefix="dx" %>
+<%@ Register Assembly="DevExpress.Web.ASPxGridView.v11.1.Export, Version=11.1.12.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a"
+    Namespace="DevExpress.Web.ASPxGridView.Export" TagPrefix="dx" %>
+<%@ Register TagPrefix="dx" Namespace="DevExpress.Web.ASPxEditors" Assembly="DevExpress.Web.ASPxEditors.v11.1" %>
+<%@ Register assembly="DevExpress.Web.ASPxGridView.v11.1" namespace="DevExpress.Web.ASPxGridView" tagprefix="dx" %>
+
+<asp:Content ID="Content1" ContentPlaceHolderID="cphHead" runat="server">
+</asp:Content>
+<asp:Content ID="Content2" ContentPlaceHolderID="cphMainContent" runat="server">
+    <div class="row">
+        <div class="twelve columns">
+            <div class="box_c">
+                <div class="box_c_heading box_actions">
+                    <p>Profit And Loss Compilation</p>
+                </div>
+                <div class="box_c_content">
+                    <asp:Panel ID="panel1" runat="server">
+                        <div style="display: table-cell; vertical-align: top; padding-top: 8px;">
+                            <dx:ASPxLabel ID="aspxLabel1" runat="server" Text="From Date "></dx:ASPxLabel>
+                        </div>
+                        <div style="display: table-cell; vertical-align: top; padding-left: 8px; padding-top: 4px;
+                            padding-right: 10px !important;">
+                            <asp:TextBox TabIndex="1" Width="100px" CssClass="input-text maskdate" runat="server"
+                                ID="txtFromDate">
+                            </asp:TextBox>
+                            <asp:RequiredFieldValidator ValidationGroup="a" EnableClientScript="false" ErrorMessage="*"
+                                ID="RequiredFieldValidator1" Display="Dynamic" runat="server" ControlToValidate="txtFromDate"></asp:RequiredFieldValidator>
+                            <asp:CompareValidator ValidationGroup="a" EnableClientScript="false" ErrorMessage="*"
+                                ID="CompareValidator1" runat="server" Display="Dynamic" ControlToValidate="txtFromDate"
+                                Operator="DataTypeCheck" Type="Date"></asp:CompareValidator>
+                        </div>
+                        <div style="display: table-cell; vertical-align: top; padding-top: 8px;">
+                            <dx:ASPxLabel ID="aspxLabel2" runat="server" Text="To Date "></dx:ASPxLabel>
+                        </div>
+                        <div style="display: table-cell; vertical-align: top; padding-left: 8px; padding-top: 4px;
+                            padding-right: 10px !important;">
+                            <asp:TextBox TabIndex="2" Width="100px" CssClass="input-text maskdate" runat="server"
+                                ID="txtToDate">
+                            </asp:TextBox>
+                            <asp:RequiredFieldValidator ValidationGroup="a" EnableClientScript="false" ErrorMessage="*"
+                                ID="RequiredFieldValidator2" Display="Dynamic" runat="server" ControlToValidate="txtToDate"></asp:RequiredFieldValidator>
+                            <asp:CompareValidator ValidationGroup="a" EnableClientScript="false" ErrorMessage="*"
+                                ID="CompareValidator2" runat="server" Display="Dynamic" ControlToValidate="txtToDate"
+                                Operator="DataTypeCheck" Type="Date"></asp:CompareValidator>
+                        </div>
+                        <div style="display: table-cell ; vertical-align:top">
+                            <asp:Button ID="btnIncome" runat="server" TabIndex="3" CssClass="GreenyPushButton" Text="Income Details" OnClick="btnIncome_Click" />
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                            <asp:Button ID="btnExpenses" runat="server" TabIndex="4" CssClass="GreenyPushButton" Text="Expenses Details" OnClick="btnExpenses_Click" />
+                        </div>
+                    </asp:Panel>
+                    <div style="display:table-cell;vertical-align:top;float:right;padding:5px">
+                        <asp:Button ID="btnExportIncome" runat="server" CssClass="GreenyPushButton" Text="Income Export" OnClick="btnExportIncome_Click" />
+                        &nbsp;&nbsp;&nbsp;&nbsp;
+                        <asp:Button ID="btnExportExpense" runat="server" CssClass="GreenyPushButton" Text="Expenses Export" OnClick="btnExportExpense_Click"  />
+                    </div>
+
+<%--                                        <div class="row" style="height: 100%; overflow-y: auto;">
+                        <dx:ASPxGridView ID="ASPxGridView1" runat="server" AutoGenerateColumns="true" Style="width: 100%;"
+                            ClientInstanceName="gridIncome">
+                            <Settings ShowTitlePanel="true" ShowFooter="true" ShowFilterRow="false" ShowFilterBar="Hidden" />
+                            <SettingsText Title="Incomes" />
+                            <SettingsPager Mode="ShowAllRecords">
+                            </SettingsPager>
+                             <Columns>
+
+                             </Columns>
+                            <!-- Your columns go here -->
+                        </dx:ASPxGridView>
+                    </div>--%>
+
+                    <div class="row" style="height: 100%; overflow-y: auto;">
+                       <dx:ASPxGridView ID="gridIncome" runat="server" AutoGenerateColumns="true" style="margin:0 auto;width:100%;" 
+                           ClientInstanceName="gridIncome">
+                           <Settings ShowTitlePanel="true" ShowFooter="true" ShowFilterRow="false" ShowFilterBar="Hidden" />
+                           <SettingsText Title="Incomes" />
+                           <SettingsPager Mode="ShowAllRecords">
+                           </SettingsPager>
+
+                           <Columns>
+<%--                               <dx:GridViewDataColumn FieldName="SNo" Caption="S.No" CellStyle-HorizontalAlign="Right"></dx:GridViewDataColumn>
+                               <dx:GridViewDataColumn FieldName="BranchName" Caption="Branch Name" CellStyle-HorizontalAlign="Left"></dx:GridViewDataColumn>
+                               <dx:GridViewDataColumn FieldName="Foreman's Commission" Caption="Foreman's Commission" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>
+                               <dx:GridViewDataColumn FieldName="Interest on Chit Debts" Caption="Interest on Chit Debts" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>
+                               <dx:GridViewDataColumn FieldName="Bank Interest" Caption="Bank Interest" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>
+                               <dx:GridViewDataColumn FieldName="Loan Interest" Caption="Loan Interest" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>
+                               <dx:GridViewDataColumn FieldName="Dividend on Foreman Chit" Caption="Dividend on Foreman Chit" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True" ></dx:GridViewDataColumn>
+                               <dx:GridViewDataColumn FieldName="Profit/Loss of Dividend on Foreman Substituted Chits" Caption="Profit/Loss Dividend on Foreman Substituted Chit" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>
+                               <dx:GridViewDataColumn FieldName="Recovery of Bad Debts" Caption="Recovery of Bad Debts" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>
+                               <dx:GridViewDataColumn FieldName="Building Rent Receipts" Caption="Building Rent Receipt" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>
+                               <dx:GridViewDataColumn FieldName="Dividend From Companies" Caption="Dividednd From Companies" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>
+                               <dx:GridViewDataColumn FieldName="Profit on Sale of Vehicles" Caption="Profit On Sale of Vehicle" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>
+                               <dx:GridViewDataColumn FieldName="Insurance Claim Received" Caption="Insurance Claim Received" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>
+                               <dx:GridViewDataColumn FieldName="Sale of News Paper & Periodicals" Caption="Sale of News Paper & Periodicals" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>
+                               <dx:GridViewDataColumn FieldName="Foreman Substituted Chit Commission" Caption="Foreman Substituted Chit Commission" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>
+                               <dx:GridViewDataColumn FieldName="Contribution to ESI Rounding off" Caption="Contribution to ESI Rounding off" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>
+                               <dx:GridViewDataColumn FieldName="Indivisible Dividend " Caption="Indivisible Dividend " CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>
+                               <dx:GridViewDataColumn FieldName="Miscellaneous Income" Caption="Miscellaneous Income" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>
+                               <dx:GridViewDataColumn FieldName="Total" Caption="Total" CellStyle-HorizontalAlign="Right"></dx:GridViewDataColumn>--%>
+                           </Columns>
+                       </dx:ASPxGridView>
+                        <dx:ASPxGridViewExporter ID="gridIncomeExport" runat="server" GridViewID="gridIncome" PaperKind="A4" Landscape="true"></dx:ASPxGridViewExporter> 
+                        <dx:ASPxGridView ID="gridExpenses" runat="server" AutoGenerateColumns="false" style="margin:0 auto;width:100%;" 
+                           ClientInstanceName="gridExpenses">
+                           <Settings ShowTitlePanel="true" ShowFooter="true" ShowFilterRow="false" ShowFilterBar="Hidden" />
+                           <SettingsText Title="Expenses" />
+                           <SettingsPager Mode="ShowAllRecords">
+                           </SettingsPager>
+
+                            <Columns>
+                                <dx:GridViewDataColumn FieldName="SNo" Caption="S.No" CellStyle-HorizontalAlign="Right"></dx:GridViewDataColumn>
+                                <dx:GridViewDataColumn FieldName="BranchName" Caption="Branch Name" CellStyle-HorizontalAlign="Left"></dx:GridViewDataColumn>
+                                <dx:GridViewDataColumn FieldName="Salary to the Establishment" Caption="Salary to the Estt." CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>
+                                <dx:GridViewDataColumn FieldName="Dearness Allowance" Caption="Dearness Allowance" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>
+                                <dx:GridViewDataColumn FieldName="House Rent Allowance" Caption="House rent Allowance" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>
+                                <dx:GridViewDataColumn FieldName="Company Contribution to EPF" Caption="Contribution to EPF" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>
+                                <dx:GridViewDataColumn FieldName="Company Contribution to EPS" Caption="Contribution to EPS" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>
+                                <dx:GridViewDataColumn FieldName="Company Contribution to ESI" Caption="Contribution to ESI" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>
+                                <dx:GridViewDataColumn FieldName="Rent Paid(Registered)" Caption="Rent(reg)" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>
+                                <dx:GridViewDataColumn FieldName="Rent Paid(Un Registered)" Caption="Rent(Unreg)" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>
+                                <dx:GridViewDataColumn FieldName="Courier(Registered)" Caption="Courier(Reg)" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>
+                                <dx:GridViewDataColumn FieldName="Courier(Un Registered)" Caption="Courier Exp(Un reg)" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>
+                                <dx:GridViewDataColumn FieldName="Postage" Caption="Postage" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>
+                                <dx:GridViewDataColumn FieldName="Telephone Charges(Registered)" Caption="Telephone Charges(reg)" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>
+                                <dx:GridViewDataColumn FieldName="Telephone Charges" Caption="Telephone Charges" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>
+                                <dx:GridViewDataColumn FieldName="Printing and Stationery(Registered)" Caption="Printing & Stationery(reg)" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>
+                                <dx:GridViewDataColumn FieldName="Printing and Stationery(Un Registered)" Caption="Printing & Stationery(Unreg)" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>
+                                <dx:GridViewDataColumn FieldName="Arbitration & Court Expenses" Caption="Arbitration Court Cost Exp" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>
+                                <dx:GridViewDataColumn FieldName="Travelling Expenses (General)" Caption="T.E General" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>
+                                <dx:GridViewDataColumn FieldName="Travelling Expenses (Batta)" Caption="T.E batta" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>
+                                <dx:GridViewDataColumn FieldName="Petrol Expenses (Two Wheelers)" Caption="T.E Petrol" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>
+                                <dx:GridViewDataColumn FieldName="Lighting and Water Charges" Caption="Lightning and Water Charges" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>
+                                <dx:GridViewDataColumn FieldName="Bank Charges" Caption="Bank Charges" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>
+                                <dx:GridViewDataColumn FieldName="News Paper and Periodicals" Caption="Newspaper and Periodicals" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>
+                                <dx:GridViewDataColumn FieldName="Photo Copying Charges(Registered)" Caption="Photo copying charges(Reg)" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>
+                                <dx:GridViewDataColumn FieldName="Photo Copying Charges(Un Registered)" Caption="Photo copying charges(Unreg)" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>
+                                <dx:GridViewDataColumn FieldName="Repair and Maintenance(Registered)" Caption="Repair & Maintenance" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>
+                                <dx:GridViewDataColumn FieldName="Miscellaneous Expenses(Registered)" Caption="Misc. Exp(reg)" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>
+                                <dx:GridViewDataColumn FieldName="Miscellaneous Expenses(Un Registered)" Caption="Misc. Exp(Un Reg)" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>
+                                <dx:GridViewDataColumn FieldName="Filing Fees under Indian Companies Act" Caption="Filing Fees Under Indian Companies Act" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>
+                                <dx:GridViewDataColumn FieldName="Filing Fees under Chit Funds Act" Caption="Filing Fees" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>
+                                <dx:GridViewDataColumn FieldName="Business Performance Pay" Caption="Business Performance pay" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>
+                                <dx:GridViewDataColumn FieldName="Business Incentive" Caption="Business Incentive" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>
+                                <dx:GridViewDataColumn FieldName="Bad Debts written off" Caption="Bad Debts" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>
+                                <dx:GridViewDataColumn FieldName="Two Wheelers Insurance" Caption="Two Whlr Insurance" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>
+                                <dx:GridViewDataColumn FieldName="Four Wheelers Insurance" Caption="Four Whlr Insurance" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>
+                                <dx:GridViewDataColumn FieldName="Two Wheelers Maintenance" Caption="Two Whlr maintanence" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>
+                                <dx:GridViewDataColumn FieldName="Four Wheelers Maintenance" Caption="Four Whlr maintanence" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>
+                                <dx:GridViewDataColumn FieldName="Staff Welfare Expenses" Caption="Staff Welfare Exp" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>
+                                <dx:GridViewDataColumn FieldName="Freight Charges (Registered) " Caption="Freight charges(reg)" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>
+                                <dx:GridViewDataColumn FieldName="Freight Charges (Un Registered) " Caption="Freight charges (Un reg)" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>
+                                <dx:GridViewDataColumn FieldName="Profession Tax For Company" Caption="Professional Tax  For Company" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>
+                                <dx:GridViewDataColumn FieldName="Association Membership subscription" Caption="Association Membership" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>
+                                <dx:GridViewDataColumn FieldName="Advertisement Charges(Registered)" Caption="Advertisement Charges(Reg)" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>
+                                <dx:GridViewDataColumn FieldName="Advertisement Charges(Un Registered)" Caption="Advertisement Charges(Un reg)" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>
+                                <dx:GridViewDataColumn FieldName="Diesel Expenses (Generators)" Caption="Diesel Exp (Generator)" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>
+                                <dx:GridViewDataColumn FieldName="Inspection Charges under P.F. Act" Caption="Inspection Charges Under PF Act" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>
+                                <dx:GridViewDataColumn FieldName="Interest on un-secured Loan " Caption="Interest on Unsecured loan" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>
+                                <dx:GridViewDataColumn FieldName="Premium to Employees Group Insurance" Caption="Premium to Employees group insurance" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>
+                                <dx:GridViewDataColumn FieldName="Library Books" Caption="Library Books" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>
+                                <dx:GridViewDataColumn FieldName="Computer Maintenance (Registered) " Caption="Computer Maintanance (Reg)" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>
+                                <dx:GridViewDataColumn FieldName="Legal Fees" Caption="Legal Fees" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>
+                                <dx:GridViewDataColumn FieldName="Managing Director Remuneration" Caption="Managing Director Remunaration" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>
+                                <dx:GridViewDataColumn FieldName="Travelling expenses for Directors" Caption="T.Exp For Directors" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>
+                                <dx:GridViewDataColumn FieldName="Travelling Expenses for Managing Director" Caption="T.Exp For Managing Directors" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>
+                                <dx:GridViewDataColumn FieldName="Petrol Expenses (Four wheelers)" Caption="Four Whlr Petrol" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>
+                                <dx:GridViewDataColumn FieldName="Computer Maintenance (Un Registered)" Caption="Computer Maintanance (Un Reg)" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>
+                                <dx:GridViewDataColumn FieldName="Generator Maintenance(Registered)" Caption="Generator Maintanance" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>
+                                <dx:GridViewDataColumn FieldName="Stationary Stock Insurance" Caption="stationary Stock insurance" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>
+                                <dx:GridViewDataColumn FieldName="Bonus" Caption="Bonus" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>
+                                <dx:GridViewDataColumn FieldName="Municipal and Land Tax" Caption="Municipal & Land Tax" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>
+                                <%--<dx:GridViewDataColumn FieldName="professional fees" Caption="Professional Fees" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>--%>
+                                <dx:GridViewDataColumn FieldName="Interest for TDS Late Payment" Caption="Intreset for TDS Late payment" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>
+                                <dx:GridViewDataColumn FieldName="Software Maintenance" Caption="Software Maintenance" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>
+                                <dx:GridViewDataColumn FieldName="Google Vault Services" Caption="Google Vault services" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>
+                                <%--<dx:GridViewDataColumn FieldName="Repair and Maintenance(Registered)" Caption="Repair & maintanance(Reg)" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>--%>
+                                <dx:GridViewDataColumn FieldName="Repair and Maintenance(Un Registered)" Caption="Repair & maintanance(Un Reg)" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>
+                                <dx:GridViewDataColumn FieldName="Depreciation" Caption="Depreciation" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>
+                                <dx:GridViewDataColumn FieldName="Loss on sale of vehicles" Caption="loss on sale of vehicle" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>
+                                <dx:GridViewDataColumn FieldName="Storage Service" Caption="Storage Services" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>
+                                <dx:GridViewDataColumn FieldName="License Fee For Talley" Caption="License fee for tally" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>
+                                <dx:GridViewDataColumn FieldName="Rounding Off" Caption="Rounding Off" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>
+                                <dx:GridViewDataColumn FieldName="GST Paid" Caption="GST Paid" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>
+                                <dx:GridViewDataColumn FieldName="Interest on GST Late Payment" Caption="Interest on GST Late Payment" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>
+                                <dx:GridViewDataColumn FieldName="professional fees" Caption="professional fees" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>
+                                <dx:GridViewDataColumn FieldName="Subscription Fee" Caption="Subscription Fee" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>
+                                
+                                <dx:GridViewDataColumn FieldName="Directors Remuneration" Caption="Directors Remuneration" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>
+                                <dx:GridViewDataColumn FieldName="Audit Fees for Statutory and Other Audits" Caption="Audit Fees for Statutory and Other Audits" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>
+                                <dx:GridViewDataColumn FieldName="NSDL (Demat) Connectivity Charges" Caption="NSDL (Demat) Connectivity Charges" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>
+                                <dx:GridViewDataColumn FieldName="Annual Custody Fees for NSDL" Caption="Annual Custody Fees for NSDL" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>
+                                <dx:GridViewDataColumn FieldName="Contribution Made to Sree Visalam Chit Fund Ltd Employees Provident Fund Trust Towards Shortfall" Caption="Contribution Made to Sree Visalam Chit Fund Ltd Employees Provident Fund Trust Towards Shortfall" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>
+                                <dx:GridViewDataColumn FieldName="Contribution Paid to Employees Gratuity Fund A/C" Caption="Contribution Paid to Employees Gratuity Fund A/C" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>
+                                <dx:GridViewDataColumn FieldName="Contribution to EGF" Caption="Contribution to EGF" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>
+                                <dx:GridViewDataColumn FieldName="Corporate Action Fee" Caption="Corporate Action Fee" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>
+                                <dx:GridViewDataColumn FieldName="UPS Maintenance(Registered)" Caption="UPS Maintenance(Registered)" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>
+                                <dx:GridViewDataColumn FieldName="UPS Maintenance(Un Registered)" Caption="UPS Maintenance(Un Registered)" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>
+                                <dx:GridViewDataColumn FieldName="Loan Documentation Charges" Caption="Loan Documentation Charges" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>
+                                <%--<dx:GridViewDataColumn FieldName="" Caption="" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>--%>
+                                <dx:GridViewDataColumn FieldName="Total" Caption="Total" CellStyle-HorizontalAlign="Right" HeaderStyle-Wrap="True"></dx:GridViewDataColumn>
+                            </Columns>
+                        </dx:ASPxGridView>
+                        <dx:ASPxGridViewExporter ID="gridExpensesExport" runat="server" GridViewID="gridExpenses" PaperKind="A4" Landscape="true"></dx:ASPxGridViewExporter> 
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+     <script type="text/javascript">
+        $(document).ready(function () {
+            prth_mask_input.init();
+        });
+        var prm = Sys.WebForms.PageRequestManager.getInstance();
+        prm.add_endRequest(function () {
+            prth_mask_input.init();
+        });
+    </script>
+</asp:Content>

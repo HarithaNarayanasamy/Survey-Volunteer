@@ -1,0 +1,96 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2008/09/mapping/cs">
+  <EntityContainerMapping StorageEntityContainer="svcfModel1StoreContainer" CdmEntityContainer="svcfEntities2">
+    <EntitySetMapping Name="unpaidprizedmoneys">
+      <EntityTypeMapping TypeName="svcfModel1.unpaidprizedmoney">
+        <MappingFragment StoreEntitySet="unpaidprizedmoney">
+          <ScalarProperty Name="Head_Id" ColumnName="Head_Id" />
+          <ScalarProperty Name="GrpMemberID" ColumnName="GrpMemberID" />
+          <ScalarProperty Name="Credit" ColumnName="Credit" />
+          <ScalarProperty Name="Debit" ColumnName="Debit" />
+          <ScalarProperty Name="AmountActuallyremittedbytheParty" ColumnName="AmountActuallyremittedbytheParty" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="view_groupwisedue">
+      <EntityTypeMapping TypeName="svcfModel1.view_groupwisedue">
+        <MappingFragment StoreEntitySet="view_groupwisedue">
+          <ScalarProperty Name="GroupIDOriginal" ColumnName="GroupIDOriginal" />
+          <ScalarProperty Name="IsFinished" ColumnName="IsFinished" />
+          <ScalarProperty Name="GroupId" ColumnName="GroupId" />
+          <ScalarProperty Name="TotaldueAmount" ColumnName="TotaldueAmount" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="view_parent">
+      <EntityTypeMapping TypeName="svcfModel1.view_parent">
+        <MappingFragment StoreEntitySet="view_parent">
+          <ScalarProperty Name="RootID" ColumnName="RootID" />
+          <ScalarProperty Name="BranchID" ColumnName="BranchID" />
+          <ScalarProperty Name="TREE" ColumnName="TREE" />
+          <ScalarProperty Name="TreeID" ColumnName="TreeID" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="view_tree">
+      <EntityTypeMapping TypeName="svcfModel1.view_tree">
+        <MappingFragment StoreEntitySet="view_tree">
+          <ScalarProperty Name="NodeId_1" ColumnName="NodeId_1" />
+          <ScalarProperty Name="BranchID" ColumnName="BranchID" />
+          <ScalarProperty Name="T1" ColumnName="T1" />
+          <ScalarProperty Name="NodeId_2" ColumnName="NodeId_2" />
+          <ScalarProperty Name="T2" ColumnName="T2" />
+          <ScalarProperty Name="NodeId_3" ColumnName="NodeId_3" />
+          <ScalarProperty Name="T3" ColumnName="T3" />
+          <ScalarProperty Name="NodeId_4" ColumnName="NodeId_4" />
+          <ScalarProperty Name="T4" ColumnName="T4" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="view_unapprovedtoken">
+      <EntityTypeMapping TypeName="svcfModel1.view_unapprovedtoken">
+        <MappingFragment StoreEntitySet="view_unapprovedtoken">
+          <ScalarProperty Name="SuggestedBranchId" ColumnName="SuggestedBranchId" />
+          <ScalarProperty Name="slno" ColumnName="slno" />
+          <ScalarProperty Name="M_ID" ColumnName="M_ID" />
+          <ScalarProperty Name="NoofTokensApproved" ColumnName="NoofTokensApproved" />
+          <ScalarProperty Name="BranchName" ColumnName="BranchName" />
+          <ScalarProperty Name="CustomerName" ColumnName="CustomerName" />
+          <ScalarProperty Name="GroupNo" ColumnName="GroupNo" />
+          <ScalarProperty Name="PoolNo" ColumnName="PoolNo" />
+          <ScalarProperty Name="EstSuretyDocument" ColumnName="EstSuretyDocument" />
+          <ScalarProperty Name="EstCallNoOfAuction" ColumnName="EstCallNoOfAuction" />
+          <ScalarProperty Name="NoofTokens" ColumnName="NoofTokens" />
+          <ScalarProperty Name="SuggestedDate" ColumnName="SuggestedDate" />
+          <ScalarProperty Name="TypeOfMember" ColumnName="TypeOfMember" />
+          <ScalarProperty Name="Gender" ColumnName="Gender" />
+          <ScalarProperty Name="Age" ColumnName="Age" />
+          <ScalarProperty Name="DOB" ColumnName="DOB" />
+          <ScalarProperty Name="FatherHusbandName" ColumnName="FatherHusbandName" />
+          <ScalarProperty Name="MotherWifeName" ColumnName="MotherWifeName" />
+          <ScalarProperty Name="ProprietorName" ColumnName="ProprietorName" />
+          <ScalarProperty Name="PartnersName" ColumnName="PartnersName" />
+          <ScalarProperty Name="DateOfPartnershipWithAmendment" ColumnName="DateOfPartnershipWithAmendment" />
+          <ScalarProperty Name="compxerox" ColumnName="compxerox" />
+          <ScalarProperty Name="dateofResol" ColumnName="dateofResol" />
+          <ScalarProperty Name="ProfessionBusiness" ColumnName="ProfessionBusiness" />
+          <ScalarProperty Name="NatureofProfessionBusiness" ColumnName="NatureofProfessionBusiness" />
+          <ScalarProperty Name="ResidentialAddress" ColumnName="ResidentialAddress" />
+          <ScalarProperty Name="AddressForCommunication" ColumnName="AddressForCommunication" />
+          <ScalarProperty Name="ProofofResidence" ColumnName="ProofofResidence" />
+          <ScalarProperty Name="AddressProfessionBusiness" ColumnName="AddressProfessionBusiness" />
+          <ScalarProperty Name="TelephoneNoProfessionBusiness" ColumnName="TelephoneNoProfessionBusiness" />
+          <ScalarProperty Name="TelephoneNoResidence" ColumnName="TelephoneNoResidence" />
+          <ScalarProperty Name="MobileNo" ColumnName="MobileNo" />
+          <ScalarProperty Name="SalesTaxRegistrationNoTNGST" ColumnName="SalesTaxRegistrationNoTNGST" />
+          <ScalarProperty Name="CSTRegistrationNumber" ColumnName="CSTRegistrationNumber" />
+          <ScalarProperty Name="IncomeTaxPANoWardandCircle" ColumnName="IncomeTaxPANoWardandCircle" />
+          <ScalarProperty Name="BankName" ColumnName="BankName" />
+          <ScalarProperty Name="SavingsCurrentAccountNo" ColumnName="SavingsCurrentAccountNo" />
+          <ScalarProperty Name="MemberID" ColumnName="MemberID" />
+          <ScalarProperty Name="NoofRemainingTokens" ColumnName="NoofRemainingTokens" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+  </EntityContainerMapping>
+</Mapping>

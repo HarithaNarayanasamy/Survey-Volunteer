@@ -1,0 +1,1448 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+using DevExpress.Web.ASPxGridView;
+using DevExpress.Data;
+using System.IO;
+using DevExpress.XtraPrintingLinks;
+using DevExpress.XtraPrinting;
+using DevExpress.Web.ASPxMenu;
+using System.Data;
+using SVCF_BusinessAccessLayer;
+using SVCF_TransactionLayer;
+using SVCF_DataAccessLayer;
+
+namespace SreeVisalamChitFundLtd_phase1
+{
+    public partial class DiarySm : System.Web.UI.Page
+    {
+        #region Object
+        BusinessLayer balayer = new BusinessLayer();
+        #endregion
+
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            if (!IsPostBack)
+            {
+                txtToDate.Text = DateTime.Now.ToString("dd/MM/yyyy");
+                lblDate.Text = DateTime.Now.ToString("dd/MM/yyyy");
+                string lb3 = balayer.ToobjectstrEvenNull(balayer.GetSingleValue("select (case when (sum(case when t1.Voucher_Type='C' then t1.Amount else 0.00 end )>sum(case when t1.Voucher_Type='D' then t1.Amount else 0.00 end )) then sum(case when t1.Voucher_Type='C' then t1.Amount else 0.00 end )-sum(case when t1.Voucher_Type='D' then t1.Amount else 0.00 end ) else sum(case when t1.Voucher_Type='D' then t1.Amount else 0.00 end )-sum(case when t1.Voucher_Type='C' then t1.Amount else 0.00 end ) end) as Amount from voucher as t1  left join bankdetails as bb on (t1.Head_Id=bb.Head_Id) where `t1`.`BranchID` =" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and `t1`.`RootID` = 3 and `t1`.`ChoosenDate` between '2009/01/01' and '" + balayer.indiandateToMysqlDate(txtToDate.Text) + "'"));
+                lbl3.Text = "3. Bank Balance Total Rs. " + lb3;
+                lblBranch.Text = "Branch : " + balayer.ToobjectstrEvenNull(Session["BranchName"]);
+                select();
+                ApplyLayout(1);
+                grid.SettingsText.Title = "3. Banks ";
+                gridChitCollection.SettingsText.Title = "Chit Collection Particulars"+Environment.NewLine+" (Credit Part of 5)";
+                gridBankCollection.SettingsText.Title = "Banks";
+                gridBranchCollection.SettingsText.Title = "Branch";
+                gridProfit.SettingsText.Title = "10. Profit and Loss Account";
+                gridOther.SettingsText.Title = "4. Other Items";
+                gridLoan.SettingsText.Title = "8. Loans";
+                gridAdvances.SettingsText.Title = "9. Sundries & Advances";
+                gridInvestments.SettingsText.Title = "2. Investments";
+                gridStamps.SettingsText.Title = "11. Stamps";
+                gridDecreeDebtors.SettingsText.Title = "7. Decree Account";
+                gridTrialBalance.SettingsText.Title = "Trial Balance for "+txtToDate.Text+"";
+                gridYesterday1.SettingsText.Title = "Today Auction Particulars";
+                gridCompanyChits.SettingsText.Title = "6. Company Chits";
+            }            
+        }
+        protected void Page_Init(object sender, EventArgs e)
+        {
+            imgVisalam.ImageUrl = Page.ResolveUrl("~/Styles/Image/logo_New.png");
+        }
+        protected void select()
+        {
+            System.Globalization.DateTimeFormatInfo usDtfi = new System.Globalization.CultureInfo("en-NZ", false).DateTimeFormat;
+            DateTime dt = DateTime.Parse(txtToDate.Text, usDtfi);
+            string lb3 = balayer.ToobjectstrEvenNull(balayer.GetSingleValue("select (case when (sum(case when t1.Voucher_Type='C' then t1.Amount else 0.00 end )>sum(case when t1.Voucher_Type='D' then t1.Amount else 0.00 end )) then sum(case when t1.Voucher_Type='C' then t1.Amount else 0.00 end )-sum(case when t1.Voucher_Type='D' then t1.Amount else 0.00 end ) else sum(case when t1.Voucher_Type='D' then t1.Amount else 0.00 end )-sum(case when t1.Voucher_Type='C' then t1.Amount else 0.00 end ) end) as Amount from voucher as t1  left join bankdetails as bb on (t1.Head_Id=bb.Head_Id) where `t1`.`BranchID` =" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and `t1`.`RootID` = 3 and `t1`.`ChoosenDate` between '2009/01/01' and '" + balayer.indiandateToMysqlDate(txtToDate.Text) + "'"));
+            lbl3.Text = "3. Bank Balance Total Rs. "+lb3;
+
+            DataTable dtHeads = balayer.GetDataTable("SELECT cast(concat(Head_Id,'',',') as char) FROM svcf.voucher where ChoosenDate<='" + balayer.indiandateToMysqlDate(txtToDate.Text) + "' and BranchID=" + Session["Branchid"] + " and Trans_Type=2 and RootID in (5,6) order by Head_Id asc");
+            string sHeads = "";
+            if (dtHeads.Rows.Count <= 0)
+            {
+            }
+            else
+            {
+                for (int i = 0; i < dtHeads.Rows.Count; i++)
+                {
+                    sHeads += balayer.ToobjectstrEvenNull(dtHeads.Rows[i][0]);
+                }
+                sHeads = sHeads.TrimEnd(',').Replace(",,", ",");
+                sHeads = " and auctiondetails.prizedMemberID not  in (" + sHeads + ")";
+            }
+            string strPay = @"SELECT `auctiondetails`.`PrizedMemberID`,`membertogroupmaster`.`GrpMemberID` AS `Chit Number`,`auctiondetails`.`DrawNO` AS `Instmnt`,DATE_FORMAT(`auctiondetails`.`AuctionDate`,'%d/%m/%Y') AS `Date`,`membertogroupmaster`.`MemberName` as `Name of the Subscriber`,(`auctiondetails`.`PrizedAmount`) AS `PrizedMoney1`,(`auctiondetails`.`KasarAmount`-`commissiondetails`.`Commission`) AS `Kasar`,(`auctiondetails`.`PrizedAmount`-`commissiondetails`.`Commission` +`auctiondetails`.`KasarAmount`) as `Total`, `commissiondetails`.`Commission` AS `Commision`,`commissiondetails`.`ChitValue` AS `PrizeMoney2`, '' AS Arrears FROM svcf.auctiondetails JOIN membertogroupmaster ON (`auctiondetails`.`PrizedMemberID`=`membertogroupmaster`.`Head_Id`) LEFT JOIN `svcf`.`groupmaster` ON (`auctiondetails`.`GroupID`=`groupmaster`.`Head_Id`) JOIN `svcf`.`commissiondetails` ON (`groupmaster`.`ChitValue`=`commissiondetails`.`ChitValue`) WHERE `groupmaster`.`Commission_ID`=`commissiondetails`.`Commission_ID` and `auctiondetails`.`BranchID`=" + Session["Branchid"] + " and auctiondetails.AuctionDate<='" + balayer.indiandateToMysqlDate(txtToDate.Text) + "'" + sHeads + "";
+            //
+            DataTable dtPay = balayer.GetDataTable(strPay);
+
+            decimal decPay = 0;
+            for (int i = 0; i < dtPay.Rows.Count; i++)
+            {
+                if (balayer.ToobjectstrEvenNull(dtPay.Rows[i]["Chit Number"]) == "CX-31-4" || balayer.ToobjectstrEvenNull(dtPay.Rows[i]["Chit Number"]) == "CX-31/25")
+                { }
+                else
+                {
+                    decPay += Convert.ToDecimal( dtPay.Rows[i]["PrizedMoney1"]);
+                }
+            }
+            lbl2.Text = "2. Payment to be made on Prized chits till date (in amount) Rs. " + decPay;
+
+            AccessDataSource1.ConnectionString = CommonClassFile.ConnectionString;
+            AccessDataSource2.ConnectionString = CommonClassFile.ConnectionString;
+            AccessDataSource3.ConnectionString = CommonClassFile.ConnectionString;
+            AccessDataSource5.ConnectionString = CommonClassFile.ConnectionString;
+            AccessDataSource6.ConnectionString = CommonClassFile.ConnectionString;
+            AccessDataSource7.ConnectionString = CommonClassFile.ConnectionString;
+            AccessDataSource8.ConnectionString = CommonClassFile.ConnectionString;
+            AccessDataSource9.ConnectionString = CommonClassFile.ConnectionString;
+
+            AccessDataSource10.ConnectionString = CommonClassFile.ConnectionString;
+
+            AccessDataSource13.ConnectionString = CommonClassFile.ConnectionString;
+            AccessDataSource14.ConnectionString = CommonClassFile.ConnectionString;
+
+            AccessDataSource16.ConnectionString = CommonClassFile.ConnectionString;
+            AccessDataSource17.ConnectionString = CommonClassFile.ConnectionString;
+            AccessDataSource1.SelectCommand = @"select t8.Node as Head ,concat(bb.BankName,'_',bb.AccountNo) as `NameoftheBank`,tt.CustomersBankName as `onaccountof`,tt.ChequeDDNO as `CashorCheque`,t1.Narration,(case when t1.Voucher_Type='C' then t1.Amount else 0.00 end )as `Credit`,(case when t1.Voucher_Type='D' then t1.Amount else 0.00 end )as `Debit` from voucher as t1  left Join headstree as t3 on t1.Head_ID=t3.NodeID left join membermaster as t4 on t4.MemberIDNew=t1.MemberID left Join headstree as t8 on (t1.ChitGroupID=t8.NodeID) left join transbank as tt on (t1.TransactionKey=tt.TransactionKey) left join bankdetails as bb on (t1.Head_Id=bb.Head_Id) where `t1`.`BranchID` = "+balayer.ToobjectstrEvenNull(Session["Branchid"])+" and `t1`.`RootID` = 3 and `t1`.`ChoosenDate`='"+balayer.indiandateToMysqlDate(txtToDate.Text)+"'";
+        //    AccessDataSource2.SelectCommand = @"select g1.GroupNo as `Group`, ht1.ParentID,(sum(case when(v1.Trans_Medium=0 and v1.Other_Trans_Type not in (3,5)) then   v1.Amount  else 0.00 end)) as CRR,(sum(case when((v1.Trans_Medium=1 or v1.Trans_Medium=2) and v1.Other_Trans_Type not in (3,5) ) then   v1.Amount  else 0.00 end)) as TRR,sum(case when(v1.Other_Trans_Type in (3,5)) then v1.Amount else 0.00 end) as PR from voucher as v1  join headstree as ht1 on v1.Head_Id=ht1.NodeID join groupmaster as g1  on g1.Head_Id=ht1.ParentID  where v1.RootID=5  and v1.Trans_Type<>2 and Voucher_Type='C' and v1.BranchID =" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and v1.choosenDate='" + balayer.indiandateToMysqlDate(txtToDate.Text) + "' group by ht1.ParentID;";
+ 
+//AccessDataSource2.SelectCommand = @"select ht1.Node as ChitNumber, "
+// + "case when(v1.Trans_Medium=0 and v1.Other_Trans_Type not in (3,5)) then v1.Amount  else 0.00 end as 'CRR',"
+//+ "case when(v1.Voucher_Type='C' and v1.Other_Trans_Type<>2 and v1.ChitGroupId=44 ) then v1.Amount else 0.00 end as 'RCM'," 
+//+ "case when (v1.Voucher_Type='C') and v1.Other_Trans_Type<>2 then v1.Amount else 0.00 end as 'TRR1',"
+// + "null as 'TRR2' ,"
+//+"case when(v1.Voucher_Type='C' and v1.Other_Trans_Type<>2 and v1.Head_Id=43 ) then v1.Amount else 0.00 end as'CCA',"
+//+"case when(v1.Voucher_Type='C' and v1.Other_Trans_Type<>2 and v1.Head_Id=47 ) then v1.Amount else 0.00 end as 'OPM',"
+//+"case when(v1.Voucher_Type='C' and v1.Other_Trans_Type<>2 and v1.Head_Id=48 ) then v1.Amount else 0.00 end as 'UPM',"
+//+"case when(v1.Voucher_Type='C' and v1.Other_Trans_Type<>2 and v1.Head_Id=46 ) then v1.Amount else 0.00 end as 'UPMLedger',"
+//+"case when(v1.Other_Trans_Type in (3,5)) then v1.Amount else 0.00 end as 'PR' "
+//+"from voucher as v1 join membertogroupmaster as m1 on(m1.Head_Id =v1.Head_Id) left join headstree as ht1 on (v1.Head_Id=ht1.NodeID) where v1.BranchID =" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and v1.choosenDate='" + balayer.indiandateToMysqlDate(txtToDate.Text) + "'"
+//+ " union "
+//+"select ht1.Node as ChitNumber,"
+//+ "case when(v1.Trans_Medium=0 and v1.Other_Trans_Type not in (3,5)) then   v1.Amount  else 0.00 end as 'CRR',"
+//+"case when(v1.Voucher_Type='C' and v1.Other_Trans_Type<>2 and v1.ChitGroupId=44 ) then v1.Amount else 0.00 end as 'RCM',"
+//+"case when (v1.Voucher_Type='C') and v1.Other_Trans_Type<>2 then v1.Amount else 0.00 end as 'TRR1'," 
+//+"case when(v1.Voucher_Type='C' and v1.Other_Trans_Type<>2) then  v1.Amount  else 0.00 end as 'TRR2', "
+//+"case when(v1.Voucher_Type='C' and v1.Other_Trans_Type<>2 and v1.Head_Id=43 ) then v1.Amount else 0.00 end as'CCA',"
+//+"case when(v1.Voucher_Type='C' and v1.Other_Trans_Type<>2 and v1.Head_Id=47 ) then v1.Amount else 0.00 end as 'OPM',"
+//+"case when(v1.Voucher_Type='C' and v1.Other_Trans_Type<>2 and v1.Head_Id=48 ) then v1.Amount else 0.00 end as 'UPM',"
+//+"case when(v1.Voucher_Type='C' and v1.Other_Trans_Type<>2 and v1.Head_Id=46 ) then v1.Amount else 0.00 end as 'UPMLedger',"
+//+"case when(v1.Other_Trans_Type in (3,5)) then v1.Amount else 0.00 end as 'PR'"
+//+"from voucher as v1 join membertogroupmaster as m1 on(m1.Head_Id =v1.Head_Id) left join headstree as ht1 on (v1.Head_Id=ht1.NodeID) where v1.BranchID =" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and v1.choosenDate='" + balayer.indiandateToMysqlDate(txtToDate.Text) + "'";
+
+//AccessDataSource2.SelectCommand = @"select g1.GroupNo as ChitNumber,ht1.ParentID, "
+//+ "(sum(case when(v1.Trans_Medium=0 and v1.Other_Trans_Type not in (3,5)) then v1.Amount  else 0.00 end)) as 'CRR',"
+//+ "(sum(case when(v1.Voucher_Type='C' and v1.Other_Trans_Type<>2 and v1.ChitGroupId=44 ) then v1.Amount else 0.00 end)) as 'RCM',"
+//+ "(sum(case when (v1.Voucher_Type='C'and ((v1.Trans_Medium=1 or v1.Trans_Medium=2))) and v1.Other_Trans_Type<>2 and v1.Trans_Type<>0 and v1.Other_Trans_Type not in (3,5)then   v1.Amount  else 0.00 end)) as 'TRR1',"
+//+ "(sum(case when((Series='voucher' and Voucher_Type='C'  and Trans_Type=0) or (Series='ADVICE' and Voucher_Type='C' and Trans_Type=1)) then v1.Amount  else 0.00 end )) as 'TRR2',"
+//+ "(sum(case when(v1.Other_Trans_Type in (3,5)) then v1.Amount else 0.00 end)) as 'PR',"
+//+ "(sum(case when(v1.Voucher_Type='C' and v1.Other_Trans_Type<>2 and v1.Head_Id=43 ) then v1.Amount else 0.00 end)) as'CCA',"
+//+ "(sum(case when(v1.Voucher_Type='C' and v1.Other_Trans_Type<>2 and v1.Head_Id=47 ) then v1.Amount else 0.00 end)) as 'OPM',"
+//+ "(sum(case when(v1.Voucher_Type='C' and v1.Other_Trans_Type<>2 and v1.Head_Id=48 ) then v1.Amount else 0.00 end)) as 'UPM',"
+//+ "(sum(case when(v1.Voucher_Type='C' and v1.Other_Trans_Type<>2 and v1.Head_Id=46 ) then v1.Amount else 0.00 end)) as 'UPMLedger'"
+
+//+ "from voucher as v1  join headstree as ht1 on v1.Head_Id=ht1.NodeID join groupmaster as g1  on g1.Head_Id=ht1.ParentID  where v1.RootID=5  and v1.Trans_Type<>2 and Voucher_Type='C' and v1.BranchID =" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and v1.choosenDate='" + balayer.indiandateToMysqlDate(txtToDate.Text) + "'group by ht1.ParentID";
+            //AccessDataSource2.SelectCommand = @"select g1.GroupNo as ChitNumber,ht1.ParentID, "
+            //+ "(sum(case when(v1.Trans_Medium=0 and v1.Other_Trans_Type not in (3,5)) then v1.Amount  else 0.00 end)) as 'CRR',"
+            //+ "(sum(case when(v1.Voucher_Type='C' and v1.Other_Trans_Type<>2 and v1.ChitGroupId=44 ) then v1.Amount else 0.00 end)) as 'RCM',"
+            //+ "(sum(case when (v1.Voucher_Type='C'and ((v1.Trans_Medium=1 or v1.Trans_Medium=2))) and v1.Other_Trans_Type<>2 and v1.Trans_Type<>0 and v1.Other_Trans_Type not in (3,5)then   v1.Amount  else 0.00 end)) as 'TRR1',"
+            //+ "(sum(case when((Series='voucher' and Voucher_Type='C'  and Trans_Type=0) or (Series='ADVICE' and Voucher_Type='C' and Trans_Type=1)) then v1.Amount  else 0.00 end )) as 'TRR2',"
+            //+ "(sum(case when(v1.Other_Trans_Type in (3,5)) then v1.Amount else 0.00 end)) as 'PR',"
+            //+ "(sum(case when(v1.Voucher_Type='C' and v1.Other_Trans_Type<>2 and v1.Head_Id=43 ) then v1.Amount else 0.00 end)) as'CCA',"
+            //+ "(sum(case when(v1.Voucher_Type='C' and v1.Other_Trans_Type<>2 and v1.Head_Id=47 ) then v1.Amount else 0.00 end)) as 'OPM',"
+            //+ "(sum(case when(v1.Voucher_Type='C' and v1.Other_Trans_Type<>2 and v1.Head_Id=48 ) then v1.Amount else 0.00 end)) as 'UPM',"
+            //+ "(sum(case when(v1.Voucher_Type='C' and v1.Other_Trans_Type<>2 and v1.Head_Id=46 ) then v1.Amount else 0.00 end)) as 'UPMLedger'"
+
+            //+ "from voucher as v1  join headstree as ht1 on v1.Head_Id=ht1.NodeID join groupmaster as g1  on g1.Head_Id=ht1.ParentID  where v1.RootID=5  and v1.Trans_Type<>2 and Voucher_Type='C' and v1.BranchID =" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and v1.choosenDate='" + balayer.indiandateToMysqlDate(txtToDate.Text) + "'group by ht1.ParentID";
+            //kee
+            //31/05/2021 - DECREE series added in the TRR1 Section(166)
+            AccessDataSource2.SelectCommand = @"select g1.GroupNo as ChitNumber,ht1.ParentID, "
+           + "(sum(case when(v1.Trans_Medium=0 and v1.Other_Trans_Type not in (3,5)) then v1.Amount  else 0.00 end)) as 'CRR',"
+
+           + "(sum(case when (v1.Voucher_Type='C'and ((v1.Trans_Medium=1 or v1.Trans_Medium=2))) and v1.Other_Trans_Type<>2 and v1.Trans_Type<>0 or (v1.Series='DECREE' and v1.Trans_Type=0) and v1.Other_Trans_Type not in (3,5)then   v1.Amount  else 0.00 end)) as 'TRR1',"
+           + "(sum(case when((Series='voucher' and Voucher_Type='C'  and Trans_Type=0) or (Series='ADVICE' and Voucher_Type='C' and Trans_Type=1)) then v1.Amount  else 0.00 end )) as 'TRR2',"
+           + "(sum(case when(v1.Other_Trans_Type in (3,5)) then v1.Amount else 0.00 end)) as 'PR',"
+           + "NULL as 'RCM',"
+           + "NULL as 'CCA',"
+           + "NULL as 'OPM',"
+           + "NULL as 'UPM',"
+           + "NULL as 'UPMLedger'"
+
+           + "from voucher as v1  join headstree as ht1 on v1.Head_Id=ht1.NodeID join groupmaster as g1  on g1.Head_Id=ht1.ParentID  where v1.RootID=5  and v1.Trans_Type<>2 and Voucher_Type='C' and v1.BranchID =" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and v1.choosenDate='" + balayer.indiandateToMysqlDate(txtToDate.Text) + "'group by ht1.ParentID"
+           + " union "
+           + "select ht1.Node as ChitNumber,ht1.ParentID, "
+           + "NULL as 'CRR',"
+           + "NULL as 'TRR1',"
+           + "NULL as 'TRR2',"
+           + "NULL as 'PR',"
+           + "(sum(case when(v1.Voucher_Type='C' and v1.Other_Trans_Type<>2 and v1.ChitGroupId=44 ) then v1.Amount else 0.00 end)) as 'RCM',"
+           + "(sum(case when(v1.Voucher_Type='C' and v1.Other_Trans_Type<>2 and v1.Head_Id=43 ) then v1.Amount else 0.00 end)) as'CCA',"
+           + "(sum(case when(v1.Voucher_Type='C' and v1.Other_Trans_Type<>2 and v1.Head_Id=47 ) then v1.Amount else 0.00 end)) as 'OPM',"
+           + "(sum(case when(v1.Voucher_Type='C' and v1.Other_Trans_Type<>2 and v1.Head_Id=48 ) then v1.Amount else 0.00 end)) as 'UPM',"
+           + "(sum(case when(v1.Voucher_Type='C' and v1.Other_Trans_Type<>2 and v1.Head_Id=46 ) then v1.Amount else 0.00 end)) as 'UPMLedger'"
+
+           + "from voucher as v1  join headstree as ht1 on v1.Head_Id=ht1.NodeID   where v1.RootID=5 and ht1.ParentID in(44,5)  and v1.Trans_Type<>1 and Voucher_Type='C' and v1.BranchID =" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and v1.choosenDate='" + balayer.indiandateToMysqlDate(txtToDate.Text) + "'group by ht1.Node";
+            //23/10/2021 -Bala
+            //AccessDataSource3.SelectCommand = @"select concat(bb.BankName ,'_',bb.AccountNo) as `Bank`,(case when (sum(case when t1.Voucher_Type='C' then t1.Amount else 0.00 end )>sum(case when t1.Voucher_Type='D' then t1.Amount else 0.00 end )) then sum(case when t1.Voucher_Type='C' then t1.Amount else 0.00 end )-sum(case when t1.Voucher_Type='D' then t1.Amount else 0.00 end ) else 0.00 end) as CrAmount,(case when (sum(case when t1.Voucher_Type='D' then t1.Amount else 0.00 end )>sum(case when t1.Voucher_Type='C' then t1.Amount else 0.00 end )) then sum(case when t1.Voucher_Type='D' then t1.Amount else 0.00 end )-sum(case when t1.Voucher_Type='C' then t1.Amount else 0.00 end ) else 0.00 end) as DrAmount from voucher as t1  left join bankdetails as bb on (t1.Head_Id=bb.Head_Id) where `t1`.`BranchID` =" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and `t1`.`RootID` = 3 and `t1`.`ChoosenDate` between '0001/01/01' and '" + balayer.indiandateToMysqlDate(txtToDate.Text) + "' group by Bank";
+            AccessDataSource3.SelectCommand = @"select * from (select concat(bb.BankName ,'_',bb.AccountNo) as `Bank`,(case when (sum(case when t1.Voucher_Type='C' then t1.Amount else 0.00 end )>sum(case when t1.Voucher_Type='D' then t1.Amount else 0.00 end )) then sum(case when t1.Voucher_Type='C' then t1.Amount else 0.00 end )-sum(case when t1.Voucher_Type='D' then t1.Amount else 0.00 end ) else 0.00 end) as CrAmount,(case when (sum(case when t1.Voucher_Type='D' then t1.Amount else 0.00 end )>sum(case when t1.Voucher_Type='C' then t1.Amount else 0.00 end )) then sum(case when t1.Voucher_Type='D' then t1.Amount else 0.00 end )-sum(case when t1.Voucher_Type='C' then t1.Amount else 0.00 end ) else 0.00 end) as DrAmount from voucher as t1  left join bankdetails as bb on (t1.Head_Id=bb.Head_Id) where `t1`.`BranchID` =" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and `t1`.`RootID` = 3 and `t1`.`ChoosenDate` between '0001/01/01' and '" + balayer.indiandateToMysqlDate(txtToDate.Text) + "' group by Bank)  A where A.CrAmount!=0.00 or A.DrAmount!=0.00";
+            DataTable dtBranchTotal = balayer.GetDataTable( @"select t3.Node as Branch , (case when(sum(case when t1.Voucher_Type='C' then t1.Amount else 0.00 end )>= sum(case when t1.Voucher_Type='D' then t1.Amount else 0.00 end )) then concat('Cr.',cast( sum(case when t1.Voucher_Type='C' then t1.Amount else 0.00 end )-sum(case when t1.Voucher_Type='D' then t1.Amount else 0.00 end ) as char )) else concat('Dr.',cast(sum(case when t1.Voucher_Type='D' then t1.Amount else 0.00 end ) -sum(case when t1.Voucher_Type='C' then t1.Amount else 0.00 end )as char)) end) as Amount from voucher as t1  left Join headstree as t3 on t1.Head_ID=t3.NodeID where `t1`.`BranchID` =" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and `t1`.`RootID` = 1 and t1.ChoosenDate between '0001/03/31' and '" + balayer.indiandateToMysqlDate(txtToDate.Text) + "' group by branch");
+            AccessDataSource5.SelectCommand = @"select t3.Node as `Sub-Head` ,t1.Narration as `onaccountof`,(case when t1.Voucher_Type='C' then t1.Amount else 0.00 end )as `Credit`,(case when t1.Voucher_Type='D' then t1.Amount else 0.00 end )as `Debit` from voucher as t1  left Join headstree as t3 on t1.Head_ID=t3.NodeID left join membermaster as t4 on (t4.MemberIDNew=t1.MemberID) left Join headstree as t8 on (t1.ChitGroupID=t8.NodeID) where `t1`.`BranchID` = "+balayer.ToobjectstrEvenNull(Session["Branchid"])+" and `t1`.`RootID` = 11 and t1.ChoosenDate='"+balayer.indiandateToMysqlDate(txtToDate.Text)+"'";
+            AccessDataSource6.SelectCommand = @"select t3.Node as `Sub-Head` ,t1.Narration as `onaccountof`,(case when t1.Voucher_Type='C' then t1.Amount else 0.00 end )as `Credit`,(case when t1.Voucher_Type='D' then t1.Amount else 0.00 end )as `Debit` from voucher as t1  left Join headstree as t3 on t1.Head_ID=t3.NodeID left join membermaster as t4 on t4.MemberIDNew=t1.MemberID left join headstree as t8 on (t1.ChitGroupID=t8.NodeID) where `t1`.`BranchID` =" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and `t1`.`RootID` = 4  and t1.ChoosenDate='" + balayer.indiandateToMysqlDate(txtToDate.Text) + "';";
+            AccessDataSource7.SelectCommand = @"select t1.Head_Id,t3.Parentid,gg.Node as `Chit/StaffLoan`,substring_index(t3.Node,'=',-1) as `Name`, (case when ( t3.Parentid=53) then substring_index(t3.Node,'=',1) else null end) as `ChitNo` ,(case when t1.Voucher_Type='C' then t1.Amount else 0.00 end )as `LoanAmountReceivedBack`,(case when t1.Voucher_Type='D' then t1.Amount else 0.00 end )as `LoanAmountPaid` from voucher as t1  left Join headstree as t3 on t1.Head_ID=t3.NodeID join headstree as gg on (t3.Parentid=gg.Nodeid) where `t1`.`BranchID` = " + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and `t1`.`RootID` = 8 and t1.ChoosenDate='" + balayer.indiandateToMysqlDate(txtToDate.Text) + "'";
+            AccessDataSource8.SelectCommand = @"select t4.Node as `Sub-Head`, t3.Node as `Name` ,(case when t1.Voucher_Type='C' then t1.Amount else 0.00 end )as `Credit`,(case when t1.Voucher_Type='D' then t1.Amount else 0.00 end )as `Debit` from voucher as t1  left Join headstree as t3 on t1.Head_ID=t3.NodeID left join headstree as t4 on t3.Parentid=t4.Nodeid where `t1`.`BranchID` = " + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and `t1`.`RootID` = 9 and t1.ChoosenDate='" + balayer.indiandateToMysqlDate(txtToDate.Text) + "'";
+            AccessDataSource9.SelectCommand = @"select t3.Node as `Sub-Head` , t1.Narration as `onaccountof`,(case when t1.Voucher_Type='C' then t1.Amount else 0.00 end )as `Credit`,(case when t1.Voucher_Type='D' then t1.Amount else 0.00 end )as `Debit` from voucher as t1  left Join headstree as t3 on t1.Head_ID=t3.NodeID where `t1`.`BranchID` =" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and `t1`.`RootID` = 2 and t1.ChoosenDate='"+ balayer.indiandateToMysqlDate(txtToDate.Text) + "' ";
+            AccessDataSource10.SelectCommand = @"select t3.Node as `Sub-Head` , t1.Narration as `onaccountof`,(case when t1.Voucher_Type='C' then t1.Amount else 0.00 end )as `Credit`,(case when t1.Voucher_Type='D' then t1.Amount else 0.00 end )as `Debit` from voucher as t1  left Join headstree as t3 on t1.Head_ID=t3.NodeID  where `t1`.`BranchID` =" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and `t1`.`RootID` = 10 and t1.ChoosenDate ='" + balayer.indiandateToMysqlDate(txtToDate.Text) + "'";
+
+           // DataTable dtTrialBalance = balayer.GetDataTable(@"SELECT cast(`headstree`.`NodeID` as char) as NodeID,`headstree`.`Node` as Head,sum((case when voucher.Voucher_Type='C' then voucher.Amount else 0.00 end )) as `Credit`,sum((case when voucher.Voucher_Type='D' then voucher.Amount else 0.00 end )) as `Debit` FROM `svcf`.`voucher` join headstree on (voucher.RootID=headstree.NodeID) where voucher.RootID<>12 and voucher.BranchID=" + balayer.ToobjectstrEvenNull(Session["Branchid"])   + " and voucher.ChoosenDate='" + balayer.indiandateToMysqlDate(txtToDate.Text) + "' group by voucher.RootID");
+            if (Convert.ToInt32(Session["Branchid"]) == 161)
+            {
+                DataTable dtTrialBalance = balayer.GetDataTable(@"SELECT cast(`headstree`.`NodeID` as char) as NodeID,`headstree`.`Node` as Head,sum((case when voucher.Voucher_Type='C' then voucher.Amount else 0.00 end )) as `Credit`,sum((case when voucher.Voucher_Type='D' then voucher.Amount else 0.00 end )) as `Debit` FROM `svcf`.`voucher` join headstree on (voucher.RootID=headstree.NodeID) where voucher.RootID<>12 and (voucher.BranchID= '161'  or voucher.BranchID='160' or voucher.BranchID='162') and voucher.ChoosenDate='" + balayer.indiandateToMysqlDate(txtToDate.Text) + "' group by voucher.RootID");
+                string DefaultId = "";
+                for (int i = 0; i < dtTrialBalance.Rows.Count; i++)
+                {
+                    DefaultId += balayer.ToobjectstrEvenNull(dtTrialBalance.Rows[i][0]) + ",";
+                }
+                DefaultId = DefaultId.TrimEnd(',');
+                if (string.IsNullOrEmpty(DefaultId))
+                {
+                    DefaultId = "0";
+                }
+                string str = "select cast(NodeID as char) as NodeID , Node as Head,0.00 as Credit,0.00 as Debit from headstree where NodeID not in (" + DefaultId + ") and NodeID<>12 and ParentID=0";
+                DataTable dt1 = balayer.GetDataTable(str);
+                str = @"select cast(12 as char) as NodeID, 'Opening Balance' as Head,sum(case when (Voucher_Type='D' and ChoosenDate<'" + balayer.indiandateToMysqlDate(txtToDate.Text) + "'  ) then Amount else 0.00 end)-sum(case when (Voucher_Type='C' and ChoosenDate<'" + balayer.indiandateToMysqlDate(txtToDate.Text) + "'  ) then Amount else 0.00 end) as Credit,0.00 as Debit  from voucher  where voucher.BranchID=" + Session["Branchid"] + " and rootid=12 union all select cast(13 as char) as NodeID, 'Closing Balance' as Head,0.00 as Credit,sum(case when (Voucher_Type='D' and ChoosenDate<='" + balayer.indiandateToMysqlDate(txtToDate.Text) + "'  ) then Amount else 0.00 end)-sum(case when (Voucher_Type='C' and ChoosenDate<='" + balayer.indiandateToMysqlDate(txtToDate.Text) + "'  ) then Amount else 0.00 end) as Debit from voucher  where voucher.BranchID=" + Session["Branchid"] + " and rootid=12";
+                DataTable dt3 = balayer.GetDataTable(str);
+                DataTable dtAll = new DataTable();
+                dtAll = dtTrialBalance.Copy();
+                dtAll.Merge(dt1, true);
+                dtAll.Merge(dt3, true);
+                DataView dataview = dtAll.DefaultView;
+                //  dataview.Sort = "NodeID";
+                dataview.Sort = "Head";
+                DataTable dt2 = dataview.ToTable();
+                gridTrialBalance.DataSource = dt2;
+
+            }
+            else
+            {
+                //DataTable dtTrialBalance = balayer.GetDataTable(@"SELECT cast(`headstree`.`NodeID` as char) as NodeID,`headstree`.`Node` as Head,sum((case when voucher.Voucher_Type='C' then voucher.Amount else 0.00 end )) as `Credit`,sum((case when voucher.Voucher_Type='D' then voucher.Amount else 0.00 end )) as `Debit` FROM `svcf`.`voucher` join headstree on (voucher.RootID=headstree.NodeID) where voucher.RootID<>12 and (voucher.BranchID=" + (balayer.ToobjectstrEvenNull(Session["Branchid"])) + " or voucher.BranchID='160' or voucher.BranchID='162') and voucher.ChoosenDate='" + balayer.indiandateToMysqlDate(txtToDate.Text) + "' group by voucher.RootID");
+                DataTable dtTrialBalance = balayer.GetDataTable(@"SELECT cast(`headstree`.`NodeID` as char) as NodeID,`headstree`.`Node` as Head,sum((case when voucher.Voucher_Type='C' then voucher.Amount else 0.00 end )) as `Credit`,sum((case when voucher.Voucher_Type='D' then voucher.Amount else 0.00 end )) as `Debit` FROM `svcf`.`voucher` join headstree on (voucher.RootID=headstree.NodeID) where voucher.RootID<>12 and voucher.BranchID=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and voucher.ChoosenDate='" + balayer.indiandateToMysqlDate(txtToDate.Text) + "' group by voucher.RootID");
+                string DefaultId = "";
+                for (int i = 0; i < dtTrialBalance.Rows.Count; i++)
+                {
+                    DefaultId += balayer.ToobjectstrEvenNull(dtTrialBalance.Rows[i][0]) + ",";
+                }
+                DefaultId = DefaultId.TrimEnd(',');
+                if (string.IsNullOrEmpty(DefaultId))
+                {
+                    DefaultId = "0";
+                }
+                string str = "select cast(NodeID as char) as NodeID , Node as Head,0.00 as Credit,0.00 as Debit from headstree where NodeID not in (" + DefaultId + ") and NodeID<>12 and ParentID=0";
+                DataTable dt1 = balayer.GetDataTable(str);
+                str = @"select cast(12 as char) as NodeID, 'Opening Balance' as Head,sum(case when (Voucher_Type='D' and ChoosenDate<'" + balayer.indiandateToMysqlDate(txtToDate.Text) + "'  ) then Amount else 0.00 end)-sum(case when (Voucher_Type='C' and ChoosenDate<'" + balayer.indiandateToMysqlDate(txtToDate.Text) + "'  ) then Amount else 0.00 end) as Credit,0.00 as Debit  from voucher  where voucher.BranchID=" + Session["Branchid"] + " and rootid=12 union all select cast(13 as char) as NodeID, 'Closing Balance' as Head,0.00 as Credit,sum(case when (Voucher_Type='D' and ChoosenDate<='" + balayer.indiandateToMysqlDate(txtToDate.Text) + "'  ) then Amount else 0.00 end)-sum(case when (Voucher_Type='C' and ChoosenDate<='" + balayer.indiandateToMysqlDate(txtToDate.Text) + "'  ) then Amount else 0.00 end) as Debit from voucher  where voucher.BranchID=" + Session["Branchid"] + " and rootid=12";
+                DataTable dt3 = balayer.GetDataTable(str);
+                DataTable dtAll = new DataTable();
+                dtAll = dtTrialBalance.Copy();
+                dtAll.Merge(dt1, true);
+                dtAll.Merge(dt3, true);
+                DataView dataview = dtAll.DefaultView;
+                //  dataview.Sort = "NodeID";
+                dataview.Sort = "Head";
+                DataTable dt2 = dataview.ToTable();
+                gridTrialBalance.DataSource = dt2;
+            }
+                //string DefaultId = "";
+                //for (int i = 0; i < dtTrialBalance.Rows.Count; i++)
+                //{
+                //    DefaultId += balayer.ToobjectstrEvenNull(dtTrialBalance.Rows[i][0]) + ",";
+                //}
+                //DefaultId = DefaultId.TrimEnd(',');
+                //if (string.IsNullOrEmpty(DefaultId))
+                //{
+                //    DefaultId = "0";
+                //}
+                //string str = "select cast(NodeID as char) as NodeID , Node as Head,0.00 as Credit,0.00 as Debit from headstree where NodeID not in (" + DefaultId + ") and NodeID<>12 and ParentID=0";
+                //DataTable dt1 = balayer.GetDataTable(str);
+                //str = @"select cast(12 as char) as NodeID, 'Opening Balance' as Head,sum(case when (Voucher_Type='D' and ChoosenDate<'" + balayer.indiandateToMysqlDate(txtToDate.Text) + "'  ) then Amount else 0.00 end)-sum(case when (Voucher_Type='C' and ChoosenDate<'" + balayer.indiandateToMysqlDate(txtToDate.Text) + "'  ) then Amount else 0.00 end) as Credit,0.00 as Debit  from voucher  where voucher.BranchID=" + Session["Branchid"] + " and rootid=12 union all select cast(13 as char) as NodeID, 'Closing Balance' as Head,0.00 as Credit,sum(case when (Voucher_Type='D' and ChoosenDate<='" + balayer.indiandateToMysqlDate(txtToDate.Text) + "'  ) then Amount else 0.00 end)-sum(case when (Voucher_Type='C' and ChoosenDate<='" + balayer.indiandateToMysqlDate(txtToDate.Text) + "'  ) then Amount else 0.00 end) as Debit from voucher  where voucher.BranchID=" + Session["Branchid"] + " and rootid=12";
+                //DataTable dt3 = balayer.GetDataTable(str);
+                //DataTable dtAll = new DataTable();
+                //dtAll = dtTrialBalance.Copy();
+                //dtAll.Merge(dt1, true);
+                //dtAll.Merge(dt3, true);
+                //DataView dataview = dtAll.DefaultView;
+                ////  dataview.Sort = "NodeID";
+                //dataview.Sort = "Head";
+                //DataTable dt2 = dataview.ToTable();
+                //gridTrialBalance.DataSource = dt2;
+            
+            AccessDataSource13.SelectCommand = @"SELECT m1.GrpMemberID as ChitNo,m1.MemberName as `nameofthesubscriber`,a1.DrawNO as `InstNo`,a1.PrizedAmount as `prizedamount` FROM `svcf`.`auctiondetails` as a1 join membertogroupmaster as m1 on (a1.PrizedMemberID=m1.Head_Id) where a1.AuctionDate='" + balayer.indiandateToMysqlDate(txtToDate.Text) + "' and a1.BranchID=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + "";
+            AccessDataSource14.SelectCommand = @"SELECT h1.Node as `ChitNo`,h2.Node as `C.C. / C.S. Chit`,v1.Narration as `CallNo`,(case when(v1.Voucher_Type='C') then v1.Amount else 0.00 end) as PrizeAmount,(case when(v1.Voucher_Type='D') then v1.Amount else 0.00 end) as CallAmount  FROM `svcf`.`voucher` as v1 join headstree as h1 on (v1.Head_Id=h1.NodeID) join headstree as h2 on (h1.ParentID=h2.NodeID) where v1.RootID=6 and v1.BranchID=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and v1.ChoosenDate='" + balayer.indiandateToMysqlDate(txtToDate.Text) + "'";
+          //  DataTable dtDebit = balayer.GetDataTable(@"select cast(tp1.AOSanctionNo as char) as AOSanctionNo,m1.GrpMemberID as ChitNo,m1.MemberName as `Name`,cast(concat(tb1.ChequeDDNO,' & ',tb1.CustomersBankName) as char) as `Cash/Cheque`,sum(case when(v1.`Voucher_Type`='D' and v1.`Trans_Type`=2) then v1.Amount else 0.00 end) as `Total`, sum(case when(v1.`Trans_Type`=1 and v1.`Trans_Medium`=0 and v1.`Other_Trans_Type`=5) then v1.Amount else 0.00 end) as `ChitKasarAmount`,sum(case when(v1.`Trans_Type`=2 and v1.Head_Id=64 and v1.`Trans_Medium`=0 and v1.`Other_Trans_Type`=0) then v1.Amount else 0.00 end) as `Commision`,sum(case when(v1.`Trans_Type`=2 and v1.Head_Id=76 and v1.`Trans_Medium`=0 and v1.`Other_Trans_Type`=0) then v1.Amount else 0.00 end) as `IncidentialCharge`,sum(case when(v1.`Trans_Type`=0 and v1.Head_Id=8 and v1.`Trans_Medium`=2 and v1.`Other_Trans_Type`=3) then v1.Amount else 0.00 end) as `Loan`,sum(case when(v1.`Trans_Type`=1 and v1.`Trans_Medium`=2 and v1.`Other_Trans_Type`=3) then v1.Amount else 0.00 end) as `FutureCallAmount`,sum(case when(v1.`Trans_Type`=2 and v1.`RootID` in (1,3,6)) then v1.Amount else 0.00 end) as `Prized`,sum(case when(v1.`Trans_Type`=2 and v1.Head_Id=1062) then v1.Amount else 0.00 end) as `ServiceTax` from trans_payment as tp1 join voucher as v1 on (v1.DualTransactionKey=tp1.DualTransactionKey) join membertogroupmaster as m1 on (tp1.TokenNumber=m1.Head_Id) left join transbank as tb1 on (tp1.TransactionKey_Bank=tb1.TransactionKey) where v1.BranchID=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and v1.ChoosenDate='" + balayer.indiandateToMysqlDate(txtToDate.Text) + "' group by v1.DualTransactionKey");
+          
+            //DataTable dtDebitClone = balayer.GetDataTable("select '' as AOSanctionNo,h1.Node as ChitNo,m1.CustomerName as `Name`,'' as `Cash/Cheque`,v1.Amount as Total,0.00 as `ChitKasarAmount`, 0.00 as `Commision`,0.00 as `IncidentialCharge`,0.00 as `Loan`,0.00 as `FutureCallAmount`,v1.Amount as `Prized`,0.00 as  `ServiceTax` from voucher as v1 join headstree as h1 on (v1.Head_Id=h1.NodeID) join membermaster as m1 on (v1.MemberID=m1.MemberIDNew) where v1.Trans_Type in (0,1) and v1.Voucher_Type='D' and v1.RootID=5 and v1.BranchID=" + Session["Branchid"] + " and v1.ChoosenDate='" + balayer.indiandateToMysqlDate(txtToDate.Text) + "';");
+            //Added gst amount on 04.07.2017 by S.Kalpana
+            //DataTable dtDebit = balayer.GetDataTable(@"select cast(tp1.AOSanctionNo as char) as AOSanctionNo,v1.Narration as Narration,a1.DrawNo as AuctionNo ,m1.GrpMemberID as ChitNo,"+
+            //    "m1.MemberName as `Name`,cast(concat(tb1.ChequeDDNO,' & ',tb1.CustomersBankName) as char) as `Cash/Cheque`,sum(case when(v1.`Voucher_Type`='D' and "+
+            //    "v1.`Trans_Type`=2) then v1.Amount else 0.00 end) as `Total`, sum(case when(v1.`Trans_Type`=1 and v1.`Trans_Medium`=0 and v1.`Other_Trans_Type`=5) then "+
+            //    "v1.Amount else 0.00 end) as `ChitKasarAmount`,sum(case when(v1.`Trans_Type`=2 and v1.Head_Id in (64,1128098) and v1.`Trans_Medium`=0 and v1.`Other_Trans_Type`=0) then " +
+            //    "v1.Amount else 0.00 end) as `Commision`,sum(case when(v1.`Trans_Type`=2 and v1.Head_Id=76 and v1.`Trans_Medium`=0 and v1.`Other_Trans_Type`=0) then v1.Amount "+
+            //"else 0.00 end) as `IncidentialCharge`,sum(case when(v1.`Trans_Type`=2 and v1.Head_Id=1131156 and v1.`Trans_Medium`=0 and v1.`Other_Trans_Type`=0) then v1.Amount " +
+            //"else 0.00 end) as `GST`,sum(case when(v1.`Trans_Type`=0 and v1.Head_Id=8 and v1.`Trans_Medium`=2 and v1.`Other_Trans_Type`=3) then v1.Amount else "+
+            //"0.00 end) as `Loan`,sum(case when(v1.`Trans_Type`=1 and v1.`Trans_Medium`=2 and v1.`Other_Trans_Type`=3) then v1.Amount else 0.00 end) as `FutureCallAmount`,"+
+            //"sum(case when(v1.`Trans_Type`=2 and v1.`RootID` in (1,3,6)) then v1.Amount else 0.00 end) as `Prized`,sum(case when(v1.`Trans_Type`=2 and v1.Head_Id=1062) then "+
+            //"v1.Amount else 0.00 end) as `ServiceTax` from trans_payment as tp1 join voucher as v1 on (v1.DualTransactionKey=tp1.DualTransactionKey) join membertogroupmaster "+
+            //"as m1 on (tp1.TokenNumber=m1.Head_Id) left join transbank as tb1 on (tp1.TransactionKey_Bank=tb1.TransactionKey)join svcf.auctiondetails a1 on "+
+            //"m1.Head_Id=a1.PrizedMemberID  where v1.BranchID=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and v1.ChoosenDate='" + balayer.indiandateToMysqlDate(txtToDate.Text) + "' group by v1.DualTransactionKey");
+
+            DataTable dtDebit = balayer.GetDataTable(@"select cast(tp1.AOSanctionNo as char) as AOSanctionNo,v1.Narration as Narration,a1.DrawNo as AuctionNo ,m1.GrpMemberID as ChitNo," +
+               "m1.MemberName as `Name`,cast(concat(tb1.ChequeDDNO,' & ',tb1.CustomersBankName) as char) as `Cash/Cheque`,sum(case when(v1.`Voucher_Type`='D' and " +
+               "v1.`Trans_Type`=2) then v1.Amount else 0.00 end) as `Total`, sum(case when(v1.`Trans_Type`=1 and v1.`Trans_Medium`=0 and v1.`Other_Trans_Type`=5) then " +
+               "v1.Amount else 0.00 end) as `ChitKasarAmount`,sum(case when(v1.`Trans_Type`=2 and v1.Head_Id in (64,1128098) and v1.`Trans_Medium`=0 and v1.`Other_Trans_Type`=0) then " +
+               "v1.Amount else 0.00 end) as `Commision`,sum(case when(v1.`Trans_Type`=2 and (v1.Head_Id=1131803 or v1.Head_Id=1131804 or v1.Head_Id=1131801 or v1.Head_Id=1131802)  and v1.`Trans_Medium`=0 and v1.`Other_Trans_Type`=0) then v1.Amount " +
+           "else 0.00 end) as `GST`,sum(case when(v1.`Trans_Type`=2 and (v1.Head_Id=1131799 or v1.Head_Id=1131800)  and v1.`Trans_Medium`=0 and v1.`Other_Trans_Type`=0) then v1.Amount " +
+           "else 0.00 end) as `IGST`,sum(case when(v1.`Trans_Type`=0 and v1.Head_Id=8 and v1.`Trans_Medium`=2 and v1.`Other_Trans_Type`=3) then v1.Amount else " +
+           "0.00 end) as `Loan`,sum(case when(v1.`Trans_Type`=1 and v1.`Trans_Medium`=2 and v1.`Other_Trans_Type`=3) then v1.Amount else 0.00 end) as `FutureCallAmount`," +
+           "sum(case when(v1.`Trans_Type`=2 and v1.`RootID` in (1,3,6)) then v1.Amount else 0.00 end) as `Prized`,sum(case when(v1.`Trans_Type`=2 and v1.Head_Id=1062) then " +
+           "v1.Amount else 0.00 end) as `ServiceTax` from trans_payment as tp1 join voucher as v1 on (v1.DualTransactionKey=tp1.DualTransactionKey) join membertogroupmaster " +
+           "as m1 on (tp1.TokenNumber=m1.Head_Id) left join transbank as tb1 on (tp1.TransactionKey_Bank=tb1.TransactionKey)join svcf.auctiondetails a1 on " +
+           "m1.Head_Id=a1.PrizedMemberID  where v1.BranchID=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and v1.ChoosenDate='" + balayer.indiandateToMysqlDate(txtToDate.Text) + "' group by v1.DualTransactionKey");
+
+           // DataTable dtDebitClone = balayer.GetDataTable("select '' as AOSanctionNo, v1.Narration as Narration,a1.DrawNo as AuctionNo,h1.Node as ChitNo,m1.CustomerName as `Name`,'' as `Cash/Cheque`,v1.Amount as Total,0.00 as `ChitKasarAmount`, 0.00 as `Commision`,0.00 as `GST`,0.00 as `IGST`,0.00 as `Loan`,0.00 as `FutureCallAmount`,v1.Amount as `Prized`,0.00 as  `ServiceTax` from voucher as v1 join headstree as h1 on (v1.Head_Id=h1.NodeID) join membermaster as m1 on (v1.MemberID=m1.MemberIDNew) left join svcf.auctiondetails a1 on v1.Head_Id=a1.PrizedMemberID where v1.Trans_Type in (0,1) and v1.Voucher_Type='D' and v1.RootID=5 and v1.BranchID=" + Session["Branchid"] + " and v1.ChoosenDate='" + balayer.indiandateToMysqlDate(txtToDate.Text) + "';");
+
+            DataTable dtDebitClone = balayer.GetDataTable("select '' as AOSanctionNo, v1.Narration as Narration,h1.Node as ChitNo,a1.DrawNo as AuctionNo,m1.CustomerName as `Name`,'' as `Cash/Cheque`,v1.Amount as Total,0.00 as `ChitKasarAmount`, 0.00 as `Commision`,0.00 as `GST`,0.00 as `IncidentialCharge`,0.00 as `Loan`,0.00 as `FutureCallAmount`,v1.Amount as `Prized`,0.00 as  `ServiceTax` from voucher as v1 join headstree as h1 on (v1.Head_Id=h1.NodeID) join membermaster as m1 on (v1.MemberID=m1.MemberIDNew) left join svcf.auctiondetails a1 on v1.Head_Id=a1.PrizedMemberID where v1.Trans_Type in (0,1) and v1.Voucher_Type='D' and v1.RootID=5 and v1.BranchID=" + Session["Branchid"] + " and v1.ChoosenDate='" + balayer.indiandateToMysqlDate(txtToDate.Text) + "' union select '' as AOSanctionNo,v1.Narration as Narration,h1.Node as ChitNo,null as 'AuctionNo',null as 'Name','' as `Cash/Cheque`,v1.Amount as Total,0.00 as `ChitKasarAmount`, 0.00 as `Commision`,0.00 as `GST`,0.00 as `IncidentialCharge`,0.00 as `Loan`,0.00 as `FutureCallAmount`,v1.Amount as `Prized`,0.00 as  `ServiceTax` from voucher as v1 join headstree as h1 on (v1.Head_Id=h1.NodeID)  where v1.Trans_Type=0 and v1.MemberID=0  and v1.Voucher_Type='D' and v1.RootID=5 and v1.BranchID=" + Session["Branchid"] + " and v1.ChoosenDate='" + balayer.indiandateToMysqlDate(txtToDate.Text) + "';");
+
+            dtDebit.Merge(dtDebitClone);
+            gridDebit.DataSource = dtDebit;
+            AccessDataSource16.SelectCommand = @"select 'Opening Balance' as Title,sum(case when (Voucher_Type='D' and ChoosenDate<'" + balayer.indiandateToMysqlDate(txtToDate.Text) + "'  ) then Amount else 0.00 end)-sum(case when (Voucher_Type='C' and ChoosenDate<'" + balayer.indiandateToMysqlDate(txtToDate.Text) + "'  ) then Amount else 0.00 end) as Cash  from voucher  where voucher.BranchID=" + Session["Branchid"] + " and rootid=12 union all select 'Closing Balance' as Title,sum(case when (Voucher_Type='D' and ChoosenDate<='" + balayer.indiandateToMysqlDate(txtToDate.Text) + "'  ) then Amount else 0.00 end)-sum(case when (Voucher_Type='C' and ChoosenDate<='" + balayer.indiandateToMysqlDate(txtToDate.Text) + "'  ) then Amount else 0.00 end) as Cash from voucher  where voucher.BranchID=" + Session["Branchid"] + " and rootid=12";
+          //  AccessDataSource17.SelectCommand = @"select t1.ChoosenDate as `Date`,t8.Node as LedgerHead ,t3.Node as Branch , t1.Narration,(case when t1.Voucher_Type='C' then t1.Amount else 0.00 end )as `Credit`,(case when t1.Voucher_Type='D' then t1.Amount else 0.00 end )as `Debit` from voucher as t1  left Join headstree as t3 on t1.Head_ID=t3.NodeID left join membermaster as t4 on t4.MemberIDNew=t1.MemberID left join headstree as t8 on (t1.ChitGroupID=t8.NodeID) where `t1`.`BranchID` =" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and `t1`.`RootID` = 1 and t1.ChoosenDate = '" + balayer.indiandateToMysqlDate(txtToDate.Text) + "' and t1.IsDeleted=0";
+            DataTable nodeid = balayer.GetDataTable("select NodeId from svcf.headstree where node like '%Pallathur%' and TreeHint=1");
+
+            if (Convert.ToInt32(Session["Branchid"]) == 161)
+            {
+                //AccessDataSource17.SelectCommand = @"select t1.ChoosenDate as `Date`,t3.Node as Branch ,t1.BranchID,t1.Narration,(case when t1.Voucher_Type='C' then t1.Amount else 0.00 end )as `Credit`,(case when t1.Voucher_Type='D' then t1.Amount else 0.00 end )as `Debit` from voucher as t1  left Join headstree as t3 on t1.Head_ID=t3.NodeID left join membermaster as t4 on t4.MemberIDNew=t1.MemberID  where (`t1`.`BranchID` ='160'  or `t1`.`BranchID`='161' or `t1`.`BranchID`='162')and `t1`.`RootID` = 1 and t1.ChoosenDate = '" + balayer.indiandateToMysqlDate(txtToDate.Text) + "' and t1.IsDeleted=0";
+                AccessDataSource17.SelectCommand = @"select t1.ChoosenDate as `Date`,case When `t1`.`BranchID` ='160' Then 'BranchI' When `t1`.`BranchID` ='161' Then 'BranchII'When `t1`.`BranchID` ='162' Then 'BranchIII' ELse '' end as BranchID,
+t3.Node as Branch , t1.Narration,(case when t1.Voucher_Type='C' then t1.Amount else 0.00 end )as `Credit`,(case when t1.Voucher_Type='D' then t1.Amount else 0.00 end )as `Debit` from voucher as t1  left Join headstree as t3 on t1.Head_ID=t3.NodeID left join membermaster as t4 on t4.MemberIDNew=t1.MemberID  where (`t1`.`BranchID` ='161' or `t1`.`BranchID` ='162' or `t1`.`BranchID` ='160') and `t1`.`RootID` = 1 and t1.ChoosenDate = '" + balayer.indiandateToMysqlDate(txtToDate.Text) + "' and t1.IsDeleted=0 order by BranchID";
+            }
+            else
+            {
+                AccessDataSource17.SelectCommand = @"select t1.ChoosenDate as `Date`,'' as BranchID,t3.Node as Branch , t1.Narration,(case when t1.Voucher_Type='C' then t1.Amount else 0.00 end )as `Credit`,(case when t1.Voucher_Type='D' then t1.Amount else 0.00 end )as `Debit` from voucher as t1  left Join headstree as t3 on t1.Head_ID=t3.NodeID left join membermaster as t4 on t4.MemberIDNew=t1.MemberID  where `t1`.`BranchID` =" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and `t1`.`RootID` = 1 and t1.ChoosenDate = '" + balayer.indiandateToMysqlDate(txtToDate.Text) + "' and t1.IsDeleted=0";
+            }
+
+            BindCRR();
+         //   BindTRR();
+            BindTRR1();
+
+            grid.DataBind();
+            gridChitCollection.DataBind();
+            gridBankCollection.DataBind();
+            DataTable dtBranchCollection = new DataTable();
+            DataRow drBranchCollection = dtBranchCollection.NewRow();
+            dtBranchCollection.Columns.Add("Branch");
+            dtBranchCollection.Columns.Add("Amount");
+            for (int i = 0; i < dtBranchTotal.Rows.Count; i++)
+            {
+                if (Convert.ToString(dtBranchTotal.Rows[i]["Amount"]) != "Cr.0.00" && Convert.ToString(dtBranchTotal.Rows[i]["Amount"]) != "Dr.0.00")
+                {
+                    drBranchCollection["Branch"] = dtBranchTotal.Rows[i]["Branch"];
+                    drBranchCollection["Amount"] = dtBranchTotal.Rows[i]["Amount"];
+                    dtBranchCollection.Rows.Add(drBranchCollection.ItemArray);
+                }
+            }
+            gridBranchCollection.DataSource = dtBranchCollection;
+
+            //DateTime dtFrom = Convert.ToDateTime(txtFromDate.Text).AddMonths(1);
+            DateTime dtTo = Convert.ToDateTime(txtToDate.Text).AddMonths(1);
+            //DataTable dtDistinct = balayer.GetDataTable("select t3.Node as Head , t1.Narration,sum(case when t1.Voucher_Type='C' then t1.Amount else 0.00 end )as `Credit`,sum(case when t1.Voucher_Type='D' then t1.Amount else 0.00 end )as `Debit` from voucher as t1  left Join headstree as t3 on t1.Head_ID=t3.NodeID left join membermaster as t4 on t4.MemberIDNew=t1.MemberID left join headstree as t8 on (t1.ChitGroupID=t8.NodeID) where  `t1`.`BranchID` = " + Session["Branchid"] + " and `t1`.`RootID` = 7 and t1.ChoosenDate between '" + dtFrom.ToString("yyyy-MM-dd") + "' and '" + dtTo.ToString("yyyy-MM-dd") + "' group by t3.Node");
+
+            //31/05/2021 - if decree credit & debit are same, should be name displayed
+            //DataTable dtDistinct = balayer.GetDataTable("SELECT v1.TransactionKey,ht2.NodeID, ht2.Node as Head,(case when (sum(case when (v1.Voucher_Type='C' and ht2.TreeHint like '7,51%') then v1.Amount else 0.00 end )>sum(case when (v1.Voucher_Type='D' and ht2.TreeHint like '7,51%') then v1.Amount else 0.00 end )) then sum(case when (v1.Voucher_Type='C' and ht2.TreeHint like '7,51%') then v1.Amount else 0.00 end )-sum(case when (v1.Voucher_Type='D' and ht2.TreeHint like '7,51%')  then v1.Amount else 0.00 end ) else 0.00 end ) as `Bal.Credit`,(case when (sum((case when (v1.Voucher_Type='D' and ht2.TreeHint like '7,51%') then v1.Amount else 0.00 end ))>sum((case when (v1.Voucher_Type='C' and ht2.TreeHint like '7,51%') then v1.Amount else 0.00 end ))) then sum((case when (v1.Voucher_Type='D' and ht2.TreeHint like '7,51%') then v1.Amount else 0.00 end ))-sum((case when (v1.Voucher_Type='C' and ht2.TreeHint like '7,51%') then v1.Amount else 0.00 end )) else 0.00 end ) as `Bal.Debit`,(case when (sum(case when (v1.Voucher_Type='C' and ht2.TreeHint like '7,52%') then v1.Amount else 0.00 end )>sum(case when (v1.Voucher_Type='D' and ht2.TreeHint like '7,52%') then v1.Amount else 0.00 end )) then sum(case when (v1.Voucher_Type='C' and ht2.TreeHint like '7,52%') then v1.Amount else 0.00 end )-sum(case when (v1.Voucher_Type='D' and ht2.TreeHint like '7,52%')  then v1.Amount else 0.00 end ) else 0.00 end ) as `Court.Credit`,(case when (sum((case when (v1.Voucher_Type='D' and ht2.TreeHint like '7,52%') then v1.Amount else 0.00 end ))>sum((case when (v1.Voucher_Type='C' and ht2.TreeHint like '7,52%') then v1.Amount else 0.00 end ))) then sum((case when (v1.Voucher_Type='D' and ht2.TreeHint like '7,52%') then v1.Amount else 0.00 end ))-sum((case when (v1.Voucher_Type='C' and ht2.TreeHint like '7,52%') then v1.Amount else 0.00 end )) else 0.00 end ) as `Court.Debit` FROM `voucher` as v1 join headstree as ht2 on v1.Head_Id=ht2.NodeID where v1.RootID=7 and v1.BranchID=" + Session["Branchid"] + " and v1.ChoosenDate='" + balayer.indiandateToMysqlDate(txtToDate.Text) + "' group by ht2.NodeID order by ht2.NodeID asc");
+            //30/10/2021
+            //DataTable dtDistinct = balayer.GetDataTable("SELECT v1.TransactionKey,ht2.NodeID, ht2.Node as Head,(case when (sum(case when (v1.Voucher_Type='C' and ht2.TreeHint like '7,51%') then v1.Amount else 0.00 end )>sum(case when (v1.Voucher_Type='D' and ht2.TreeHint like '7,51%') then v1.Amount else 0.00 end )) then sum(case when (v1.Voucher_Type='C' and ht2.TreeHint like '7,51%') then v1.Amount else 0.00 end )-sum(case when (v1.Voucher_Type='D' and ht2.TreeHint like '7,51%')  then v1.Amount else 0.00 end )when (sum(case when (v1.Voucher_Type='C' and ht2.TreeHint like '7,51%') then v1.Amount else 0.00 end )=sum(case when (v1.Voucher_Type='D' and ht2.TreeHint like '7,51%') then v1.Amount else 0.00 end )) then v1.Amount else 0.00 end ) as `Bal.Credit`,(case when (sum((case when (v1.Voucher_Type='D' and ht2.TreeHint like '7,51%') then v1.Amount else 0.00 end ))>sum((case when (v1.Voucher_Type='C' and ht2.TreeHint like '7,51%') then v1.Amount else 0.00 end ))) then sum((case when (v1.Voucher_Type='D' and ht2.TreeHint like '7,51%') then v1.Amount else 0.00 end ))-sum((case when (v1.Voucher_Type='C' and ht2.TreeHint like '7,51%') then v1.Amount else 0.00 end )) when (sum((case when (v1.Voucher_Type='D' and ht2.TreeHint like '7,51%') then v1.Amount else 0.00 end ))=sum((case when (v1.Voucher_Type='C' and ht2.TreeHint like '7,51%') then v1.Amount else 0.00 end ))) then v1.Amount else 0.00 end ) as `Bal.Debit`,(case when (sum(case when (v1.Voucher_Type='C' and ht2.TreeHint like '7,52%') then v1.Amount else 0.00 end )>sum(case when (v1.Voucher_Type='D' and ht2.TreeHint like '7,52%') then v1.Amount else 0.00 end )) then sum(case when (v1.Voucher_Type='C' and ht2.TreeHint like '7,52%') then v1.Amount else 0.00 end )-sum(case when (v1.Voucher_Type='D' and ht2.TreeHint like '7,52%')  then v1.Amount else 0.00 end )  else 0.00 end ) as `Court.Credit`,(case when (sum((case when (v1.Voucher_Type='D' and ht2.TreeHint like '7,52%') then v1.Amount else 0.00 end ))>sum((case when (v1.Voucher_Type='C' and ht2.TreeHint like '7,52%') then v1.Amount else 0.00 end ))) then sum((case when (v1.Voucher_Type='D' and ht2.TreeHint like '7,52%') then v1.Amount else 0.00 end ))-sum((case when (v1.Voucher_Type='C' and ht2.TreeHint like '7,52%') then v1.Amount else 0.00 end )) else 0.00 end ) as `Court.Debit` FROM `voucher` as v1 join headstree as ht2 on v1.Head_Id=ht2.NodeID where v1.RootID=7 and v1.BranchID=" + Session["Branchid"] + " and v1.ChoosenDate='" + balayer.indiandateToMysqlDate(txtToDate.Text) + "' group by ht2.NodeID order by ht2.NodeID asc");
+            DataTable dtDistinct = balayer.GetDataTable("SELECT v1.TransactionKey,ht2.NodeID, ht2.Node as Head,(sum(case when (v1.Voucher_Type='C' AND ht2.TreeHint LIKE '7,51%') then v1.Amount else 0.00 end ) ) as `Bal.Credit`,(sum(case when (v1.Voucher_Type='D' AND ht2.TreeHint LIKE '7,51%') then v1.Amount else 0.00 end )) as `Bal.Debit`, (sum(case when (v1.Voucher_Type='C' AND (ht2.TreeHint LIKE '7,52%' OR ht2.TreeHint LIKE '7,4638%')) then v1.Amount else 0.00 end )) as `Court.Credit`,(sum((case when (v1.Voucher_Type='D' AND (ht2.TreeHint LIKE '7,52%' OR ht2.TreeHint LIKE '7,4638%')) then v1.Amount else 0.00 end ))) as `Court.Debit` FROM `voucher` as v1 join headstree as ht2 on v1.Head_Id=ht2.NodeID where v1.RootID=7 and v1.BranchID=" + Session["Branchid"] + " and v1.ChoosenDate='" + balayer.indiandateToMysqlDate(txtToDate.Text) + "' group by ht2.NodeID order by ht2.NodeID asc;");
+            DataTable dtDecreeDebtors = new DataTable();
+            DataRow drDecreeDebtors = dtDecreeDebtors.NewRow();
+            dtDecreeDebtors.Columns.Add("SlNo");
+            dtDecreeDebtors.Columns.Add("CC No");
+            dtDecreeDebtors.Columns.Add("EP No./OS No./ARC No./ARB No.");
+            dtDecreeDebtors.Columns.Add("ChitName");
+            dtDecreeDebtors.Columns.Add("Name");
+            dtDecreeDebtors.Columns.Add("CreditDECREE", typeof(decimal));
+            dtDecreeDebtors.Columns.Add("DebitDECREE", typeof(decimal));
+            dtDecreeDebtors.Columns.Add("CreditCOST", typeof(decimal));
+            dtDecreeDebtors.Columns.Add("DebitCOST", typeof(decimal));
+            dtDecreeDebtors.Columns.Add("Description");
+
+            int iCount = 0;
+            for (int i = 0; i < dtDistinct.Rows.Count; i++)
+            {
+                if (Convert.ToDecimal(dtDistinct.Rows[i]["Bal.Credit"]) > 0.00M || Convert.ToDecimal(dtDistinct.Rows[i]["Bal.Debit"]) > 0.00M || Convert.ToDecimal(dtDistinct.Rows[i]["Court.Credit"]) > 0.00M || Convert.ToDecimal(dtDistinct.Rows[i]["Court.Debit"]) > 0.00M)
+                {
+                    drDecreeDebtors["SlNo"] = iCount + 1;
+                    drDecreeDebtors["CC No"] = balayer.GetSingleValue("SELECT CC FROM svcf.transcourt where TransactionKey=" + dtDistinct.Rows[i]["TransactionKey"]);
+                    drDecreeDebtors["EP No./OS No./ARC No./ARB No."] = balayer.GetSingleValue("SELECT Number FROM svcf.transcourt where TransactionKey=" + dtDistinct.Rows[i]["TransactionKey"]);
+                    drDecreeDebtors["ChitName"] = balayer.GetSingleValue("SELECT ChitName FROM svcf.chitheads where HeadId=" + dtDistinct.Rows[i]["NodeID"]);
+                    drDecreeDebtors["Name"] = balayer.GetSingleValue("SELECT MemberName FROM svcf.chitheads where HeadId=" + dtDistinct.Rows[i]["NodeID"]);
+                    drDecreeDebtors["CreditDECREE"] = dtDistinct.Rows[i]["Bal.Credit"];
+                    drDecreeDebtors["DebitDECREE"] = dtDistinct.Rows[i]["Bal.Debit"];
+                    drDecreeDebtors["CreditCOST"] = dtDistinct.Rows[i]["Court.Credit"];
+                    drDecreeDebtors["DebitCOST"] = dtDistinct.Rows[i]["Court.Debit"];
+                    drDecreeDebtors["Description"] = "";
+                    dtDecreeDebtors.Rows.Add(drDecreeDebtors.ItemArray);
+                    iCount++;
+                }
+            }
+
+            if (dtDecreeDebtors.Rows.Count > 0)
+            {
+                decimal DeecreeCR = Convert.ToDecimal(dtDecreeDebtors.Compute("sum(CreditDECREE)", ""));
+                decimal DeecreeDR = Convert.ToDecimal(dtDecreeDebtors.Compute("sum(DebitDECREE)", ""));
+                decimal CostCR = Convert.ToDecimal(dtDecreeDebtors.Compute("sum(CreditCOST)", ""));
+                decimal CostDR = Convert.ToDecimal(dtDecreeDebtors.Compute("sum(DebitCOST)", ""));
+
+                DataRow rowTotal = dtDecreeDebtors.NewRow();
+                rowTotal["Name"] = "Total";
+                rowTotal["CreditDECREE"] = DeecreeCR;
+                rowTotal["DebitDECREE"] = DeecreeDR;
+                rowTotal["CreditCOST"] = CostCR;
+                rowTotal["DebitCOST"] = CostDR;
+                dtDecreeDebtors.Rows.Add(rowTotal.ItemArray);
+
+                DataRow rowNet = dtDecreeDebtors.NewRow();
+                rowNet["Name"] = "Net Balance";
+                if ((DeecreeCR + CostCR) >= (DeecreeDR + CostDR))
+                {
+                    decimal net = (DeecreeCR + CostCR) - (DeecreeDR + CostDR);
+                    rowNet["CreditDECREE"] = net;
+                }
+                else
+                {
+                    decimal net = (DeecreeDR + CostDR) - (DeecreeCR + CostCR);
+                    rowNet["DebitDECREE"] = net;
+                }
+                dtDecreeDebtors.Rows.Add(rowNet.ItemArray);
+            }
+            gridDecreeDebtors.DataSource = dtDecreeDebtors;
+            gridDecreeDebtors.DataBind();
+
+
+            gridBranchCollection.DataBind();
+            gridProfit.DataBind();
+            gridOther.DataBind();
+            gridLoan.DataBind();
+            gridAdvances.DataBind();
+            gridInvestments.DataBind();
+            gridStamps.DataBind();
+            gridDecreeDebtors.DataBind();
+            gridTrialBalance.DataBind();
+            gridYesterday1.DataBind();
+            gridCompanyChits.DataBind();
+            gridDebit.DataBind();
+            gridCash.DataBind();
+            gridBranches.DataBind();
+        }
+        void BindCRR()
+        {
+            DataTable dtCRR = new DataTable();
+            DataTable dtOther = new DataTable();
+            DataTable dtPandL = new DataTable();
+            DataTable dtBind = new DataTable();
+            dtBind.Columns.Add("slno");
+            dtBind.Columns.Add("Voucher_No", typeof(string));
+            dtBind.Columns.Add("Narration", typeof(string));
+            dtBind.Columns.Add("ChitNumber", typeof(string));
+            dtBind.Columns.Add("MemberName");
+            dtBind.Columns.Add("ChitAmount");
+            dtBind.Columns.Add("Heads");
+            dtBind.Columns.Add("Amount");
+            dtBind.Columns.Add("GrandTotal");
+            dtBind.Columns.Add("OtherAmount");
+            dtBind.Columns.Add("Remarks");
+            DataRow dr = dtBind.NewRow();
+            DataTable dtDate = balayer.GetDataTable("select distinct ChoosenDate from voucher where Trans_Type<>2 and Voucher_Type='C' and BranchID=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and choosenDate='" + balayer.indiandateToMysqlDate(txtToDate.Text) + "' and Trans_Medium=0 and Other_Trans_Type not in (3,5) order by ChoosenDate asc");
+            //dataempty
+            if (dtDate.Rows.Count>0)
+            {
+                for (int i = 0; i < dtDate.Rows.Count; i++)
+                {
+                    //dtCRR = balayer.GetDataTable("select distinct v1.TransactionKey,v1.`Voucher_No`,v1.Series,m1.GrpMemberID as ChitNumber, v1.`ChoosenDate`, REPLACE( v1.Narration,'  ','') as Narration,concat( m2.MemberID,' | ', m1.MemberName) as MemberName, v1.Amount as ChitAmount from voucher as v1  join headstree as ht1 on (v1.Head_Id=ht1.NodeID) join `membertogroupmaster` as m1 on (v1.Head_Id=m1.Head_Id) left join membermaster as m2 on (v1.MemberID=m2.MemberIdNew) where v1.RootID=5 and v1.IsAccepted=0 and v1.Trans_Type=1 and Voucher_Type='C' and v1.BranchID =" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and v1.choosenDate='" + balayer.indiandateToMysqlDate(balayer.ToobjectstrEvenNull(dtDate.Rows[i][0])) + "' and v1.Trans_Medium=0 and v1.Other_Trans_Type not in (3,5)");
+                    dtCRR = balayer.GetDataTable("select distinct v1.TransactionKey,v1.`Voucher_No`,v1.Series,m1.GrpMemberID as ChitNumber, null as Heads,v1.`ChoosenDate`, REPLACE( v1.Narration,'  ','') as Narration,concat( m2.MemberID,' | ', m1.MemberName) as MemberName, v1.Amount as ChitAmount,null as HeadAmount from voucher as v1  join headstree as ht1 on (v1.Head_Id=ht1.NodeID) join `membertogroupmaster` as m1 on (v1.Head_Id=m1.Head_Id) left join membermaster as m2 on (v1.MemberID=m2.MemberIdNew) where v1.RootID=5 and v1.IsAccepted=0 and v1.Trans_Type=1 and Voucher_Type='C' and v1.BranchID =" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and v1.choosenDate='" + balayer.indiandateToMysqlDate(balayer.ToobjectstrEvenNull(dtDate.Rows[i][0])) + "' and v1.Trans_Medium=0 and v1.Other_Trans_Type not in(3,5)  union SELECT  v1.TransactionKey,v1.`Voucher_No`,v1.Series,null as ChitNumber,h1.Node as Heads, v1.`ChoosenDate`, REPLACE( v1.Narration,'  ','') as Narration,null as MemberName, null as ChitAmount,v1.Amount as HeadAmount FROM svcf.voucher as v1 join headstree as h1 on (v1.Head_Id=h1.NodeID) join headstree as h2 on (h1.ParentID=h2.NodeID) where v1.Rootid not in (1,5)  and v1.BranchID=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and v1.IsAccepted=0 and v1.Trans_Medium=0 and v1.Trans_Type=1 and v1.Voucher_Type='C' and v1.ChoosenDate='" + balayer.indiandateToMysqlDate(balayer.ToobjectstrEvenNull(dtDate.Rows[i][0])) + "'order by Voucher_No");
+                    dtOther = balayer.GetDataTable("SELECT distinct v1.TransactionKey,v1.`Voucher_No`,v1.Series,ht1.Node as OtherBranch,v1.`ChoosenDate`,REPLACE( v1.Narration,'  ','') as Narration, v1.Amount as BranchAmount FROM svcf.voucher as v1 join voucher as v2 on (v1.DualTransactionKey=v2.DualTransactionKey) join headstree as ht1 on (v1.Head_Id=ht1.NodeID) where v1.Rootid=1 and v1.Trans_Medium=0 and v1.Trans_Type=1 and v1.IsAccepted=0 and v1.ChoosenDate='" + balayer.indiandateToMysqlDate(balayer.ToobjectstrEvenNull(dtDate.Rows[i][0])) + "'  and v1.branchid=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and v1.voucher_type='C' and v2.rootid=12");
+                    //dtPandL = balayer.GetDataTable("SELECT distinct v1.TransactionKey,v1.`Voucher_No`,v1.Series,h1.Node as Heads, v1.`ChoosenDate`, REPLACE( v1.Narration,'  ','') as Narration, v1.Amount as HeadAmount FROM svcf.voucher as v1 join headstree as h1 on (v1.Head_Id=h1.NodeID) join headstree as h2 on (h1.ParentID=h2.NodeID) where v1.Rootid not in (1,5)  and v1.BranchID=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and v1.IsAccepted=0 and v1.Trans_Medium=0 and v1.Trans_Type=1 and v1.Voucher_Type='C' and v1.ChoosenDate='" + balayer.indiandateToMysqlDate(balayer.ToobjectstrEvenNull(dtDate.Rows[i][0])) + "'");
+                    dr["slno"] = "";
+                    dr["Voucher_No"] = "";
+                    //dr["Narration"] = "Date : " + dtDate.Rows[i][0]; +txtToDate.Text +
+                    dr["Narration"] = "Date :" + txtToDate.Text + "";
+
+                    dr["ChitNumber"] = "";
+                    dr["MemberName"] = "";
+                    dr["ChitAmount"] = "";
+                    dr["Heads"] = "";
+                    dr["Amount"] = "";
+                    dr["GrandTotal"] = "";
+                    dr["OtherAmount"] = "";
+                    dr["Remarks"] = "";
+                    dtBind.Rows.Add(dr.ItemArray);
+                    int count = 0;
+                    for (int j = 0; j < dtCRR.Rows.Count; j++)
+                    {
+                        dr["slno"] = j + 1;
+                        count += 1;
+                        dr["Voucher_No"] = dtCRR.Rows[j]["Voucher_No"];
+                        dr["Narration"] = dtCRR.Rows[j]["Narration"]; ;
+                        dr["ChitNumber"] = dtCRR.Rows[j]["ChitNumber"]; ;
+                        dr["MemberName"] = dtCRR.Rows[j]["MemberName"]; ;
+                        dr["ChitAmount"] = dtCRR.Rows[j]["ChitAmount"];
+                        dr["Heads"] = "";
+                        dr["Amount"] = "";
+                        dr["OtherAmount"] = "";
+                        dr["GrandTotal"] = dtCRR.Rows[j]["ChitAmount"];
+                        if (Convert.ToString(dtCRR.Rows[j]["ChitNumber"]) == "")
+                        {
+                            if (Convert.ToString(dtCRR.Rows[j]["Heads"]) != "")
+                            {
+                                dr["Heads"] = dtCRR.Rows[j]["Heads"];
+                                dr["Amount"] = dtCRR.Rows[j]["HeadAmount"];
+                                dr["GrandTotal"] = dtCRR.Rows[j]["HeadAmount"];
+                            }
+                        }
+                        dr["Remarks"] = "";
+                        dtBind.Rows.Add(dr.ItemArray);
+                    }
+                    for (int j = 0; j < dtOther.Rows.Count; j++)
+                    {
+                        dr["slno"] = count + 1;
+                        count += 1;
+                        dr["Voucher_No"] = dtOther.Rows[j]["Voucher_No"];
+                        dr["Narration"] = dtOther.Rows[j]["Narration"]; ;
+                        dr["ChitNumber"] = "";
+                        dr["MemberName"] = "";
+                        dr["ChitAmount"] = "";
+                        dr["Heads"] = dtOther.Rows[j]["OtherBranch"];
+                        dr["Amount"] = "";
+                        dr["OtherAmount"] = dtOther.Rows[j]["BranchAmount"];
+                        dr["GrandTotal"] = dtOther.Rows[j]["BranchAmount"];
+                        dr["Remarks"] = "";
+                        dtBind.Rows.Add(dr.ItemArray);
+                    }
+                    //for (int j = 0; j < dtPandL.Rows.Count; j++)
+                    //{
+                    //    dr["slno"] = count + 1;
+                    //    count += 1;
+                    //    dr["Voucher_No"] = dtPandL.Rows[j]["Voucher_No"];
+                    //    dr["Narration"] = dtPandL.Rows[j]["Narration"]; ;
+                    //    dr["ChitNumber"] = "";
+                    //    dr["MemberName"] = "";
+                    //    dr["ChitAmount"] = "";
+                    //    dr["Heads"] = dtPandL.Rows[j]["Heads"];
+                    //    dr["Amount"] = dtPandL.Rows[j]["HeadAmount"];
+                    //    dr["GrandTotal"] = dtPandL.Rows[j]["HeadAmount"];
+                    //    dr["OtherAmount"] = "";
+                    //    dr["Remarks"] = "";
+                    //    dtBind.Rows.Add(dr.ItemArray);
+                    //}
+                    object smCRR;
+                    smCRR = dtCRR.Compute("sum(ChitAmount)", "");
+                    object smPL;
+                    smPL = dtCRR.Compute("sum(HeadAmount)", "");
+                    object smB;
+                    smB = dtOther.Compute("sum(BranchAmount)", "");
+                    if (string.IsNullOrEmpty(balayer.ToobjectstrEvenNull(smCRR)))
+                        smCRR = 0.00M;
+                    if (string.IsNullOrEmpty(balayer.ToobjectstrEvenNull(smB)))
+                        smB = 0.00M;
+                    if (string.IsNullOrEmpty(balayer.ToobjectstrEvenNull(smPL)))
+                        smPL = 0.00M;
+                    dr["slno"] = "";
+                    dr["Voucher_No"] = "";
+                    dr["Narration"] = "";
+                    dr["ChitNumber"] = "";
+                    dr["MemberName"] = "Total";
+                    dr["ChitAmount"] = smCRR;
+                    dr["Heads"] = "";
+                    dr["Amount"] = Convert.ToDecimal(smPL);
+                    dr["OtherAmount"] = Convert.ToDecimal(smB);
+                    dr["Remarks"] = "";
+                    dr["GrandTotal"] = Convert.ToDecimal(smCRR) + Convert.ToDecimal(smPL) + Convert.ToDecimal(smB);
+                    dtBind.Rows.Add(dr.ItemArray);
+                    gridCRR.DataSource = dtBind;
+                    gridCRR.DataBind();
+                }
+            }
+            else
+            {
+                dr["Narration"] = "Date :" + txtToDate.Text + "";
+                dtBind.Rows.Add(dr.ItemArray);
+                gridCRR.DataSource = dtBind;
+                gridCRR.DataBind();
+            }
+            //dataempty
+        }
+        //void BindTRR()
+        //{
+        //    DataTable dtTRR = new DataTable();
+        //    DataTable dtOther = new DataTable();
+        //    DataTable dtPandL = new DataTable();
+        //    DataTable dtBind = new DataTable();
+        //    dtBind.Columns.Add("slno");
+        //    dtBind.Columns.Add("Voucher_No", typeof(string));
+        //    dtBind.Columns.Add("Narration", typeof(string));
+        //    dtBind.Columns.Add("ChitNumber", typeof(string));
+        //    dtBind.Columns.Add("MemberName");
+        //    dtBind.Columns.Add("ChitAmount");
+        //    dtBind.Columns.Add("Heads");
+        //    dtBind.Columns.Add("Amount");
+        //    dtBind.Columns.Add("OtherAmount");
+        //    dtBind.Columns.Add("GrandTotal");
+        //    DataRow dr = dtBind.NewRow();
+        //    //DataTable dtDate = balayer.GetDataTable("select distinct ChoosenDate from voucher where Trans_Type<>2 and Voucher_Type='C' and BranchID=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and choosenDate='" + balayer.indiandateToMysqlDate(txtToDate.Text) + "' and Trans_Medium=1 and Other_Trans_Type not in (3,5) order by ChoosenDate asc");
+
+        //    DataTable dtM1 = balayer.GetDataTable("select m1.GrpMemberID,m1.MemberName,m2.moneycollname from svcf.membertogroupmaster m1  LEFT JOIN  svcf.moneycollector m2 on m1.M_Id=m2.moneycollid");
+        //    DataTable dtDate = balayer.GetDataTable("select distinct ChoosenDate from voucher where Trans_Type<>2 and Voucher_Type='C' and BranchID=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and choosenDate='" + balayer.indiandateToMysqlDate(txtToDate.Text) + "' and Trans_Medium=0 and Other_Trans_Type not in (3,5) order by ChoosenDate asc");
+
+
+        //    for (int i = 0; i < dtDate.Rows.Count; i++)
+        //    {
+        //        //dtTRR = balayer.GetDataTable("select distinct v1.TransactionKey,v1.`CurrDate`,v1.`Voucher_No`,ht1.Node as ChitNumber, v1.`ChoosenDate`, REPLACE( v1.Narration,'  ','') as Narration,concat( m2.MemberID,' | ', m1.MemberName) as MemberName,  v1.Amount as ChitAmount from voucher as v1  join headstree as ht1 on (v1.Head_Id=ht1.NodeID) left join `membertogroupmaster` as m1 on (v1.Head_Id=m1.Head_Id) left join membermaster as m2 on (v1.MemberID=m2.MemberIdNew) where v1.RootID=5  and v1.Trans_Type<>2 and v1.IsAccepted=1 and  Voucher_Type='C' and v1.BranchID =" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and v1.choosenDate ='" + balayer.indiandateToMysqlDate(balayer.ToobjectstrEvenNull(dtDate.Rows[i][0])) + "' and v1.Trans_Medium=1 and v1.Other_Trans_Type not in (3,5)");
+        //        //dtOther = balayer.GetDataTable("SELECT distinct v1.TransactionKey,v1.`CurrDate`,v1.`Voucher_No`,ht1.Node as OtherBranch, v1.`ChoosenDate`,REPLACE( v1.Narration,'  ','') as Narration, v1.Amount as BranchAmount FROM svcf.voucher as v1 join voucher as v2 on (v1.DualTransactionKey=v2.DualTransactionKey) join headstree as ht1 on (v1.Head_Id=ht1.NodeID) where v1.Rootid=1 and v1.Trans_Medium=1 and v1.Trans_Type=1 and v1.IsAccepted=1 and  v1.ChoosenDate='" + balayer.indiandateToMysqlDate(balayer.ToobjectstrEvenNull(dtDate.Rows[i][0])) + "'  and v1.branchid=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and v1.voucher_type='C' and v2.rootid=3");
+        //        //dtPandL = balayer.GetDataTable("SELECT distinct v1.TransactionKey,v1.`CurrDate`,v1.`Voucher_No`,h1.Node as Heads, v1.`ChoosenDate`, REPLACE( v1.Narration,'  ','') as Narration, v1.Amount as HeadAmount FROM svcf.voucher as v1 join headstree as h1 on (v1.Head_Id=h1.NodeID) join headstree as h2 on (h1.ParentID=h2.NodeID) where v1.Rootid not in (1,5) and v1.Trans_Medium in (1,3) and v1.Trans_Type=1 and v1.Voucher_Type='C' and v1.IsAccepted=1 and  v1.BranchID=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and v1.ChoosenDate='" + balayer.indiandateToMysqlDate(balayer.ToobjectstrEvenNull(dtDate.Rows[i][0])) + "'");
+
+        //        dtTRR = balayer.GetDataTable("select distinct v1.TransactionKey,v1.`CurrDate`,v1.`Voucher_No`,v1.Series,ht1.Node as ChitNumber,null as heads, v1.`ChoosenDate`, REPLACE( v1.Narration,'  ','') as Narration,concat( m2.MemberID,' | ', m1.MemberName) as MemberName,  v1.Amount as ChitAmount,null as HeadAmount from voucher as v1  join headstree as ht1 on (v1.Head_Id=ht1.NodeID) left join `membertogroupmaster` as m1 on (v1.Head_Id=m1.Head_Id) left join membermaster as m2 on (v1.MemberID=m2.MemberIdNew) where v1.RootID=5 and v1.IsAccepted=0 and v1.Trans_Type<>2 and Voucher_Type='C' and v1.BranchID =" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and v1.choosenDate ='" + balayer.indiandateToMysqlDate(balayer.ToobjectstrEvenNull(dtDate.Rows[i][0])) +
+        //        "' and v1.Trans_Medium=1 and v1.Other_Trans_Type not in (3,5) UNION select v1.TransactionKey,v1.`CurrDate`,v1.`Voucher_No`,v1.Series,null as ChitNumber,h1.Node as Heads, v1.`ChoosenDate`, REPLACE( v1.Narration,'  ','') as Narration, null as MemberName,null as ChitAmount,v1.Amount as HeadAmount FROM svcf.voucher as v1 join headstree as h1 on (v1.Head_Id=h1.NodeID) join headstree as h2 on (h1.ParentID=h2.NodeID) where v1.Rootid not in (1,5) and v1.Trans_Medium in (1,3) and v1.Trans_Type=1 and v1.Voucher_Type='C' and v1.IsAccepted=0 and v1.BranchID=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and v1.ChoosenDate='" + balayer.indiandateToMysqlDate(balayer.ToobjectstrEvenNull(dtDate.Rows[i][0])) + "' order by Voucher_No ");
+        //       // dtTRR = balayer.GetDataTable("select distinct v1.TransactionKey,v1.`CurrDate`,v1.`Voucher_No`,v1.Series,ht1.Node as ChitNumber, v1.`ChoosenDate`, REPLACE( v1.Narration,'  ','') as Narration,concat( m2.MemberID,' | ', m1.MemberName) as MemberName,  v1.Amount as ChitAmount from voucher as v1  join headstree as ht1 on (v1.Head_Id=ht1.NodeID) left join `membertogroupmaster` as m1 on (v1.Head_Id=m1.Head_Id) left join membermaster as m2 on (v1.MemberID=m2.MemberIdNew) where v1.RootID=5 and v1.IsAccepted=0 and v1.Trans_Type<>2 and Voucher_Type='C' and v1.BranchID =" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and v1.choosenDate ='" + balayer.indiandateToMysqlDate(balayer.ToobjectstrEvenNull(dtDate.Rows[i][0])) + "' and v1.Trans_Medium=1 and v1.Other_Trans_Type not in (3,5)");
+        //        dtOther = balayer.GetDataTable("SELECT distinct v1.TransactionKey,v1.`CurrDate`,v1.`Voucher_No`,v1.Series,ht1.Node as OtherBranch, v1.`ChoosenDate`,REPLACE( v1.Narration,'  ','') as Narration, v1.Amount as BranchAmount FROM svcf.voucher as v1 join voucher as v2 on (v1.DualTransactionKey=v2.DualTransactionKey) join headstree as ht1 on (v1.Head_Id=ht1.NodeID) where v1.Rootid=1 and v1.Trans_Medium=1 and v1.Trans_Type=1 and v1.IsAccepted=0 and v1.ChoosenDate='" + balayer.indiandateToMysqlDate(balayer.ToobjectstrEvenNull(dtDate.Rows[i][0])) + "'  and v1.branchid=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and v1.voucher_type='C' and v2.rootid=3");
+        //       // dtPandL = balayer.GetDataTable("SELECT distinct v1.TransactionKey,v1.`CurrDate`,v1.`Voucher_No`,v1.Series,h1.Node as Heads, v1.`ChoosenDate`, REPLACE( v1.Narration,'  ','') as Narration, v1.Amount as HeadAmount FROM svcf.voucher as v1 join headstree as h1 on (v1.Head_Id=h1.NodeID) join headstree as h2 on (h1.ParentID=h2.NodeID) where v1.Rootid not in (1,5) and v1.Trans_Medium in (1,3) and v1.Trans_Type=1 and v1.Voucher_Type='C' and v1.IsAccepted=0 and v1.BranchID=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and v1.ChoosenDate='" + balayer.indiandateToMysqlDate(balayer.ToobjectstrEvenNull(dtDate.Rows[i][0])) + "'");
+
+
+
+        //        dr["slno"] = "";
+        //        dr["Voucher_No"] = "";
+        //        dr["Narration"] = "Date : " + dtDate.Rows[i][0];
+        //        dr["ChitNumber"] = "";
+        //        dr["MemberName"] = "";
+        //        dr["ChitAmount"] = "";
+        //        dr["Heads"] = "";
+        //        dr["Amount"] = "";
+        //        dr["OtherAmount"] = "";
+        //        dr["GrandTotal"] = "";
+        //        dtBind.Rows.Add(dr.ItemArray);
+        //        int count = 0;
+        //        for (int j = 0; j < dtTRR.Rows.Count; j++)
+        //        {
+
+        //            dr["slno"] = j + 1;
+        //            count += 1;
+        //            dr["Voucher_No"] = dtTRR.Rows[j]["Voucher_No"];
+        //            dr["Narration"] = dtTRR.Rows[j]["Narration"]; ;
+        //            dr["ChitNumber"] = dtTRR.Rows[j]["ChitNumber"]; ;
+        //            dr["MemberName"] = dtTRR.Rows[j]["MemberName"]; ;
+        //            dr["ChitAmount"] = dtTRR.Rows[j]["ChitAmount"];
+        //            dr["Heads"] = "";
+        //            dr["Amount"] = "";
+        //            dr["OtherAmount"] = "";
+        //            dr["GrandTotal"] = dtTRR.Rows[j]["ChitAmount"];
+        //            if (Convert.ToString(dtTRR.Rows[j]["ChitNumber"]) == "")
+        //            {
+        //                if(Convert.ToString(dtTRR.Rows[j]["Heads"])!="")
+        //                {
+        //                dr["Heads"] = dtTRR.Rows[j]["Heads"];
+        //                dr["Amount"] = dtTRR.Rows[j]["HeadAmount"];
+        //                dr["GrandTotal"] = dtTRR.Rows[j]["HeadAmount"];
+        //                }
+        //            }
+        //            dtBind.Rows.Add(dr.ItemArray);
+        //        }
+        //        for (int j = 0; j < dtOther.Rows.Count; j++)
+        //        {
+        //            dr["slno"] = count + 1;
+        //            count += 1;
+        //            dr["Voucher_No"] = dtOther.Rows[j]["Voucher_No"];
+        //            dr["Narration"] = dtOther.Rows[j]["Narration"]; ;
+        //            dr["ChitNumber"] = "";
+        //            dr["MemberName"] = "";
+        //            dr["ChitAmount"] = "";
+        //            dr["Heads"] = dtOther.Rows[j]["OtherBranch"];
+        //            dr["Amount"] = "";
+        //            dr["OtherAmount"] = dtOther.Rows[j]["BranchAmount"];
+        //            dr["GrandTotal"] = dtOther.Rows[j]["BranchAmount"];
+        //            dtBind.Rows.Add(dr.ItemArray);
+        //        }
+        //        //for (int j = 0; j < dtPandL.Rows.Count; j++)
+        //        //{
+        //        //    dr["slno"] = count + 1;
+        //        //    count += 1;
+        //        //    dr["Voucher_No"] = dtPandL.Rows[j]["Voucher_No"];
+        //        //    dr["Narration"] = dtPandL.Rows[j]["Narration"]; ;
+        //        //    dr["ChitNumber"] = "";
+        //        //    dr["MemberName"] = "";
+        //        //    dr["ChitAmount"] = "";
+        //        //    dr["Heads"] = dtPandL.Rows[j]["Heads"];
+        //        //    dr["Amount"] = dtPandL.Rows[j]["HeadAmount"];
+        //        //    dr["OtherAmount"] = "";
+        //        //    dr["GrandTotal"] = dtPandL.Rows[j]["HeadAmount"];
+        //        //    dtBind.Rows.Add(dr.ItemArray);
+        //        //}
+        //        object smTRR;
+        //        smTRR = dtTRR.Compute("sum(ChitAmount)", "");
+        //        //object smPL;
+        //        //smPL = dtPandL.Compute("sum(HeadAmount)", "");
+        //        object smPL;
+        //        smPL = dtTRR.Compute("sum(HeadAmount)", "");
+        //        object smB;
+        //        smB = dtOther.Compute("sum(BranchAmount)", "");
+        //        if (string.IsNullOrEmpty(balayer.ToobjectstrEvenNull(smTRR)))
+        //            smTRR = 0.00M;
+        //        if (string.IsNullOrEmpty(balayer.ToobjectstrEvenNull(smB)))
+        //            smB = 0.00M;
+        //        if (string.IsNullOrEmpty(balayer.ToobjectstrEvenNull(smPL)))
+        //            smPL = 0.00M;
+        //        dr["slno"] = "";
+        //        dr["Voucher_No"] = "";
+        //        dr["Narration"] = "";
+        //        dr["ChitNumber"] = "";
+        //        dr["MemberName"] = "Total";
+        //        dr["ChitAmount"] = smTRR;
+        //        dr["Heads"] = "";
+        //       // dr["Amount"] = Convert.ToDecimal(smPL);
+        //        dr["Amount"] = Convert.ToDecimal(smPL);
+        //        dr["OtherAmount"] = Convert.ToDecimal(smB);
+        //  //      dr["GrandTotal"] = Convert.ToDecimal(smTRR) + Convert.ToDecimal(smPL) + Convert.ToDecimal(smB);
+        //        dr["GrandTotal"] = Convert.ToDecimal(smTRR) + Convert.ToDecimal(smPL) + Convert.ToDecimal(smB);
+        //        dtBind.Rows.Add(dr.ItemArray);
+        //        gridtrr.DataSource = dtBind;
+        //        gridtrr.DataBind();
+        //    }
+        //}
+
+        void BindTRR1()
+        {
+            try
+            {
+
+                DataTable Trramt = new DataTable();
+                DataTable dtTRR = new DataTable();
+                DataTable dtOther = new DataTable();
+                DataTable dtPandL = new DataTable();
+                DataTable dtBind = new DataTable();
+                dtBind.Columns.Add("slno");
+                dtBind.Columns.Add("Voucher_No", typeof(string));
+                dtBind.Columns.Add("Narration", typeof(string));
+                dtBind.Columns.Add("ChitNumber", typeof(string));
+                dtBind.Columns.Add("MemberName");
+                dtBind.Columns.Add("ChitAmount");
+                dtBind.Columns.Add("AdviceAmount");
+                dtBind.Columns.Add("Heads");
+                dtBind.Columns.Add("Amount");
+                dtBind.Columns.Add("OtherAmount");
+                dtBind.Columns.Add("GrandTotal");
+                DataRow dr = dtBind.NewRow();
+                //DataTable dtDate = balayer.GetDataTable("select distinct ChoosenDate from voucher where Trans_Type<>2 and Voucher_Type='C' and BranchID=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and choosenDate='" + balayer.indiandateToMysqlDate(txtToDate.Text) + "' and Trans_Medium=1 and Other_Trans_Type not in (3,5) order by ChoosenDate asc");
+                DataTable dtDate = balayer.GetDataTable("select distinct ChoosenDate from voucher where Trans_Type<>2 and Voucher_Type='C' and BranchID=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and choosenDate='" + balayer.indiandateToMysqlDate(txtToDate.Text) + "' and Other_Trans_Type not in (3,5) order by ChoosenDate asc");//26/08/2020(Advice amount not shown in TRR)
+
+                DataTable dtM1 = balayer.GetDataTable("select m1.GrpMemberID,m1.MemberName,m2.moneycollname from svcf.membertogroupmaster m1  LEFT JOIN  svcf.moneycollector m2 on m1.M_Id=m2.moneycollid");
+                if (dtDate.Rows.Count > 0)
+                {
+                    for (int i = 0; i < dtDate.Rows.Count; i++)
+                    {
+                        //dtTRR = balayer.GetDataTable("select distinct v1.TransactionKey,v1.`CurrDate`,v1.`Voucher_No`,ht1.Node as ChitNumber, v1.`ChoosenDate`, REPLACE( v1.Narration,'  ','') as Narration,concat( m2.MemberID,' | ', m1.MemberName) as MemberName,  v1.Amount as ChitAmount from voucher as v1  join headstree as ht1 on (v1.Head_Id=ht1.NodeID) left join `membertogroupmaster` as m1 on (v1.Head_Id=m1.Head_Id) left join membermaster as m2 on (v1.MemberID=m2.MemberIdNew) where v1.RootID=5  and v1.Trans_Type<>2 and v1.IsAccepted=1 and  Voucher_Type='C' and v1.BranchID =" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and v1.choosenDate ='" + balayer.indiandateToMysqlDate(balayer.ToobjectstrEvenNull(dtDate.Rows[i][0])) + "' and v1.Trans_Medium=1 and v1.Other_Trans_Type not in (3,5)");
+                        //dtOther = balayer.GetDataTable("SELECT distinct v1.TransactionKey,v1.`CurrDate`,v1.`Voucher_No`,ht1.Node as OtherBranch, v1.`ChoosenDate`,REPLACE( v1.Narration,'  ','') as Narration, v1.Amount as BranchAmount FROM svcf.voucher as v1 join voucher as v2 on (v1.DualTransactionKey=v2.DualTransactionKey) join headstree as ht1 on (v1.Head_Id=ht1.NodeID) where v1.Rootid=1 and v1.Trans_Medium=1 and v1.Trans_Type=1 and v1.IsAccepted=1 and  v1.ChoosenDate='" + balayer.indiandateToMysqlDate(balayer.ToobjectstrEvenNull(dtDate.Rows[i][0])) + "'  and v1.branchid=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and v1.voucher_type='C' and v2.rootid=3");
+                        //dtPandL = balayer.GetDataTable("SELECT distinct v1.TransactionKey,v1.`CurrDate`,v1.`Voucher_No`,h1.Node as Heads, v1.`ChoosenDate`, REPLACE( v1.Narration,'  ','') as Narration, v1.Amount as HeadAmount FROM svcf.voucher as v1 join headstree as h1 on (v1.Head_Id=h1.NodeID) join headstree as h2 on (h1.ParentID=h2.NodeID) where v1.Rootid not in (1,5) and v1.Trans_Medium in (1,3) and v1.Trans_Type=1 and v1.Voucher_Type='C' and v1.IsAccepted=1 and  v1.BranchID=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and v1.ChoosenDate='" + balayer.indiandateToMysqlDate(balayer.ToobjectstrEvenNull(dtDate.Rows[i][0])) + "'");
+
+                        Trramt = balayer.GetDataTable("select distinct v1.TransactionKey,v1.`CurrDate`,v1.`Voucher_No`,v1.Series,ht1.Node as ChitNumber, v1.`ChoosenDate`, REPLACE( v1.Narration,'  ','') as Narration,concat( m2.MemberID,' | ', m1.MemberName) as MemberName,  v1.Amount as AdviceAmount from voucher as v1  join `membertogroupmaster` as m1 on (v1.Head_Id=m1.Head_Id) left join headstree as ht1 on (v1.Head_Id=ht1.NodeID)  left join membermaster as m2 on (v1.MemberID=m2.MemberIdNew) where v1.BranchID =" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and (Series='ADVICE' and Voucher_Type='C' and Trans_Type=1 or Series='voucher' and Voucher_Type='C'  and Trans_Type=0) and v1.choosenDate='" + balayer.indiandateToMysqlDate(txtToDate.Text) + "'");
+
+
+
+                        // dtTRR = balayer.GetDataTable("select distinct v1.TransactionKey,v1.`CurrDate`,v1.`Voucher_No`,v1.Series,ht1.Node as ChitNumber,null as heads, v1.`ChoosenDate`, REPLACE( v1.Narration,'  ','') as Narration,concat( m2.MemberID,' | ', m1.MemberName) as MemberName,  v1.Amount as ChitAmount,null as HeadAmount from voucher as v1  join headstree as ht1 on (v1.Head_Id=ht1.NodeID) left join `membertogroupmaster` as m1 on (v1.Head_Id=m1.Head_Id) left join membermaster as m2 on (v1.MemberID=m2.MemberIdNew) where v1.RootID=5 and v1.IsAccepted=0 and v1.Trans_Type<>2 and Voucher_Type='C' and v1.BranchID =" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and v1.choosenDate ='" + balayer.indiandateToMysqlDate(balayer.ToobjectstrEvenNull(dtDate.Rows[i][0])) +
+                        //"' and v1.Trans_Medium=1 and v1.Other_Trans_Type not in (3,5) UNION select v1.TransactionKey,v1.`CurrDate`,v1.`Voucher_No`,v1.Series,null as ChitNumber,h1.Node as Heads, v1.`ChoosenDate`, REPLACE( v1.Narration,'  ','') as Narration, null as MemberName,null as ChitAmount,v1.Amount as HeadAmount FROM svcf.voucher as v1 join headstree as h1 on (v1.Head_Id=h1.NodeID) join headstree as h2 on (h1.ParentID=h2.NodeID) where v1.Rootid not in (1,5) and v1.Trans_Medium in (1,3) and v1.Trans_Type=1 and v1.Voucher_Type='C' and Series<>'salary' and v1.IsAccepted=0 and v1.BranchID=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and v1.ChoosenDate='" + balayer.indiandateToMysqlDate(balayer.ToobjectstrEvenNull(dtDate.Rows[i][0])) + "' order by Voucher_No ");
+                        dtTRR = balayer.GetDataTable("select distinct v1.TransactionKey,v1.`CurrDate`,v1.`Voucher_No`,v1.Series,ht1.Node as ChitNumber,null as heads, v1.`ChoosenDate`, REPLACE( v1.Narration,'  ','') as Narration,concat( m2.MemberID,' | ', m1.MemberName) as MemberName,  v1.Amount as ChitAmount,null as HeadAmount from voucher as v1  join headstree as ht1 on (v1.Head_Id=ht1.NodeID) left join `membertogroupmaster` as m1 on (v1.Head_Id=m1.Head_Id) left join membermaster as m2 on (v1.MemberID=m2.MemberIdNew) where v1.RootID=5 and v1.IsAccepted=0 and (v1.Voucher_Type='C'and ((v1.Trans_Medium=1 or v1.Trans_Medium=2))) and v1.Other_Trans_Type<>2 and v1.Trans_Type<>0 and v1.Other_Trans_Type not in (3,5) and v1.BranchID =" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and v1.choosenDate ='" + balayer.indiandateToMysqlDate(balayer.ToobjectstrEvenNull(dtDate.Rows[i][0])) + "'UNION select v1.TransactionKey,v1.`CurrDate`,v1.`Voucher_No`,v1.Series,null as ChitNumber,h1.Node as Heads, v1.`ChoosenDate`, REPLACE( v1.Narration,'  ','') as Narration, null as MemberName,null as ChitAmount,v1.Amount as HeadAmount FROM svcf.voucher as v1 join headstree as h1 on (v1.Head_Id=h1.NodeID) join headstree as h2 on (h1.ParentID=h2.NodeID) where v1.Rootid not in (1,5) and v1.Trans_Medium in (1,3) and v1.Trans_Type=1 and v1.Voucher_Type='C' and Series<>'salary' and v1.IsAccepted=0 and v1.BranchID=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and v1.ChoosenDate='" + balayer.indiandateToMysqlDate(balayer.ToobjectstrEvenNull(dtDate.Rows[i][0])) + "' order by Voucher_No");
+
+
+                        //  dtTRR = balayer.GetDataTable("select distinct v1.TransactionKey,v1.`CurrDate`,v1.`Voucher_No`,v1.Series,ht1.Node as ChitNumber, v1.`ChoosenDate`, REPLACE( v1.Narration,'  ','') as Narration,concat( m2.MemberID,' | ', m1.MemberName) as MemberName,  v1.Amount as ChitAmount from voucher as v1  join headstree as ht1 on (v1.Head_Id=ht1.NodeID) left join `membertogroupmaster` as m1 on (v1.Head_Id=m1.Head_Id) left join membermaster as m2 on (v1.MemberID=m2.MemberIdNew) where v1.RootID=5 and v1.IsAccepted=0 and v1.Trans_Type<>2 and Voucher_Type='C' and v1.BranchID =" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and v1.choosenDate ='" + balayer.indiandateToMysqlDate(balayer.ToobjectstrEvenNull(dtDate.Rows[i][0])) + "' and v1.Trans_Medium=1 and v1.Other_Trans_Type not in (3,5)");
+                        dtOther = balayer.GetDataTable("SELECT distinct v1.TransactionKey,v1.`CurrDate`,v1.`Voucher_No`,v1.Series,ht1.Node as OtherBranch, v1.`ChoosenDate`,REPLACE( v1.Narration,'  ','') as Narration, v1.Amount as BranchAmount FROM svcf.voucher as v1 join voucher as v2 on (v1.DualTransactionKey=v2.DualTransactionKey) join headstree as ht1 on (v1.Head_Id=ht1.NodeID) where v1.Rootid=1 and v1.Trans_Medium=1 and v1.Trans_Type=1 and v1.IsAccepted=0 and v1.ChoosenDate='" + balayer.indiandateToMysqlDate(balayer.ToobjectstrEvenNull(dtDate.Rows[i][0])) + "'  and v1.branchid=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and v1.voucher_type='C' and v2.rootid=3");
+                        //   dtPandL = balayer.GetDataTable("SELECT distinct v1.TransactionKey,v1.`CurrDate`,v1.`Voucher_No`,v1.Series,h1.Node as Heads, v1.`ChoosenDate`, REPLACE( v1.Narration,'  ','') as Narration, v1.Amount as HeadAmount FROM svcf.voucher as v1 join headstree as h1 on (v1.Head_Id=h1.NodeID) join headstree as h2 on (h1.ParentID=h2.NodeID) where v1.Rootid not in (1,5) and v1.Trans_Medium in (1,3) and v1.Trans_Type=1 and v1.Voucher_Type='C' and v1.IsAccepted=0 and v1.BranchID=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and v1.ChoosenDate='" + balayer.indiandateToMysqlDate(balayer.ToobjectstrEvenNull(dtDate.Rows[i][0])) + "'");
+
+
+
+                        dr["slno"] = "";
+                        dr["Voucher_No"] = "";
+                        //dr["Narration"] = "Date : " + dtDate.Rows[i][0];
+                        dr["Narration"] = "Date : " + txtToDate.Text + "";
+                        dr["ChitNumber"] = "";
+                        dr["MemberName"] = "";
+                        dr["ChitAmount"] = "";
+                        // dr["Advice Amount"] = "";
+                        dr["Heads"] = "";
+                        dr["Amount"] = "";
+                        dr["OtherAmount"] = "";
+                        dr["GrandTotal"] = "";
+                        dtBind.Rows.Add(dr.ItemArray);
+                        int count = 0;
+
+
+                        //for (int j = 0; j < dtTRR.Rows.Count; j++)
+                        //{
+                        //    dr["slno"] = j + 1;
+                        //    count += 1;
+                        //    dr["Voucher_No"] = dtTRR.Rows[j]["Voucher_No"];
+                        //    dr["Narration"] = dtTRR.Rows[j]["Narration"]; ;
+                        //    dr["ChitNumber"] = dtTRR.Rows[j]["ChitNumber"]; ;
+                        //    dr["MemberName"] = dtTRR.Rows[j]["MemberName"]; ;
+                        //    dr["ChitAmount"] = dtTRR.Rows[j]["ChitAmount"];
+                        //    dr["Heads"] = "";
+                        //    dr["Amount"] = "";
+                        //    dr["OtherAmount"] = "";
+                        //    dr["GrandTotal"] = dtTRR.Rows[j]["ChitAmount"];
+                        //    dtBind.Rows.Add(dr.ItemArray);
+                        //}
+                        for (int j = 0; j < dtTRR.Rows.Count; j++)
+                        {
+
+                            dr["slno"] = j + 1;
+                            count += 1;
+                            dr["Voucher_No"] = dtTRR.Rows[j]["Voucher_No"];
+                            dr["Narration"] = dtTRR.Rows[j]["Narration"]; ;
+                            dr["ChitNumber"] = dtTRR.Rows[j]["ChitNumber"]; ;
+                            dr["MemberName"] = dtTRR.Rows[j]["MemberName"]; ;
+                            dr["ChitAmount"] = dtTRR.Rows[j]["ChitAmount"];
+                            dr["Heads"] = "";
+                            dr["Amount"] = "";
+                            dr["OtherAmount"] = "";
+                            dr["GrandTotal"] = dtTRR.Rows[j]["ChitAmount"];
+                            if (Convert.ToString(dtTRR.Rows[j]["ChitNumber"]) == "")
+                            {
+                                if (Convert.ToString(dtTRR.Rows[j]["Heads"]) != "")
+                                {
+                                    dr["Heads"] = dtTRR.Rows[j]["Heads"];
+                                    dr["Amount"] = dtTRR.Rows[j]["HeadAmount"];
+                                    dr["GrandTotal"] = dtTRR.Rows[j]["HeadAmount"];
+                                }
+                            }
+                            dtBind.Rows.Add(dr.ItemArray);
+                        }
+                        for (int j = 0; j < dtOther.Rows.Count; j++)
+                        {
+                            dr["slno"] = count + 1;
+                            count += 1;
+                            dr["Voucher_No"] = dtOther.Rows[j]["Voucher_No"];
+                            dr["Narration"] = dtOther.Rows[j]["Narration"]; ;
+                            dr["ChitNumber"] = "";
+                            dr["MemberName"] = "";
+                            dr["ChitAmount"] = "";
+                            dr["Heads"] = dtOther.Rows[j]["OtherBranch"];
+                            dr["Amount"] = "";
+                            dr["OtherAmount"] = dtOther.Rows[j]["BranchAmount"];
+                            dr["GrandTotal"] = dtOther.Rows[j]["BranchAmount"];
+                            dtBind.Rows.Add(dr.ItemArray);
+                        }
+
+                        for (int j = 0; j < Trramt.Rows.Count; j++)
+                        {
+                            dr["slno"] = count + 1;
+                            count += 1;
+                            dr["Voucher_No"] = Trramt.Rows[j]["Voucher_No"];
+                            dr["Heads"] = "";
+                            dr["OtherAmount"] = "";
+                            dr["GrandTotal"] = Trramt.Rows[j]["AdviceAmount"];
+                            dr["Narration"] = Trramt.Rows[j]["Narration"]; ;
+                            dr["ChitNumber"] = Trramt.Rows[j]["ChitNumber"]; ;
+                            dr["MemberName"] = Trramt.Rows[j]["MemberName"];
+                            dr["Amount"] = "";
+                            dr["ChitAmount"] = "";
+                            dr["AdviceAmount"] = Trramt.Rows[j]["AdviceAmount"];
+
+                            dtBind.Rows.Add(dr.ItemArray);
+                        }
+                        object smTRR;
+                        smTRR = dtTRR.Compute("sum(ChitAmount)", "");
+                        object smPL;
+                        smPL = dtTRR.Compute("sum(HeadAmount)", "");
+                        object smB;
+                        smB = dtOther.Compute("sum(BranchAmount)", "");
+                        object smB1;
+                        smB1 = Trramt.Compute("sum(AdviceAmount)", "");
+                        if (string.IsNullOrEmpty(balayer.ToobjectstrEvenNull(smTRR)))
+                            smTRR = 0.00M;
+                        if (string.IsNullOrEmpty(balayer.ToobjectstrEvenNull(smB)))
+                            smB = 0.00M;
+                        if (string.IsNullOrEmpty(balayer.ToobjectstrEvenNull(smPL)))
+                            smPL = 0.00M;
+                        if (string.IsNullOrEmpty(balayer.ToobjectstrEvenNull(smB1)))
+                            smB1 = 0.00M;
+                        dr["slno"] = "";
+                        dr["Voucher_No"] = "";
+                        dr["Narration"] = "";
+                        dr["ChitNumber"] = "";
+                        dr["MemberName"] = "Total";
+                        dr["ChitAmount"] = smTRR;
+                        dr["AdviceAmount"] = "";
+                        dr["Heads"] = "";
+                        dr["Amount"] = Convert.ToDecimal(smPL);
+                        dr["OtherAmount"] = Convert.ToDecimal(smB);
+                        dr["AdviceAmount"] = Convert.ToDecimal(smB1);
+                        dr["GrandTotal"] = Convert.ToDecimal(smTRR) + Convert.ToDecimal(smPL) + Convert.ToDecimal(smB) + Convert.ToDecimal(smB1);
+                        dtBind.Rows.Add(dr.ItemArray);
+                        gridtrr.DataSource = dtBind;
+                        gridtrr.DataBind();
+                    }
+
+                }
+                else
+                {
+                    dr["Narration"] = "Date : " + txtToDate.Text + "";
+                    dtBind.Rows.Add(dr.ItemArray);
+                    gridtrr.DataSource = dtBind;
+                    gridtrr.DataBind();
+                }
+            }
+            catch (Exception err)
+            {
+
+            }
+        }
+        protected void BtnStatisticsGo_Click(object sender, EventArgs e)
+        {
+            select();
+            lblDate.Text ="Date : "+ txtToDate.Text;
+            lblBranch.Text = "Branch : " + balayer.ToobjectstrEvenNull(Session["BranchName"]);
+            ApplyLayout(1);
+            grid.SettingsText.Title = "3. Banks";
+            gridChitCollection.SettingsText.Title = "Chit Collection Particulars" + Environment.NewLine + " (Credit Part of 5)";
+            gridBankCollection.SettingsText.Title = "Banks";
+            gridBranchCollection.SettingsText.Title = "Branch";
+            gridProfit.SettingsText.Title = "10. Profit and Loss Account";
+            gridOther.SettingsText.Title = "4. Other Items";
+            gridLoan.SettingsText.Title = "8. Loans";
+            gridAdvances.SettingsText.Title = "9. Sundries & Advances";
+            gridInvestments.SettingsText.Title = "2. Investments";
+            gridStamps.SettingsText.Title = "11. Stamps";
+            gridDecreeDebtors.SettingsText.Title = "7. Decree Account";
+            gridTrialBalance.SettingsText.Title = "Trial Balance for " + txtToDate.Text + "";
+            gridYesterday1.SettingsText.Title = "Today Auction Particulars";
+            gridCompanyChits.SettingsText.Title = "6. Company / Chits";
+        }
+        void ApplyLayout(int layoutIndex)
+        {
+            grid.BeginUpdate();
+            gridAdvances.BeginUpdate();
+            try
+            {
+                grid.ClearSort();
+                gridAdvances.ClearSort();
+                switch (layoutIndex)
+                {
+                    case 0:
+                        break;
+                    case 1:
+                        grid.GroupBy(grid.Columns["NameoftheBank"]);
+                        gridAdvances.GroupBy(gridAdvances.Columns["Sub-Head"]);
+                        break;
+                }
+            }
+            finally
+            {
+                grid.EndUpdate();
+                gridAdvances.EndUpdate();
+            }
+            grid.ExpandAll();
+            gridAdvances.ExpandAll();
+        }
+        protected void banks3_SummaryDisplayText(object sender, ASPxGridViewSummaryDisplayTextEventArgs e)
+        {
+            if (e.IsTotalSummary)
+            {
+                if (e.Item.FieldName == "Credit")
+                {
+                    e.Text =  balayer.ConvertToIndCurrency(e.Value.ToString());
+                }
+                else if (e.Item.FieldName == "Debit")
+                {
+                    e.Text =  balayer.ConvertToIndCurrency(e.Value.ToString());
+                }
+                else if (e.Item.FieldName == "Narration")
+                {
+                    e.Text = "Total : ";
+                }
+            }
+        }
+        
+        protected void gridYesterday1_OnSummaryDisplayText(object sender, ASPxGridViewSummaryDisplayTextEventArgs e)
+        {
+            if (e.IsTotalSummary)
+            {
+                if (e.Item.FieldName == "prizedamount")
+                {
+                    e.Text = balayer.ConvertToIndCurrency(e.Value.ToString());
+                }
+                else if (e.Item.FieldName == "nameofthesubscriber")
+                {
+                    e.Text = "Total : ";
+                }
+            }
+        }
+        
+        protected void gridChitCollection_SummaryDisplayText(object sender, ASPxGridViewSummaryDisplayTextEventArgs e)
+        {
+            string parsed = balayer.ConvertToIndCurrency(e.Value.ToString());
+            if (e.IsTotalSummary)
+            {
+                //if (e.Item.FieldName == "CRR")
+                //{
+                if (e.Item.FieldName == "TRR1")
+                {
+                    e.Text = parsed;
+                }
+                //else if (e.Item.FieldName == "TRR")
+                //{
+                else if (e.Item.FieldName == "CRR")
+                {
+
+                    e.Text = parsed;
+                }
+                else if (e.Item.FieldName == "TRR2")
+                {
+                    
+                    e.Text = parsed;
+                }
+                else if (e.Item.FieldName == "RCM")
+                {
+                    e.Text = parsed;
+                }
+                else if (e.Item.FieldName == "CCA")
+                {
+                    e.Text = parsed;
+                }
+                else if (e.Item.FieldName == "OPM")
+                {
+                    e.Text = parsed;
+                }
+                else if (e.Item.FieldName == "UPM")
+                {
+                    e.Text = parsed;
+                }
+                else if (e.Item.FieldName == "UPMLedger")
+                {
+                    e.Text = parsed;
+                }
+                else if (e.Item.FieldName == "PR")
+                {
+                    e.Text = parsed;
+                }
+                //else if (e.Item.FieldName == "Group")
+                //{
+                //    e.Text = "Total : " + parsed;
+                //}
+                //if (e.Item.FieldName == "TRR1")
+                //{
+                //    e.Text = parsed;
+                //}
+                //else if (e.Item.FieldName == "TRR2")
+                //{
+                //    e.Text = parsed;
+                //}
+                //else if (e.Item.FieldName == "RCM")
+                //{
+                //    e.Text = parsed;
+                //}
+                //else if (e.Item.FieldName == "CCA")
+                //{
+                //    e.Text = parsed;
+                //}
+                //else if (e.Item.FieldName == "OPM")
+                //{
+                //    e.Text = parsed;
+                //}
+                //else if (e.Item.FieldName == "UPM")
+                //{
+                //    e.Text = parsed;
+                //}
+                //else if (e.Item.FieldName == "UPMLedger")
+                //{
+                //    e.Text = parsed;
+                //}
+                //else if (e.Item.FieldName == "PR")
+                //{
+                //    e.Text = parsed;
+                //}
+                else if (e.Item.FieldName == "ChitNumber")
+                {
+                    e.Text = "Total : " + parsed;
+                }
+            }
+        }
+        protected void gridDebit_OnSummaryDisplayText(object sender, ASPxGridViewSummaryDisplayTextEventArgs e)
+        {
+            if (e.IsTotalSummary)
+            {
+                if (e.Item.FieldName == "Prized")
+                {
+                    if (e.Value != null)
+                        e.Text = balayer.ConvertToIndCurrency(e.Value.ToString());
+                }
+                else if (e.Item.FieldName == "Commision")
+                {
+                    if (e.Value != null)
+                        e.Text = balayer.ConvertToIndCurrency(e.Value.ToString());
+                }
+
+                else if (e.Item.FieldName == "AuctionNo")
+                {
+                    if (e.Value != null)
+                        e.Text = balayer.ConvertToIndCurrency(e.Value.ToString());
+                }
+
+                //else if (e.Item.FieldName == "ServiceTax")
+                //{
+                //    e.Text = balayer.ConvertToIndCurrency(e.Value.ToString());
+                //}
+                else if (e.Item.FieldName == "IGST")
+                {
+                    if (e.Value != null)
+                        e.Text = balayer.ConvertToIndCurrency(e.Value.ToString());
+                }
+                else if (e.Item.FieldName == "ChitKasarAmount")
+                {
+                    if (e.Value != null)
+                        e.Text = balayer.ConvertToIndCurrency(e.Value.ToString());
+                }
+                else if (e.Item.FieldName == "Loan")
+                {
+                    if (e.Value != null)
+                        e.Text = balayer.ConvertToIndCurrency(e.Value.ToString());
+                }
+                else if (e.Item.FieldName == "FutureCallAmount")
+                {
+                    if (e.Value != null)
+                        e.Text = balayer.ConvertToIndCurrency(e.Value.ToString());
+                }
+                else if (e.Item.FieldName == "Total")
+                {
+                    if (e.Value != null)
+                        e.Text = balayer.ConvertToIndCurrency(e.Value.ToString());
+                }
+                else if (e.Item.FieldName == "Narration")
+                {
+                    if (e.Value != null)
+                        e.Text = balayer.ConvertToIndCurrency(e.Value.ToString());
+                }
+                else if (e.Item.FieldName == "Cash/Cheque")
+                {
+                   e.Text = "Total : ";
+                }
+                else if (e.Item.FieldName == "GST")
+                {
+                    if (e.Value != null)
+                        e.Text = balayer.ConvertToIndCurrency(e.Value.ToString());
+                }
+            }
+        }
+        protected void gridLoan_OnSummaryDisplayText(object sender, ASPxGridViewSummaryDisplayTextEventArgs e)
+        {
+            if (e.IsTotalSummary)
+            {
+                if (e.Item.FieldName == "LoanAmountReceivedBack")
+                {
+                    e.Text = balayer.ConvertToIndCurrency(e.Value.ToString());
+                }
+                else if (e.Item.FieldName == "LoanAmountPaid")
+                {
+                    e.Text = balayer.ConvertToIndCurrency(e.Value.ToString());
+                }
+                else if (e.Item.FieldName == "ChitNo")
+                {
+                    e.Text = "Total : ";
+                }
+            }
+        }
+        protected void gridInvestments_OnSummaryDisplayText(object sender, ASPxGridViewSummaryDisplayTextEventArgs e)
+        {
+            if (e.IsTotalSummary)
+            {
+                if (e.Item.FieldName == "Credit")
+                {
+                    e.Text = balayer.ConvertToIndCurrency(e.Value.ToString());
+                }
+                else if (e.Item.FieldName == "Debit")
+                {
+                    e.Text = balayer.ConvertToIndCurrency(e.Value.ToString());
+                }
+                else if (e.Item.FieldName == "onaccountof")
+                {
+                    e.Text = "Total : ";
+                }
+            }
+        }
+        protected void gridCompanyChits_OnSummaryDisplayText(object sender, ASPxGridViewSummaryDisplayTextEventArgs e)
+        {
+            if (e.IsTotalSummary)
+            {
+                if (e.Item.FieldName == "PrizeAmount")
+                {
+                    e.Text = balayer.ConvertToIndCurrency(e.Value.ToString());
+                }
+                else if (e.Item.FieldName == "CallAmount")
+                {
+                    e.Text = balayer.ConvertToIndCurrency(e.Value.ToString());
+                }
+                else if (e.Item.FieldName == "CallNo")
+                {
+                    e.Text = "Total : ";
+                }
+            }
+        }
+        protected void gridBankCollection_SummaryDisplayText(object sender, ASPxGridViewSummaryDisplayTextEventArgs e)
+        {
+            if (e.IsTotalSummary)
+            {
+                if (e.Item.FieldName == "Amount")
+                {
+                    e.Text = balayer.ConvertToIndCurrency(e.Value.ToString());
+                }
+                else if (e.Item.FieldName == "Bank")
+                {
+                    e.Text = "Total : ";
+                }
+            }
+        }
+        protected void gridProfit_SummaryDisplayText(object sender, ASPxGridViewSummaryDisplayTextEventArgs e)
+        {
+            if (e.IsTotalSummary)
+            {
+                if (e.Item.FieldName == "Credit")
+                {
+                    e.Text = balayer.ConvertToIndCurrency(e.Value.ToString());
+                }
+                if (e.Item.FieldName == "Debit")
+                {
+                    e.Text = balayer.ConvertToIndCurrency(e.Value.ToString());
+                }
+                else if (e.Item.FieldName == "Sub-Head")
+                {
+                    e.Text = "Total : ";
+                }
+            }
+        }
+        protected void gridDecreeDebtors_OnSummaryDisplayText(object sender, ASPxGridViewSummaryDisplayTextEventArgs e)
+        {
+            if (e.IsTotalSummary)
+            {
+                if (e.Item.FieldName == "Credit")
+                {
+                    e.Text = balayer.ConvertToIndCurrency(e.Value.ToString());
+                }
+                if (e.Item.FieldName == "Debit")
+                {
+                    e.Text = balayer.ConvertToIndCurrency(e.Value.ToString());
+                }
+                else if (e.Item.FieldName == "Name")
+                {
+                    e.Text = "Total : ";
+                }
+            }
+        }
+        protected void gridStamps_OnSummaryDisplayText(object sender, ASPxGridViewSummaryDisplayTextEventArgs e)
+        {
+            if (e.IsTotalSummary)
+            {
+                if (e.Item.FieldName == "Credit")
+                {
+                    e.Text = balayer.ConvertToIndCurrency(e.Value.ToString());
+                }
+                if (e.Item.FieldName == "Debit")
+                {
+                    e.Text = balayer.ConvertToIndCurrency(e.Value.ToString());
+                }
+                else if (e.Item.FieldName == "onaccountof")
+                {
+                    e.Text = "Total : ";
+                }
+            }
+        }
+        protected void gridOther_SummaryDisplayText(object sender, ASPxGridViewSummaryDisplayTextEventArgs e)
+        {
+            if (e.IsTotalSummary)
+            {
+                if (e.Item.FieldName == "Credit")
+                {
+                    e.Text = balayer.ConvertToIndCurrency(e.Value.ToString());
+                }
+                if (e.Item.FieldName == "Debit")
+                {
+                    e.Text = balayer.ConvertToIndCurrency(e.Value.ToString());
+                }
+                else if (e.Item.FieldName == "Sub-Head")
+                {
+                    e.Text = "Total : ";
+                }
+            }
+        }
+        protected void gridTrialBalance_OnSummaryDisplayText(object sender, ASPxGridViewSummaryDisplayTextEventArgs e)
+        {
+            if (e.IsTotalSummary)
+            {
+                if (e.Item.FieldName == "Credit")
+                {
+                    e.Text = balayer.ConvertToIndCurrency(e.Value.ToString());
+                }
+                if (e.Item.FieldName == "Debit")
+                {
+                    e.Text = balayer.ConvertToIndCurrency(e.Value.ToString());
+                }
+                else if (e.Item.FieldName == "Head")
+                {
+                    e.Text = "Total : ";
+                }
+            }
+        }
+        protected void gridAdvances_SummaryDisplayText(object sender, ASPxGridViewSummaryDisplayTextEventArgs e)
+        {
+            if (e.IsTotalSummary)
+            {
+                if (e.Item.FieldName == "Credit")
+                {
+                    e.Text = balayer.ConvertToIndCurrency(e.Value.ToString());
+                }
+                if (e.Item.FieldName == "Debit")
+                {
+                    e.Text = balayer.ConvertToIndCurrency(e.Value.ToString());
+                }
+                else if (e.Item.FieldName == "Name")
+                {
+                    e.Text = "Total : ";
+                }
+            }
+        }
+        protected void gridBranches_SummaryDisplayText(object sender, ASPxGridViewSummaryDisplayTextEventArgs e)
+        {
+            if (e.IsTotalSummary)
+            {
+                if (e.Item.FieldName == "Credit")
+                {
+                    e.Text = balayer.ConvertToIndCurrency(e.Value.ToString());
+                }
+                if (e.Item.FieldName == "Debit")
+                {
+                    e.Text = balayer.ConvertToIndCurrency(e.Value.ToString());
+                }
+                else if (e.Item.FieldName == "Narration")
+                {
+                    e.Text = "Total : ";
+                }
+            }
+        }
+        
+        protected void gridChitCollection_OnCustomSummaryCalculate(object sender, CustomSummaryEventArgs e)
+        {
+            if (e.IsTotalSummary)
+            {
+                ASPxSummaryItem x = (ASPxSummaryItem)e.Item;
+               //if (x.FieldName.ToString() == "Group")
+                if (x.FieldName.ToString() == "ChitNumber")
+                {
+                    decimal cre = Convert.ToDecimal(gridChitCollection.GetTotalSummaryValue(gridChitCollection.TotalSummary["CRR"]));
+                    //decimal deb = Convert.ToDecimal(gridChitCollection.GetTotalSummaryValue(gridChitCollection.TotalSummary["TRR"]));
+                    //decimal pp = Convert.ToDecimal(gridChitCollection.GetTotalSummaryValue(gridChitCollection.TotalSummary["PR"]));
+                    decimal cre2 = Convert.ToDecimal(gridChitCollection.GetTotalSummaryValue(gridChitCollection.TotalSummary["TRR1"]));
+                    decimal deb = Convert.ToDecimal(gridChitCollection.GetTotalSummaryValue(gridChitCollection.TotalSummary["TRR2"]));
+                    decimal cre1 = Convert.ToDecimal(gridChitCollection.GetTotalSummaryValue(gridChitCollection.TotalSummary["RCM"]));
+                    decimal deb1 = Convert.ToDecimal(gridChitCollection.GetTotalSummaryValue(gridChitCollection.TotalSummary["CCA"]));
+                    decimal OP = Convert.ToDecimal(gridChitCollection.GetTotalSummaryValue(gridChitCollection.TotalSummary["OPM"]));
+                    decimal UP = Convert.ToDecimal(gridChitCollection.GetTotalSummaryValue(gridChitCollection.TotalSummary["UPM"]));
+                    decimal UPMLED = Convert.ToDecimal(gridChitCollection.GetTotalSummaryValue(gridChitCollection.TotalSummary["UPMLedger"]));
+                    decimal pp = Convert.ToDecimal(gridChitCollection.GetTotalSummaryValue(gridChitCollection.TotalSummary["PR"]));
+                  //  e.TotalValue = cre + deb+pp ;
+                   e.TotalValue = cre + cre2+deb + cre1 + deb1 + OP + UP + UPMLED + pp;
+
+                }
+            }
+        }
+        protected void Export_click(object sender, MenuItemEventArgs e)
+        {
+            if (e.Item.Text.ToString() == "PDF")
+            {
+                PrintingSystem ps = new PrintingSystem();
+                PrintableComponentLink pAdvances = new PrintableComponentLink(ps);
+                pAdvances.Component = exportAdvances;
+                
+                PrintableComponentLink pstamps = new PrintableComponentLink(ps);
+                pstamps.Component = exportStamps;
+                
+                PrintableComponentLink pDecree = new PrintableComponentLink(ps);
+                pDecree.Component = exportDecreeDebtors;
+                
+                PrintableComponentLink pccchits = new PrintableComponentLink(ps);
+                pccchits.Component = exportCompanyChits;
+                
+                PrintableComponentLink pInvestments = new PrintableComponentLink(ps);
+                pInvestments.Component = exportInvestments;
+                
+                PrintableComponentLink pLoan = new PrintableComponentLink(ps);
+                pLoan.Component = exportInvestments;
+                
+                PrintableComponentLink pOther = new PrintableComponentLink(ps);
+                pOther.Component = exportOther;
+                
+                PrintableComponentLink pProfit = new PrintableComponentLink(ps);
+                pProfit.Component = exportProfit;
+                
+                PrintableComponentLink pDebit = new PrintableComponentLink(ps);
+                pDebit.Component = exportDebit;
+                
+                PrintableComponentLink pBank3 = new PrintableComponentLink(ps);
+                pBank3.Component = exportBank3;
+                
+                PrintableComponentLink pTrial = new PrintableComponentLink(ps);
+                pTrial.Component = exportTrialBalance;
+                
+                PrintableComponentLink pChitCollection = new PrintableComponentLink(ps);
+                pChitCollection.Component = exportChits;
+                
+                PrintableComponentLink pBranch = new PrintableComponentLink(ps);
+                pBranch.Component = exportBranches;
+                
+                PrintableComponentLink pYesterday = new PrintableComponentLink(ps);
+                pYesterday.Component = exportYesterday;
+                
+                PrintableComponentLink pBankCollection = new PrintableComponentLink(ps);
+                pBankCollection.Component = exportBanks;
+                
+                PrintableComponentLink pCash = new PrintableComponentLink(ps);
+                pBankCollection.Component = exportCash;
+
+                PrintableComponentLink pBranches = new PrintableComponentLink(ps);
+                pBranches.Component = exportBranches1;
+
+                CompositeLink compositeLink = new CompositeLink(ps);
+                compositeLink.Links.AddRange(new object[] { pAdvances, pstamps, pDecree, pccchits, pInvestments, pLoan, pOther, pProfit, pDebit, pBank3, pTrial, pChitCollection, pBranch, pYesterday, pBankCollection, pCash, pBranches });
+                
+                using (MemoryStream stream = new MemoryStream())
+                {
+                    compositeLink.Landscape = true;
+                    compositeLink.CreateDocument(false);
+                    compositeLink.PrintingSystem.Document.AutoFitToPagesWidth = 1;
+                    compositeLink.PrintingSystem.InsertPageBreak(1);
+                    compositeLink.PrintingSystem.ExportToPdf(stream);
+                    WriteToResponse("Diary", true, "pdf", stream);
+                }
+                ps.Dispose();
+            }
+            
+        }
+
+        void WriteToResponse(string fileName, bool saveAsFile, string fileFormat, MemoryStream stream)
+        {
+            if (Page == null || Page.Response == null)
+                return;
+            string disposition = saveAsFile ? "attachment" : "inline";
+            Page.Response.Clear();
+            Page.Response.Buffer = false;
+            Page.Response.AppendHeader("Content-Type", string.Format("application/{0}", fileFormat));
+            Page.Response.AppendHeader("Content-Transfer-Encoding", "binary");
+            Page.Response.AppendHeader("Content-Disposition",
+                string.Format("{0}; filename={1}.{2}", disposition, fileName, fileFormat));
+            Page.Response.BinaryWrite(stream.GetBuffer());
+            Page.Response.End();
+        }
+    }
+}

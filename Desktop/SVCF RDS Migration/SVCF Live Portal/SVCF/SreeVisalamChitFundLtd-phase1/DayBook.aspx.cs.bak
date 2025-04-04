@@ -1,0 +1,1505 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+using DevExpress.Web.ASPxGridView;
+using System.Data;
+using System.IO;
+using DevExpress.XtraPrinting;
+using System.Drawing;
+using DevExpress.Web.ASPxMenu;
+using DevExpress.XtraPrintingLinks;
+using SVCF_BusinessAccessLayer;
+using SVCF_DataAccessLayer;
+using DevExpress.Data;
+namespace SreeVisalamChitFundLtd_phase1
+{
+    public partial class DayBook : System.Web.UI.Page
+    {
+        #region ObjDeclaration
+        Dictionary<string, string> Tempdic = new Dictionary<string, string>();
+        List<string> TempList = new List<string>();
+        VarDeclaration objVar = new VarDeclaration();
+        string qry = "";
+        #endregion
+
+        #region VarDeclaration
+        BusinessLayer balayer = new BusinessLayer();
+        #endregion
+
+        CommonVariables objCOM = new CommonVariables();
+        DataTable dt1 = new DataTable();
+        double total = 0;
+        double totalexp = 0;
+        double balance = 0;
+        DataTable pr = new DataTable();
+        DataTable pr1 = new DataTable();
+        string removalname = "", transfername = "";
+        double KasarAmount = 0;
+        double current = 0;
+        double DtAmount = 0;
+        double Dt = 0;
+        decimal amt = 0.00M;
+        private System.Drawing.Image headerImage;
+
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            if (!IsPostBack)
+            {
+                LoadGrpId(DD_GP, 1);
+                // GetGroupMember();
+                dateFromConsolidated.Text = DateTime.Now.ToString("dd/MM/yyyy");
+                dateToConsolidated.Text = DateTime.Now.ToString("dd/MM/yyyy");
+                select();
+                RadDayBook.Checked = true;
+                divDayBook.Visible = true;
+
+                foreach (GridViewColumn column in grid.Columns)
+                {
+                    if (column is GridViewDataColumn)
+                    {
+                        ((GridViewDataColumn)column).Settings.AutoFilterCondition = AutoFilterCondition.Contains;
+                    }
+                }                
+            }
+            select();
+        }
+        protected void select()
+         {
+
+            try
+            {
+                grid.SettingsPager.Mode = GridViewPagerMode.ShowAllRecords;
+
+                DataTable dtDummy = new DataTable();
+                dtDummy.Columns.Add("Date", typeof(string));
+                dtDummy.Columns.Add("Groupno", typeof(string));
+                dtDummy.Columns.Add("Amount", typeof(string));
+                dtDummy.Columns.Add("Voucher_No", typeof(string));
+                dtDummy.Columns.Add("TotalCommission", typeof(string));
+                dtDummy.Columns.Add("PrizedAmount", typeof(string));
+                dtDummy.Columns.Add("KasarAmount", typeof(string));
+                dtDummy.Columns.Add("KasarAmountc", typeof(string));
+                dtDummy.Columns.Add("Balance", typeof(string));
+                dtDummy.Columns.Add("Total", typeof(string));
+                dtDummy.Columns.Add("Totalexp", typeof(string));
+                DataRow dr = dtDummy.NewRow();
+                DataTable dt = new DataTable();
+
+
+                //dt = balayer.GetDataTable("select * from ( select  ChoosenDate,v1.Series,v1.Voucher_Type,v1.Narration,(case when v1.Voucher_Type='C' and " +
+                //     "v1.Other_Trans_Type<>5 then v1.Amount else 0.00 end )as `Amount`,null as amt," +
+                //     "(case when v1.Voucher_Type='D' and v1.Other_Trans_Type<>5 and v1.Series='VOUCHER' then v1.Amount else 0.00 end )as `DebitAmount`," +
+                //     "g1.GrpMemberID,v1.Voucher_No,a1.TotalCommission,g1.MemberName,a1.KasarAmount,g1.Head_Id,g1.GroupID,a1.CurrentDueAmount " +
+                //     "from voucher as v1 left join auctiondetails as a1 on (a1.PrizedMemberID=v1.Head_Id) left join membertogroupmaster as g1 on (v1.Head_Id=g1.Head_Id)  where v1.ChoosenDate between '" + balayer.indiandateToMysqlDate(dateFromConsolidated.Text) + "'  and '" + balayer.indiandateToMysqlDate(dateToConsolidated.Text) + "' and g1.GroupID =" + DD_GP.SelectedValue + " and v1.Other_Trans_Type<>5   and v1.Rootid=5   union all  select ChoosenDate," +
+                //     " v1.Series, v1.Voucher_Type, v1.Narration, sum(case when v1.Voucher_Type = 'C' and v1.Other_Trans_Type = 5 and v1.Series not in('PAYMENT','FCP') then v1.Amount else 0.00 end) as `Amount`, sum(case when v1.Voucher_Type = 'C' and v1.Other_Trans_Type = 5 and Trans_Type=1 and Trans_Medium=2 and v1.Series  in('PAYMENT','FCP') then v1.Amount else 0.00 end) as amt,null `DebitAmount`, g1.GrpMemberID, v1.Voucher_No, a1.TotalCommission, g1.MemberName, a1.KasarAmount, g1.Head_Id, g1.GroupID,null as CurrentDueAmount" +
+                //     " from voucher as v1 left join auctiondetails as a1 on(a1.PrizedMemberID = v1.Head_Id) left join membertogroupmaster as g1 on(v1.Head_Id = g1.Head_Id)  where v1.ChoosenDate between '" + balayer.indiandateToMysqlDate(dateFromConsolidated.Text) + "'  and '" + balayer.indiandateToMysqlDate(dateToConsolidated.Text) + "' and g1.GroupID = " + DD_GP.SelectedValue + " and v1.Other_Trans_Type = 5     and v1.Rootid = 5 ) a order by ChoosenDate asc ");
+
+                dt = balayer.GetDataTable("select * from ( select  ChoosenDate,v1.Series,v1.Voucher_Type,v1.Narration,(case when v1.Voucher_Type='C' and " +
+                     "v1.Other_Trans_Type<>5 then v1.Amount else 0.00 end )as `Amount`,null as amt," +
+                     "(case when v1.Voucher_Type='D' and v1.Other_Trans_Type<>5 and v1.Series='VOUCHER' then v1.Amount else 0.00 end )as `DebitAmount`," +
+                     "g1.GrpMemberID,v1.Voucher_No,a1.TotalCommission,g1.MemberName,a1.KasarAmount,g1.Head_Id,g1.GroupID,a1.CurrentDueAmount " +
+                     "from voucher as v1 left join auctiondetails as a1 on (a1.PrizedMemberID=v1.Head_Id) left join membertogroupmaster as g1 on (v1.Head_Id=g1.Head_Id)  where v1.ChoosenDate between '" + balayer.indiandateToMysqlDate(dateFromConsolidated.Text) + "'  and '" + balayer.indiandateToMysqlDate(dateToConsolidated.Text) + "' and g1.GroupID =" + DD_GP.SelectedValue + " and v1.Other_Trans_Type<>5   and v1.Rootid=5 " +
+                     "union all select ChoosenDate, v1.Series, v1.Voucher_Type, v1.Narration, sum(case when v1.Voucher_Type = 'C' and v1.Other_Trans_Type = 5 and v1.Series not in('PAYMENT','FCP') then v1.Amount else 0.00 end) as `Amount`, null as amt,null `DebitAmount`, g1.GrpMemberID, v1.Voucher_No, a1.TotalCommission, g1.MemberName, a1.KasarAmount, g1.Head_Id, g1.GroupID,null as CurrentDueAmount from voucher as v1 left join auctiondetails as a1 on(a1.PrizedMemberID = v1.Head_Id) left join membertogroupmaster as g1 on(v1.Head_Id = g1.Head_Id)  where v1.ChoosenDate between '" + balayer.indiandateToMysqlDate(dateFromConsolidated.Text) + "'  and '" + balayer.indiandateToMysqlDate(dateToConsolidated.Text) + "'  and v1.Series  not in('PAYMENT','FCP') and g1.GroupID = " + DD_GP.SelectedValue + " and v1.Other_Trans_Type = 5     and v1.Rootid = 5" +
+                     "  union all  select ChoosenDate," +
+                     " v1.Series, v1.Voucher_Type, v1.Narration, sum(case when v1.Voucher_Type = 'C' and v1.Other_Trans_Type = 5 and Trans_Type=1 and Trans_Medium=2 and v1.Series  in('PAYMENT','FCP') then v1.Amount else 0.00 end) as `Amount`, sum(case when v1.Voucher_Type = 'C' and v1.Other_Trans_Type = 5 and Trans_Type=1 and Trans_Medium=2 and v1.Series  in('PAYMENT','FCP') then v1.Amount else 0.00 end) as amt,null `DebitAmount`, g1.GrpMemberID, v1.Voucher_No, a1.TotalCommission, g1.MemberName, a1.KasarAmount, g1.Head_Id, g1.GroupID,null as CurrentDueAmount" +
+                     " from voucher as v1 left join auctiondetails as a1 on(a1.PrizedMemberID = v1.Head_Id) left join membertogroupmaster as g1 on(v1.Head_Id = g1.Head_Id)  where v1.ChoosenDate between '" + balayer.indiandateToMysqlDate(dateFromConsolidated.Text) + "'  and '" + balayer.indiandateToMysqlDate(dateToConsolidated.Text) + "' and g1.GroupID = " + DD_GP.SelectedValue + " and v1.Other_Trans_Type = 5     and v1.Rootid = 5 ) a order by ChoosenDate asc ");
+
+
+                amt = 0.00M;
+
+
+
+                #region Existing Bind
+
+                for (int i = 0; i < dt.Rows.Count; i++)
+                {
+                    pr.Clear();
+                    try
+                    {
+                        if (dt.Rows.Count > 0)
+                        {
+                            if (dt.Rows[i]["Head_Id"].ToString() != "")
+                            {
+                                if (dt.Rows[i].ItemArray[1].ToString() == "PAYMENT" || dt.Rows[i].ItemArray[1].ToString() == "FCP")
+                                {
+                                   // if (dt.Rows[i].ItemArray[1].ToString() == "FCP")
+                                  //  {
+
+                                        if (dt.Rows[i].ItemArray[2].ToString() == "D")
+                                        {
+                                            pr = new DataTable();
+                                            pr = balayer.GetDataTable("select t1.PrizedAmount as PrizedAmount,v1.Narration,t1.Description,v1.Voucher_No, a1.TotalCommission,a1.KasarAmount,a1.PrizedMemberID,t1.PaymentDate,a1.CurrentDueAmount " +
+                                           "from auctiondetails as a1 join  voucher as v1 on (a1.PrizedMemberID=v1.Head_Id)  join membertogroupmaster as g1 on " +
+                                          "(v1.Head_Id=g1.Head_Id) join trans_payment as t1 on (t1.TokenNumber = g1.Head_Id) where a1.PrizedMemberID=" + dt.Rows[i]["Head_Id"] + " and   v1.Series in('PAYMENT','FCP') and  v1.Voucher_Type='D' and v1.Trans_Type=2  and  a1.GroupID=" + DD_GP.SelectedValue + " and t1.PaymentDate='" + balayer.changedateformat(Convert.ToDateTime(dt.Rows[i]["ChoosenDate"]), 2) + "'order by Voucher_No asc");
+                                        }
+                                  //  }
+                                }
+                            
+
+                            else
+                            {
+                                pr = new DataTable();
+
+                            }
+                                if (dt.Rows[i]["ChoosenDate"].ToString() != "")
+                                {
+
+                                    if (pr.Rows.Count > 0)
+                                    {
+                                       // for (int j = 0; j < pr.Rows.Count; j++)
+                                       // {
+
+                                            dr["Date"] = balayer.changedateformat(Convert.ToDateTime(dt.Rows[i]["ChoosenDate"]), 6);
+                                        //string hh = balayer.changedateformat(Convert.ToDateTime(dt.Rows[i]["ChoosenDate"]), 6).t;
+                                        objVar.memberid = Convert.ToString(dt.Rows[i]["GrpMemberID"]);
+                                            objVar.MemberName = Convert.ToString(dt.Rows[i]["MemberName"]);
+
+                                            dr["Groupno"] = pr.Rows[0]["Narration"];
+                                            dr["Amount"] = 0;
+                                         //   string current = Convert.ToString(balayer.GetSingleValue("select (case when v1.Voucher_Type='C' and v1.Other_Trans_Type<>5 then v1.Amount else 0.00 end )as `Amount` from voucher as v1 left join auctiondetails as a1 on (a1.PrizedMemberID=v1.Head_Id) left join membertogroupmaster as g1 on (v1.Head_Id=g1.Head_Id) where a1.PrizedMemberID=" + dt.Rows[i]["Head_Id"] + " and   v1.Series in('PAYMENT','FCP')  and   v1.Voucher_Type='C' and  a1.GroupID=" + DD_GP.SelectedValue + " and v1.ChoosenDate between '" + balayer.indiandateToMysqlDate(dateFromConsolidated.Text) + "'  and '" + balayer.indiandateToMysqlDate(dateToConsolidated.Text) + "' and v1.Other_Trans_Type<>5 and v1.Rootid=5 order by ChoosenDate asc "));
+                                            //if (Convert.ToString(current) != "")
+                                            //{
+                                            //    dr["Amount"] = current;
+                                            //}
+                                            //else
+                                            //{
+                                            //   // current = " 0";
+                                            //    dr["Amount"] = 0;
+                                            //}
+                                            if (Convert.ToString(pr.Rows[0]["KasarAmount"]) != "")
+                                            {
+                                                KasarAmount = Convert.ToDouble(pr.Rows[0]["KasarAmount"]);
+                                            }
+                                            else
+                                            {
+                                                KasarAmount = 0;
+                                            }
+                                            if (Convert.ToString(dt.Rows[i]["Amount"]) != "0.00")
+                                            {
+                                                DtAmount = Convert.ToDouble(dt.Rows[i]["Amount"]);
+                                                dr["PrizedAmount"] = "0";
+                                            }
+                                            else
+                                            {
+                                                DtAmount = 0;
+                                                dr["PrizedAmount"] = pr.Rows[0]["PrizedAmount"];
+                                            }
+                                        //double total = Convert.ToDouble(KasarAmount + DtAmount + Convert.ToDouble(current));
+                                        double total = Convert.ToDouble(KasarAmount + DtAmount );
+                                        dr["Total"] = total;
+
+                                            dr["Voucher_No"] = pr.Rows[0]["Voucher_No"];
+                                            dr["TotalCommission"] = pr.Rows[0]["TotalCommission"];
+                                            dr["PrizedAmount"] = pr.Rows[0]["PrizedAmount"];
+                                            dr["KasarAmount"] = pr.Rows[0]["KasarAmount"];
+                                            dr["KasarAmountc"] = total;
+                                            if (Convert.ToString(pr.Rows[0]["KasarAmount"]) != "")
+                                            {
+                                                objCOM.KasarAmount = Convert.ToDecimal(pr.Rows[0]["KasarAmount"]);
+                                            }
+                                            else
+                                            {
+                                                objCOM.KasarAmount = 0;
+                                            }
+
+                                            if (Convert.ToString(pr.Rows[0]["TotalCommission"]) != "")
+                                            {
+                                                objCOM.TotalCommission = Convert.ToDecimal(pr.Rows[0]["TotalCommission"]);
+                                            }
+                                            else
+                                            {
+                                                objCOM.TotalCommission = 0;
+                                            }
+                                            dr["Totalexp"] = Convert.ToInt32(pr.Rows[0]["PrizedAmount"]) + Convert.ToInt32(objCOM.KasarAmount) + Convert.ToInt32(objCOM.TotalCommission);
+
+
+                                            amt += Convert.ToDecimal(dt.Rows[i]["Amount"]);
+
+
+                                            dtDummy.Rows.Add(dr.ItemArray);
+                                       // }
+                                    }
+                                    else
+                                    {
+                                        dr["Amount"] = "0";
+                                                dr["PrizedAmount"] = "";
+                                                if (dt.Rows[i]["Amount"].ToString() != "")
+                                                {
+                                                    dr["Date"] = balayer.changedateformat(Convert.ToDateTime(dt.Rows[i]["ChoosenDate"]), 6);
+
+
+                                                    if (Convert.ToString(dt.Rows[i]["Amount"]) != "")
+                                                    {
+                                                        DtAmount = Convert.ToDouble(dt.Rows[i]["Amount"]);
+                                                    }
+                                                    else
+                                                    {
+                                                        DtAmount = 0;
+                                                    }
+                                                    if (Convert.ToString(dt.Rows[i]["DebitAmount"]) == "" && Convert.ToString(dt.Rows[i]["TotalCommission"]) == "" && Convert.ToString(dt.Rows[i]["KasarAmount"]) == "" && Convert.ToString(dt.Rows[i]["CurrentDueAmount"]) == "")
+                                                    {
+                                                        dr["KasarAmountc"] = DtAmount;
+                                                    }
+                                                    else
+                                                    {
+                                                        dr["Amount"] = DtAmount;
+                                                    }
+                                           if(Convert.ToString(dt.Rows[i]["amt"])=="")
+                                            {
+                                                //dr["Amount"] = "0";
+                                                dr["Total"] = Convert.ToInt32(dt.Rows[i]["Amount"]);
+                                                 dr["Groupno"] = Convert.ToString(dt.Rows[i]["Narration"]);
+                                            }
+                                            else
+                                            {
+                                                UInt32 amttt = Convert.ToUInt32(dt.Rows[i]["Amount"]);
+                                                UInt32 tamt = Convert.ToUInt32(dt.Rows[i]["amt"]);
+                                                dr["Total"] = amttt ;
+                                            }
+                                            
+                                                
+                                            
+
+                                                  
+                                                    total += Convert.ToDouble(dt.Rows[i]["Amount"]);
+
+
+                                                    dr["Voucher_No"] = dt.Rows[i]["Voucher_No"];
+                                                    dr["TotalCommission"] = "";
+                                            
+                                             if (Convert.ToString(dt.Rows[i]["Voucher_Type"]).Equals("C"))
+                                            {
+                                                if (Convert.ToString(dt.Rows[i]["Series"]) == "PAYMENT" || Convert.ToString(dt.Rows[i]["Series"]) == "FCP")
+                                                {
+                                                    if (Convert.ToString(dt.Rows[i]["amt"]) != "")
+                                                    {
+                                                        dr["Groupno"] = Convert.ToString(dt.Rows[i]["Narration"]);
+                                                        dr["KasarAmountc"] = Convert.ToString(dt.Rows[i]["amt"]);
+                                                    }
+                                                }
+
+                                                else if (Convert.ToString(dt.Rows[i]["Series"]) == "VOUCHER" || Convert.ToString(dt.Rows[i]["Series"]) == "Voucher")
+                                                {
+                                                    if (Convert.ToString(dt.Rows[i]["Narration"]).Contains("Redraw Kasar Difference"))
+                                                    {
+                                                        dr["Groupno"] = Convert.ToString(dt.Rows[i]["Narration"]);
+                                                        dr["KasarAmountc"] = Convert.ToString(dt.Rows[i]["Amount"]);
+                                                        dr["Amount"] = "";
+                                                    }
+                                                    else
+                                                    {
+
+
+                                                        dr["Groupno"] = Convert.ToString(dt.Rows[i]["Narration"]);
+                                                        dr["Amount"] = Convert.ToString(dt.Rows[i]["Amount"]);
+                                                    }
+                                                }
+                                                
+
+                                                else
+                                                {
+                                                    removalname = balayer.GetSingleValue(@"select (case when(r.DateOfRemoval>'" + balayer.indiandateToMysqlDate(dateFromConsolidated.Text) + "') then concat(m1.CustomerName) else concat(mg1.MemberName) end) as `MemberName` from membertogroupmaster as mg1 left join removal_approval r on mg1.Head_Id=r.GroupMemberID join membermaster m1 on m1.MemberIDNew=r.OldMemberID join voucher as v1 on v1.Head_Id=mg1.Head_Id  left join trans_payment as tp1 on v1.Head_Id =tp1.TokenNumber join membermaster as mm on (mg1.MemberID=mm.MemberIDNew) where mg1.BranchID=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and mg1.GroupID=" + DD_GP.SelectedValue + " and v1.Head_Id=" + dt.Rows[i]["Head_Id"] + " and v1.ChoosenDate between'" + balayer.indiandateToMysqlDate(dateFromConsolidated.Text) + "'  and '" + balayer.indiandateToMysqlDate(dateToConsolidated.Text) + "' group by v1.Head_Id order by v1.ChoosenDate DESC ;");
+                                                    transfername = balayer.GetSingleValue(@"select (case when(r.ApprovedDate>'" + balayer.indiandateToMysqlDate(dateFromConsolidated.Text) + "') then concat(m1.CustomerName) else concat(mg1.MemberName) end) as `MemberName` from membertogroupmaster as mg1 left join transfer_approval r on mg1.Head_Id=r.GrpMemberID join membermaster m1 on m1.MemberIDNew=r.Old_Member join voucher as v1 on v1.Head_Id=mg1.Head_Id  left join trans_payment as tp1 on v1.Head_Id =tp1.TokenNumber join membermaster as mm on (mg1.MemberID=mm.MemberIDNew) where mg1.BranchID=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and mg1.GroupID=" + DD_GP.SelectedValue + " and v1.Head_Id=" + dt.Rows[i]["Head_Id"] + " and v1.ChoosenDate between'" + balayer.indiandateToMysqlDate(dateFromConsolidated.Text) + "'  and '" + balayer.indiandateToMysqlDate(dateToConsolidated.Text) + "' group by v1.Head_Id order by v1.ChoosenDate DESC");
+                                                    if (string.IsNullOrEmpty(removalname) && string.IsNullOrEmpty(transfername))
+                                                    {
+                                                        objVar.memberid = Convert.ToString(dt.Rows[i]["GrpMemberID"]);
+                                                        objVar.MemberName = Convert.ToString(dt.Rows[i]["MemberName"]);
+
+                                                        dr["Groupno"] = objVar.MemberName + "  " + objVar.memberid;
+                                                        dr["PrizedAmount"] = 0;
+                                                    }
+                                                    else if (removalname == "")
+                                                    {
+                                                        objVar.memberid = Convert.ToString(dt.Rows[i]["GrpMemberID"]);
+                                                        dr["Groupno"] = transfername + "  " + objVar.memberid;
+                                                        dr["Groupno"] = Convert.ToString(dt.Rows[i]["Narration"]);
+                                                    }
+                                                    else
+                                                    {
+                                                        dr["Groupno"] = removalname + "  " + objVar.memberid;
+                                                        dr["Groupno"] = Convert.ToString(dt.Rows[i]["Narration"]);
+                                                    }
+                                                }
+
+                                            }
+                                            else if (dt.Rows[i]["Voucher_Type"].ToString().Equals("D"))
+                                            {
+                                                dr["Groupno"] = Convert.ToString(dt.Rows[i]["Narration"]);
+
+                                                dr["PrizedAmount"] = dt.Rows[i]["DebitAmount"];
+                                                dr["Totalexp"] = dt.Rows[i]["DebitAmount"];
+
+                                                dr["Totalexp"] = dt.Rows[i]["DebitAmount"];
+
+                                            }
+                                                    if (Convert.ToString(dt.Rows[i]["DebitAmount"]) == "")
+                                                    {
+                                                        dr["Totalexp"] = "";
+
+                                                    }
+
+                                                    dr["Totalexp"] = dt.Rows[i]["DebitAmount"];
+                                                    if (Convert.ToString(dt.Rows[i]["DebitAmount"]) != "")
+                                                    {
+
+
+
+                                                        totalexp += Convert.ToDouble(dt.Rows[i]["DebitAmount"]);
+                                                    }
+                                                    dr["KasarAmount"] = "";
+                                            //if (Convert.ToString(dt.Rows[i]["Series"]) == "PAYMENT" || Convert.ToString(dt.Rows[i]["Series"]) == "FCP")
+                                            //{
+                                            //   dr["KasarAmountc"] = "";
+                                            // }
+                                         
+
+
+                                                amt += Convert.ToDecimal(dt.Rows[i]["Amount"]);
+                                                    dtDummy.Rows.Add(dr.ItemArray);
+
+                                                }
+                                           // }
+
+                                       // }//if loop
+
+                                    }
+
+                                    amt = 0.00M;
+                                    dr["KasarAmountc"] = "";
+                                }
+                                #endregion
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        string jj = ex.Message;
+                    }
+
+
+                } 
+
+                grid.DataSource = dtDummy;
+                ViewState["Exportdt"] = dtDummy;
+                grid.DataBind();
+
+
+
+                DataTable dtDummysummary = new DataTable();
+                DataTable dtDummysummary1 = new DataTable();
+                dtDummysummary.Columns.Add("Date", typeof(string));
+                dtDummysummary.Columns.Add("Groupno", typeof(string));
+                dtDummysummary.Columns.Add("Amount", typeof(decimal));
+                dtDummysummary.Columns.Add("Voucher_No", typeof(string));
+                dtDummysummary.Columns.Add("TotalCommission", typeof(decimal));
+                dtDummysummary.Columns.Add("PrizedAmount", typeof(decimal));
+                dtDummysummary.Columns.Add("KasarAmount", typeof(decimal));
+                dtDummysummary.Columns.Add("KasarAmountc", typeof(decimal));
+                dtDummysummary.Columns.Add("Balance", typeof(decimal));
+                dtDummysummary.Columns.Add("Total", typeof(decimal));
+                dtDummysummary.Columns.Add("Totalexp", typeof(decimal));
+                DataRow dr1 = dtDummysummary.NewRow();
+                List<decimal> pri = new List<decimal>();
+                //DataTable pr = new DataTable();
+                //DataTable pr1 = new DataTable();
+                //double KasarAmount = 0;
+                //double DtAmount = 0;
+                //double Dt = 0;
+                //decimal amt = 0.00M;
+                //dt1 = balayer.GetDataTable("select * from ( select  ChoosenDate,v1.Series,v1.Voucher_Type,v1.Narration,(case when v1.Voucher_Type='C' and " +
+                //    "v1.Other_Trans_Type<>5 then v1.Amount else 0.00 end )as `Amount`,null as amt," +
+                //    "(case when v1.Voucher_Type='D' and v1.Other_Trans_Type<>5 and v1.Series='VOUCHER' then v1.Amount else 0.00 end )as `DebitAmount`," +
+                //    "g1.GrpMemberID,v1.Voucher_No,a1.TotalCommission,g1.MemberName,a1.KasarAmount,g1.Head_Id,g1.GroupID,a1.CurrentDueAmount " +
+                //    "from voucher as v1 left join auctiondetails as a1 on (a1.PrizedMemberID=v1.Head_Id) left join membertogroupmaster as g1 on (v1.Head_Id=g1.Head_Id)  where v1.ChoosenDate < '" + balayer.indiandateToMysqlDate(dateFromConsolidated.Text) + "'   and g1.GroupID =" + DD_GP.SelectedValue + " and v1.Other_Trans_Type<>5   and v1.Rootid=5   union all  select ChoosenDate," +
+                //    " v1.Series, v1.Voucher_Type, v1.Narration, sum(case when v1.Voucher_Type = 'C' and v1.Other_Trans_Type = 5 and v1.Series not in('PAYMENT','FCP') then v1.Amount else 0.00 end) as `Amount`, sum(case when v1.Voucher_Type = 'C' and v1.Other_Trans_Type = 5 and Trans_Type=1 and Trans_Medium=2 and v1.Series  in('PAYMENT','FCP') then v1.Amount else 0.00 end) as amt,null `DebitAmount`, g1.GrpMemberID, v1.Voucher_No, a1.TotalCommission, g1.MemberName, a1.KasarAmount, g1.Head_Id, g1.GroupID,null as CurrentDueAmount" +
+                //    " from voucher as v1 left join auctiondetails as a1 on(a1.PrizedMemberID = v1.Head_Id) left join membertogroupmaster as g1 on(v1.Head_Id = g1.Head_Id)  where v1.ChoosenDate < '" + balayer.indiandateToMysqlDate(dateFromConsolidated.Text) + "'   and g1.GroupID = " + DD_GP.SelectedValue + " and v1.Other_Trans_Type = 5     and v1.Rootid = 5 ) a order by ChoosenDate asc ");
+                dt1 = balayer.GetDataTable("select * from ( select  ChoosenDate,v1.Series,v1.Voucher_Type,v1.Narration,(case when v1.Voucher_Type='C' and " +
+                   "v1.Other_Trans_Type<>5 then v1.Amount else 0.00 end )as `Amount`,null as amt," +
+                   "(case when v1.Voucher_Type='D' and v1.Other_Trans_Type<>5 and v1.Series='VOUCHER' then v1.Amount else 0.00 end )as `DebitAmount`," +
+                   "g1.GrpMemberID,v1.Voucher_No,a1.TotalCommission,g1.MemberName,a1.KasarAmount,g1.Head_Id,g1.GroupID,a1.CurrentDueAmount " +
+                   "from voucher as v1 left join auctiondetails as a1 on (a1.PrizedMemberID=v1.Head_Id) left join membertogroupmaster as g1 on (v1.Head_Id=g1.Head_Id)  where v1.ChoosenDate < '" + balayer.indiandateToMysqlDate(dateFromConsolidated.Text) + "'   and g1.GroupID =" + DD_GP.SelectedValue + " and v1.Other_Trans_Type<>5   and v1.Rootid=5   " +
+                   "union all select ChoosenDate, v1.Series, v1.Voucher_Type, v1.Narration, sum(case when v1.Voucher_Type = 'C' and v1.Other_Trans_Type = 5 and v1.Series not in('PAYMENT','FCP') then v1.Amount else 0.00 end) as `Amount`, null as amt,null `DebitAmount`, g1.GrpMemberID, v1.Voucher_No, a1.TotalCommission, g1.MemberName, a1.KasarAmount, g1.Head_Id, g1.GroupID,null as CurrentDueAmount from voucher as v1 left join auctiondetails as a1 on(a1.PrizedMemberID = v1.Head_Id) left join membertogroupmaster as g1 on(v1.Head_Id = g1.Head_Id)  where v1.ChoosenDate < '" + balayer.indiandateToMysqlDate(dateFromConsolidated.Text) + "' and v1.Series  not in('PAYMENT','FCP') and g1.GroupID = " + DD_GP.SelectedValue + " and v1.Other_Trans_Type = 5     and v1.Rootid = 5   " +
+                   "  union all  select ChoosenDate," +
+                   " v1.Series, v1.Voucher_Type, v1.Narration, sum(case when v1.Voucher_Type = 'C' and v1.Other_Trans_Type = 5 and Trans_Type=1 and Trans_Medium=2 and v1.Series  in('PAYMENT','FCP') then v1.Amount else 0.00 end) as `Amount`, sum(case when v1.Voucher_Type = 'C' and v1.Other_Trans_Type = 5 and Trans_Type=1 and Trans_Medium=2 and v1.Series  in('PAYMENT','FCP') then v1.Amount else 0.00 end) as amt,null `DebitAmount`, g1.GrpMemberID, v1.Voucher_No, a1.TotalCommission, g1.MemberName, a1.KasarAmount, g1.Head_Id, g1.GroupID,null as CurrentDueAmount" +
+                   " from voucher as v1 left join auctiondetails as a1 on(a1.PrizedMemberID = v1.Head_Id) left join membertogroupmaster as g1 on(v1.Head_Id = g1.Head_Id)  where v1.ChoosenDate < '" + balayer.indiandateToMysqlDate(dateFromConsolidated.Text) + "'   and g1.GroupID = " + DD_GP.SelectedValue + " and v1.Other_Trans_Type = 5     and v1.Rootid = 5 ) a order by ChoosenDate asc ");
+
+                amt = 0.00M;
+
+                #region Existing Bind
+
+                for (int i = 0; i < dt1.Rows.Count; i++)
+                {
+                    if(dt1.Rows[i]["ChoosenDate"].ToString()== "2018-06-06")
+                    {
+
+                    }
+                    pr.Clear();
+                    try
+                    {
+                        if (dt1.Rows.Count > 0)
+                        {
+                            if (dt1.Rows[i]["Head_Id"].ToString() != "")
+                            {
+                                if (dt1.Rows[i].ItemArray[1].ToString() == "PAYMENT" || dt1.Rows[i].ItemArray[1].ToString() == "FCP")
+                                {
+                                            if (dt1.Rows[i].ItemArray[2].ToString() == "D")
+                                            {
+
+                                                
+                                                pr = new DataTable();
+                                                pr = balayer.GetDataTable("select t1.PrizedAmount as PrizedAmount,v1.Narration,t1.Description,v1.Voucher_No, a1.TotalCommission,a1.KasarAmount,a1.PrizedMemberID,t1.PaymentDate,a1.CurrentDueAmount " +
+                                               "from auctiondetails as a1 join  voucher as v1 on (a1.PrizedMemberID=v1.Head_Id)  join membertogroupmaster as g1 on " +
+                                              "(v1.Head_Id=g1.Head_Id) join trans_payment as t1 on (t1.TokenNumber = g1.Head_Id) where a1.PrizedMemberID=" + dt1.Rows[i]["Head_Id"] + " and   v1.Series in('PAYMENT','FCP') and   v1.Trans_Type=2 and v1.Voucher_Type='D'  and  a1.GroupID=" + DD_GP.SelectedValue + " and t1.PaymentDate='" + balayer.changedateformat(Convert.ToDateTime(dt1.Rows[i]["ChoosenDate"]), 2) + "'order by Voucher_No asc");
+                                            }
+                                }
+                                else
+                                {
+                                    pr = new DataTable();
+
+                                }
+                                if (dt1.Rows[i]["ChoosenDate"].ToString() != "")
+                                {
+
+                                    if (pr.Rows.Count > 0)
+                                    {
+                                       // for (int j = 0; j < pr.Rows.Count; j++)
+                                      //  {
+
+                                            dr1["Date"] = balayer.changedateformat(Convert.ToDateTime(dt1.Rows[i]["ChoosenDate"]), 6);
+
+                                        objVar.memberid = Convert.ToString(dt1.Rows[i]["GrpMemberID"]);
+                                            objVar.MemberName = Convert.ToString(dt1.Rows[i]["MemberName"]);
+
+                                            dr1["Groupno"] = pr.Rows[0]["Narration"];
+                                            dr1["Amount"] = 0;
+                                          //  string current = Convert.ToString(balayer.GetSingleValue("select (case when v1.Voucher_Type='C' and v1.Other_Trans_Type<>5 then v1.Amount else 0.00 end )as `Amount` from voucher as v1 left join auctiondetails as a1 on (a1.PrizedMemberID=v1.Head_Id) left join membertogroupmaster as g1 on (v1.Head_Id=g1.Head_Id) where a1.PrizedMemberID=" + dt1.Rows[i]["Head_Id"] + " and   v1.Series in('PAYMENT','FCP')  and   v1.Voucher_Type='C' and  a1.GroupID=" + DD_GP.SelectedValue + " and v1.ChoosenDate between '" + balayer.indiandateToMysqlDate(dateFromConsolidated.Text) + "'  and '" + balayer.indiandateToMysqlDate(dateToConsolidated.Text) + "' and v1.Other_Trans_Type<>5 and v1.Rootid=5 order by ChoosenDate asc "));
+                                            //if (Convert.ToString(current) != "")
+                                            //{
+                                            //    dr1["Amount"] = current;
+                                            //}
+                                            //else
+                                            //{
+                                            // //   current = " 0";
+                                            //    dr1["Amount"] = 0;
+                                            //}
+                                            if (Convert.ToString(pr.Rows[0]["KasarAmount"]) != "")
+                                            {
+                                                KasarAmount = Convert.ToDouble(pr.Rows[0]["KasarAmount"]);
+                                            }
+                                            else
+                                            {
+                                                KasarAmount = 0;
+                                            }
+                                            if (Convert.ToString(dt1.Rows[i]["Amount"]) != "0.00")
+                                            {
+                                                DtAmount = Convert.ToDouble(dt1.Rows[i]["Amount"]);
+                                                dr1["PrizedAmount"] = "0";
+                                            }
+                                            else
+                                            {
+                                                DtAmount = 0;
+                                                dr1["PrizedAmount"] = pr.Rows[0]["PrizedAmount"];
+                                            }
+                                        //double total = Convert.ToDouble(KasarAmount + DtAmount + Convert.ToDouble(current));
+                                        double total = Convert.ToDouble(KasarAmount + DtAmount );
+                                        dr1["Total"] = total;
+
+                                            dr1["Voucher_No"] = pr.Rows[0]["Voucher_No"];
+                                            dr1["TotalCommission"] = pr.Rows[0]["TotalCommission"];
+                                            decimal prized = Convert.ToDecimal(pr.Rows[0]["PrizedAmount"]);
+                                            dr1["PrizedAmount"] = pr.Rows[0]["PrizedAmount"];
+                                            dr1["KasarAmount"] = pr.Rows[0]["KasarAmount"];
+                                            dr1["KasarAmountc"] = total;
+                                            if (Convert.ToString(pr.Rows[0]["KasarAmount"]) != "")
+                                            {
+                                                objCOM.KasarAmount = Convert.ToDecimal(pr.Rows[0]["KasarAmount"]);
+                                            }
+                                            else
+                                            {
+                                                objCOM.KasarAmount = 0;
+                                            }
+
+                                            if (Convert.ToString(pr.Rows[0]["TotalCommission"]) != "")
+                                            {
+                                                objCOM.TotalCommission = Convert.ToDecimal(pr.Rows[0]["TotalCommission"]);
+                                            }
+                                            else
+                                            {
+                                                objCOM.TotalCommission = 0;
+                                            }
+                                            dr1["Totalexp"] = Convert.ToInt32(pr.Rows[0]["PrizedAmount"]) + Convert.ToInt32(objCOM.KasarAmount) + Convert.ToInt32(objCOM.TotalCommission);
+
+
+                                            amt += Convert.ToDecimal(dt1.Rows[i]["Amount"]);
+                                            pri.Add(prized);
+
+                                            dtDummysummary.Rows.Add(dr1.ItemArray);
+                                      //  }
+                                    }
+                                    else
+                                    {
+                                        dr1["Amount"] = "0";
+                                        dr1["PrizedAmount"] = "0";
+                                        if (dt1.Rows[i]["Amount"].ToString() != "")
+                                        {
+                                            dr1["Date"] = balayer.changedateformat(Convert.ToDateTime(dt1.Rows[i]["ChoosenDate"]), 6);
+                                            dr1["PrizedAmount"] = "0";
+                                            if (Convert.ToString(dt1.Rows[i]["Amount"]) != "")
+                                            {
+                                                DtAmount = Convert.ToDouble(dt1.Rows[i]["Amount"]);
+                                                dr1["PrizedAmount"] = "0";
+                                            }
+                                            else
+                                            {
+                                                DtAmount = 0;
+                                                dr1["PrizedAmount"] = "0";
+                                            }
+                                            if (Convert.ToString(dt1.Rows[i]["DebitAmount"]) == "" && Convert.ToString(dt1.Rows[i]["TotalCommission"]) == "" && Convert.ToString(dt1.Rows[i]["KasarAmount"]) == "" && Convert.ToString(dt1.Rows[i]["CurrentDueAmount"]) == "")
+                                            {
+                                                dr1["KasarAmountc"] = DtAmount;
+                                                dr1["PrizedAmount"] = "0";
+                                            }
+                                            else
+                                            {
+                                                dr1["Amount"] = DtAmount;
+                                                dr1["PrizedAmount"] = "0";
+                                            }
+
+
+                                            //dr1["Total"] = Convert.ToInt32(dt1.Rows[i]["Amount"]);
+                                            //total += Convert.ToDouble(dt1.Rows[i]["Amount"]);
+                                            if (Convert.ToString(dt1.Rows[i]["amt"]) == "")
+                                            {
+                                                dr1["Total"] = Convert.ToInt32(dt1.Rows[i]["Amount"]);
+                                                dr1["Groupno"] = Convert.ToString(dt1.Rows[i]["Narration"]);
+                                            }
+                                            else
+                                            {
+                                                UInt32 amttt = Convert.ToUInt32(dt1.Rows[i]["Amount"]);
+                                                UInt32 tamt = Convert.ToUInt32(dt1.Rows[i]["amt"]);
+                                                dr1["Total"] = amttt ;
+                                            }
+
+
+
+                                            dr1["Voucher_No"] = dt1.Rows[i]["Voucher_No"];
+                                            dr1["TotalCommission"] = "0.00";
+                                            
+                                            if (Convert.ToString(dt1.Rows[i]["Voucher_Type"]).Equals("C"))
+                                            {
+                                               if (Convert.ToString(dt1.Rows[i]["Series"]) == "PAYMENT" || Convert.ToString(dt1.Rows[i]["Series"]) == "FCP")
+                                                {
+                                                    if (Convert.ToString(dt1.Rows[i]["amt"]) != "")
+                                                    {
+                                                        dr1["Groupno"] = Convert.ToString(dt1.Rows[i]["Narration"]);
+                                                            dr1["KasarAmountc"] = Convert.ToString(dt1.Rows[i]["amt"]);
+                                                    }
+                                                }
+                                               else  if (Convert.ToString(dt1.Rows[i]["Series"]) == "VOUCHER" || Convert.ToString(dt1.Rows[i]["Series"]) == "Voucher")
+                                                {
+                                                    //dr1["Groupno"] = Convert.ToString(dt1.Rows[i]["Narration"]);
+                                                    //dr1["Amount"] = Convert.ToString(dt1.Rows[i]["Amount"]);
+                                                    //dr1["PrizedAmount"] = 0;
+                                                    if (Convert.ToString(dt1.Rows[i]["Narration"]).Contains("Redraw Kasar Difference"))
+                                                    {
+                                                        dr1["Groupno"] = Convert.ToString(dt1.Rows[i]["Narration"]);
+                                                        dr1["KasarAmountc"] = Convert.ToString(dt1.Rows[i]["Amount"]);
+                                                        dr1["PrizedAmount"] = 0;
+                                                        dr1["Amount"] = 0;
+                                                    }
+                                                    else
+                                                    {
+                                                        dr1["Groupno"] = Convert.ToString(dt1.Rows[i]["Narration"]);
+                                                        dr1["Amount"] = Convert.ToString(dt1.Rows[i]["Amount"]);
+                                                       dr1["PrizedAmount"] = 0;
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    removalname = balayer.GetSingleValue(@"select (case when(r.DateOfRemoval>'" + balayer.indiandateToMysqlDate(dateFromConsolidated.Text) + "') then concat(m1.CustomerName) else concat(mg1.MemberName) end) as `MemberName` from membertogroupmaster as mg1 left join removal_approval r on mg1.Head_Id=r.GroupMemberID join membermaster m1 on m1.MemberIDNew=r.OldMemberID join voucher as v1 on v1.Head_Id=mg1.Head_Id  left join trans_payment as tp1 on v1.Head_Id =tp1.TokenNumber join membermaster as mm on (mg1.MemberID=mm.MemberIDNew) where mg1.BranchID=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and mg1.GroupID=" + DD_GP.SelectedValue + " and v1.Head_Id=" + dt1.Rows[i]["Head_Id"] + " and v1.ChoosenDate between'" + balayer.indiandateToMysqlDate(dateFromConsolidated.Text) + "'  and '" + balayer.indiandateToMysqlDate(dateToConsolidated.Text) + "' group by v1.Head_Id order by v1.ChoosenDate DESC ;");
+                                                    transfername = balayer.GetSingleValue(@"select (case when(r.ApprovedDate>'" + balayer.indiandateToMysqlDate(dateFromConsolidated.Text) + "') then concat(m1.CustomerName) else concat(mg1.MemberName) end) as `MemberName` from membertogroupmaster as mg1 left join transfer_approval r on mg1.Head_Id=r.GrpMemberID join membermaster m1 on m1.MemberIDNew=r.Old_Member join voucher as v1 on v1.Head_Id=mg1.Head_Id  left join trans_payment as tp1 on v1.Head_Id =tp1.TokenNumber join membermaster as mm on (mg1.MemberID=mm.MemberIDNew) where mg1.BranchID=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and mg1.GroupID=" + DD_GP.SelectedValue + " and v1.Head_Id=" + dt1.Rows[i]["Head_Id"] + " and v1.ChoosenDate between'" + balayer.indiandateToMysqlDate(dateFromConsolidated.Text) + "'  and '" + balayer.indiandateToMysqlDate(dateToConsolidated.Text) + "' group by v1.Head_Id order by v1.ChoosenDate DESC");
+                                                    if (string.IsNullOrEmpty(removalname) && string.IsNullOrEmpty(transfername))
+                                                    {
+                                                        objVar.memberid = Convert.ToString(dt1.Rows[i]["GrpMemberID"]);
+                                                        objVar.MemberName = Convert.ToString(dt1.Rows[i]["MemberName"]);
+
+                                                        dr1["Groupno"] = objVar.MemberName + "  " + objVar.memberid;
+                                                        dr1["PrizedAmount"] = 0;
+                                                    }
+                                                    else if (removalname == "")
+                                                    {
+                                                        objVar.memberid = Convert.ToString(dt1.Rows[i]["GrpMemberID"]);
+                                                        dr1["Groupno"] = transfername + "  " + objVar.memberid;
+                                                        dr1["Groupno"] = Convert.ToString(dt1.Rows[i]["Narration"]);
+                                                        dr1["PrizedAmount"] = "0";
+                                                    }
+                                                    else
+                                                    {
+                                                        dr1["Groupno"] = removalname + "  " + objVar.memberid;
+                                                        dr1["Groupno"] = Convert.ToString(dt1.Rows[i]["Narration"]);
+                                                        dr1["PrizedAmount"] = "0";
+                                                    }
+                                                }
+
+                                            }
+                                            else if (dt1.Rows[i]["Voucher_Type"].ToString().Equals("D"))
+                                            {
+                                                dr1["Groupno"] = Convert.ToString(dt1.Rows[i]["Narration"]);
+                                                decimal ppp = Convert.ToDecimal(dt1.Rows[i]["DebitAmount"]);
+                                                dr1["PrizedAmount"] = dt1.Rows[i]["DebitAmount"];
+                                                dr1["Totalexp"] = dt1.Rows[i]["DebitAmount"];
+
+                                                dr1["Totalexp"] = dt1.Rows[i]["DebitAmount"];
+                                                pri.Add(ppp);
+                                            }
+                                            if (Convert.ToString(dt1.Rows[i]["DebitAmount"]) == "")
+                                            {
+                                                dr1["Totalexp"] = "0.00";
+
+
+                                            }
+
+                                            dr1["Totalexp"] = dt1.Rows[i]["DebitAmount"];
+                                            if (Convert.ToString(dt1.Rows[i]["DebitAmount"]) != "")
+                                            {
+
+
+
+                                                totalexp += Convert.ToDouble(dt1.Rows[i]["DebitAmount"]);
+                                                //  dr1["PrizedAmount"] = "0";
+                                            }
+                                            dr1["KasarAmount"] = "0.00";
+                                         //   dr1["KasarAmountc"] = "0.00";
+
+                                            amt += Convert.ToDecimal(dt1.Rows[i]["Amount"]);
+                                            dtDummysummary.Rows.Add(dr1.ItemArray);
+
+                                        }
+                                    }
+
+                                    //   }//if loop
+
+                                  //  }
+
+                                    amt = 0.00M;
+                                    dr1["KasarAmountc"] = "0.00";
+                                }
+                                #endregion
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        string jj = ex.Message;
+                    }
+
+
+                }
+                if (dtDummysummary.Rows.Count > 0)
+                  {
+
+                    DataRow dr2 = dtDummy.NewRow();
+                    decimal jj = Convert.ToDecimal(dtDummysummary.Compute("sum(Amount)", ""));
+                    decimal jj1 = Convert.ToDecimal(dtDummysummary.Compute("sum(KasarAmountc)", ""));
+                    decimal prized = Convert.ToDecimal(dtDummysummary.Compute("sum(PrizedAmount)", ""));
+                    decimal TotalCommission = Convert.ToDecimal(dtDummysummary.Compute("sum(TotalCommission)", ""));
+                    decimal KasarAmount1 = Convert.ToDecimal(dtDummysummary.Compute("sum(KasarAmount)", ""));
+                    decimal total = Convert.ToDecimal(dtDummysummary.Compute("sum(Total)", ""));
+                    decimal Totalexp = Convert.ToDecimal(dtDummysummary.Compute("sum(Totalexp)", ""));
+
+                    dr2["Groupno"] = "Previous NetBalance";
+                    dr2["Amount"] = jj;
+                    dr2["KasarAmountc"] = jj1;
+                    dr2["PrizedAmount"] = prized;
+                    dr2["TotalCommission"] = TotalCommission;
+                    dr2["KasarAmount"] = KasarAmount1;
+                    dr2["Total"] = total;
+                    dr2["Totalexp"] = Totalexp;
+                    if (total > Totalexp)
+                    {
+                        decimal cretot = total - Totalexp;
+                        dr2["Balance"] = "CrBal." + cretot;
+
+
+                    }
+                    else if (total < Totalexp)
+                    {
+                        decimal debtot = Totalexp - total;
+                        dr2["Balance"] = "DrBal." + debtot;
+
+                    }
+
+                    else
+                    {
+                        dr2["Balance"] = "0.00";
+                    }
+                    //dtDummy.Rows.Add(dr2.ItemArray);
+                    dtDummy.Rows.InsertAt(dr2, 0);
+
+                }
+                else
+                {
+                    DataRow dr2 = dtDummy.NewRow();
+                    dr2["Groupno"] = "Previous NetBalance";
+                    dr2["Amount"] = "0.00";
+                    dr2["PrizedAmount"] = "0.00";
+                    dr2["TotalCommission"] = "0.00";
+                    dr2["KasarAmount"] = "0.00";
+                    dr2["Totalexp"] = "0.00";
+                    dr2["Total"] = "0.00";
+                    dr2["Balance"] = "0.00";
+                    //dtDummy.Rows.Add(dr2.ItemArray);
+                    dtDummy.Rows.InsertAt(dr2, 0);
+                }
+                grid.DataSource = dtDummy;
+                ViewState["Exportdt1"] = dtDummy;
+                grid.DataBind();
+                // LoadGridTemp();0
+
+
+
+
+
+                //List<Daybookclass> VoucherData = dt.DataTableToList<Daybookclass>();
+                //int cc = 2;
+                //var HeadIdList = VoucherData.Select(x =>x.Head_Id).ToList();
+                //var HeadId_DistinctList = HeadIdList.Distinct().ToList();
+
+                //foreach (var r in HeadId_DistinctList)
+                //{
+                //    var existingrow = (from row in VoucherData.AsEnumerable()
+                //                       where row.Head_Id == Convert.ToInt32(r)
+                //                       select row).ToList();
+                //    //var orderByResult = (from s in existingrow
+                //    //                     orderby s.Date ascending
+                //    //                     select s).ToList();
+                //    //foreach (var r1 in existingrow)
+                //    //{
+                //    foreach (var r1 in existingrow)
+                //    {
+                //        pr.Clear();
+                //        if (existingrow.Count > 0)
+                //        {
+
+                //            if (Convert.ToString(r1.Head_Id) != "")
+                //            {
+                //               if (Convert.ToString(r1.Series) == "PAYMENT" || Convert.ToString(r1.Series) == "FCP")
+                //               // if (Convert.ToString(r1.Amount) == "0.00" )
+                //                {
+                //                    pr = balayer.GetDataTable("select (case when v1.Voucher_Type='C' and v1.Other_Trans_Type<>5 then v1.Amount else 0.00 end )as `Amount`, t1.PrizedAmount as PrizedAmount,v1.Narration,t1.Description,v1.Voucher_No, a1.TotalCommission,a1.KasarAmount,a1.PrizedMemberID,t1.PaymentDate,a1.CurrentDueAmount " +
+                //                        "from auctiondetails as a1 join  voucher as v1 on (a1.PrizedMemberID=v1.Head_Id)  join membertogroupmaster as g1 on " +
+                //                       "(v1.Head_Id=g1.Head_Id) join trans_payment as t1 on (t1.TokenNumber = g1.Head_Id) where a1.PrizedMemberID=" + r1.Head_Id + " and   v1.Series in('PAYMENT','FCP') and  v1.Voucher_Type='D'  and  a1.GroupID=" + DD_GP.SelectedValue + " and t1.PaymentDate='" + balayer.changedateformat(Convert.ToDateTime(r1.Date), 2) + "'order by Voucher_No asc");
+                //                }
+                //            }
+                //            if (r1.Date != "")
+                //            {
+                //                if (pr.Rows.Count > 0)
+                //                {
+
+
+                //                    dr["Date"] = r1.Date;
+
+                //                    objVar.memberid = r1.GrpMemberID;
+                //                    objVar.MemberName = r1.MemberName;
+
+                //                    dr["Groupno"] = pr.Rows[0]["Narration"];
+                //                    dr["Amount"] = 0;
+                //                    if (Convert.ToString(pr.Rows[0]["CurrentDueAmount"]) != "")
+                //                    {
+                //                        dr["Amount"] = Convert.ToDouble(pr.Rows[0]["CurrentDueAmount"]);
+                //                        current = Convert.ToDouble(pr.Rows[0]["CurrentDueAmount"]);
+                //                    }
+                //                    if (Convert.ToString(pr.Rows[0]["KasarAmount"]) != "")
+                //                    {
+                //                        KasarAmount = Convert.ToDouble(pr.Rows[0]["KasarAmount"]);
+                //                    }
+                //                    else
+                //                    {
+                //                        KasarAmount = 0;
+                //                    }
+                //                    if (Convert.ToString(pr.Rows[0]["Amount"]) != "0.00" )
+                //                    {
+                //                        DtAmount = Convert.ToDouble(r1.Amount);
+                //                        dr["Amount"] = Convert.ToDouble(r1.Amount);
+                //                        dr["PrizedAmount"] = "0";
+                //                    }
+                //                    else
+                //                    {
+                //                        DtAmount = 0;
+                //                        dr["PrizedAmount"] = pr.Rows[0]["PrizedAmount"];
+                //                    }
+                //                    dr["Total"] = KasarAmount + DtAmount + current;
+
+                //                    dr["Voucher_No"] = pr.Rows[0]["Voucher_No"];
+                //                    dr["TotalCommission"] = pr.Rows[0]["TotalCommission"];
+                //                    //dr["PrizedAmount"] = pr.Rows[0]["PrizedAmount"];
+                //                    dr["KasarAmount"] = pr.Rows[0]["KasarAmount"];
+
+                //                    if (Convert.ToString(pr.Rows[0]["KasarAmount"]) != "")
+                //                    {
+                //                        objCOM.KasarAmount = Convert.ToDecimal(pr.Rows[0]["KasarAmount"]);
+                //                    }
+                //                    else
+                //                    {
+                //                        objCOM.KasarAmount = 0;
+                //                    }
+
+                //                    if (Convert.ToString(pr.Rows[0]["TotalCommission"]) != "")
+                //                    {
+                //                        objCOM.TotalCommission = Convert.ToDecimal(pr.Rows[0]["TotalCommission"]);
+                //                    }
+                //                    else
+                //                    {
+                //                        objCOM.TotalCommission = 0;
+                //                    }
+                //                    dr["Totalexp"] = Convert.ToInt32(pr.Rows[0]["PrizedAmount"]) + Convert.ToInt32(objCOM.KasarAmount) + Convert.ToInt32(objCOM.TotalCommission);
+
+
+                //                    amt += Convert.ToDecimal(r1.Amount);
+
+
+                //                    dtDummy.Rows.Add(dr.ItemArray);
+                //                    //}
+                //                }
+                //                else
+                //                {
+                //                   // if (dt.Rows[i]["Series"].ToString() != "PAYMENT" || dt.Rows[i]["Series"].ToString() != "FCP")
+                //                   // {
+                //                        dr["PrizedAmount"] = "";
+                //                    //  if (dt.Rows[i]["Amount"].ToString() != "0.00")
+                //                    // {
+                //                    dr["Date"] = r1.Date;
+
+
+                //                        if (Convert.ToString(r1.Amount) != "")
+                //                        {
+                //                            DtAmount = Convert.ToDouble(r1.Amount);
+                //                        }
+                //                        else
+                //                        {
+                //                            DtAmount = 0;
+                //                        }
+                //                        dr["Amount"] = DtAmount;
+
+                //                        dr["Total"] = Convert.ToInt32(r1.Amount);
+                //                        total += Convert.ToDouble(r1.Amount);
+
+
+                //                    dr["Voucher_No"] = r1.Voucher_No;
+                //                        dr["TotalCommission"] = "";
+                //                        if (Convert.ToString(r1.Voucher_Type).Equals("C"))
+                //                        {
+                //                            if (Convert.ToString(r1.Series) == "VOUCHER")
+                //                            {
+                //                                dr["Groupno"] = Convert.ToString(r1.Narration);
+                //                            }
+                //                            else
+                //                            {
+                //                                removalname = balayer.GetSingleValue(@"select (case when(r.DateOfRemoval>'" + balayer.indiandateToMysqlDate(dateFromConsolidated.Text) + "') then concat(m1.CustomerName) else concat(mg1.MemberName) end) as `MemberName` from membertogroupmaster as mg1 left join removal_approval r on mg1.Head_Id=r.GroupMemberID join membermaster m1 on m1.MemberIDNew=r.OldMemberID join voucher as v1 on v1.Head_Id=mg1.Head_Id  left join trans_payment as tp1 on v1.Head_Id =tp1.TokenNumber join membermaster as mm on (mg1.MemberID=mm.MemberIDNew) where mg1.BranchID=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and mg1.GroupID=" + DD_GP.SelectedValue + " and v1.Head_Id=" + r1.Head_Id + " and v1.ChoosenDate between'" + balayer.indiandateToMysqlDate(dateFromConsolidated.Text) + "'  and '" + balayer.indiandateToMysqlDate(dateToConsolidated.Text) + "' group by v1.Head_Id order by v1.ChoosenDate DESC ;");
+                //                                transfername = balayer.GetSingleValue(@"select (case when(r.ApprovedDate>'" + balayer.indiandateToMysqlDate(dateFromConsolidated.Text) + "') then concat(m1.CustomerName) else concat(mg1.MemberName) end) as `MemberName` from membertogroupmaster as mg1 left join transfer_approval r on mg1.Head_Id=r.GrpMemberID join membermaster m1 on m1.MemberIDNew=r.Old_Member join voucher as v1 on v1.Head_Id=mg1.Head_Id  left join trans_payment as tp1 on v1.Head_Id =tp1.TokenNumber join membermaster as mm on (mg1.MemberID=mm.MemberIDNew) where mg1.BranchID=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and mg1.GroupID=" + DD_GP.SelectedValue + " and v1.Head_Id=" + r1.Head_Id + " and v1.ChoosenDate between'" + balayer.indiandateToMysqlDate(dateFromConsolidated.Text) + "'  and '" + balayer.indiandateToMysqlDate(dateToConsolidated.Text) + "' group by v1.Head_Id order by v1.ChoosenDate DESC");
+                //                                if (string.IsNullOrEmpty(removalname) && string.IsNullOrEmpty(transfername))
+                //                                {
+                //                                    objVar.memberid = Convert.ToString(r1.GrpMemberID);
+                //                                    objVar.MemberName = Convert.ToString(r1.MemberName);
+
+                //                                    dr["Groupno"] = objVar.MemberName + "  " + objVar.memberid;
+                //                                    dr["PrizedAmount"] = 0;
+                //                                }
+                //                                else if (removalname == "")
+                //                                {
+                //                                    objVar.memberid = Convert.ToString(r1.GrpMemberID);
+                //                                    // dr["Groupno"] = transfername + "  " + objVar.memberid; 
+                //                                    dr["Groupno"] = Convert.ToString(r1.Narration);
+                //                                }
+                //                                else
+                //                                {
+                //                                    //  dr["Groupno"] = removalname + "  " + objVar.memberid; 
+                //                                    dr["Groupno"] = Convert.ToString(r1.Narration);
+                //                                }
+                //                            }
+
+                //                        }
+                //                        else if (r1.Voucher_Type.ToString().Equals("D"))
+                //                        {
+                //                            dr["Groupno"] = Convert.ToString(r1.Narration);
+
+                //                            dr["PrizedAmount"] = r1.DebitAmount;
+                //                            dr["Totalexp"] = r1.DebitAmount;
+
+                //                            //dr["Totalexp"] = dt.Rows[i]["DebitAmount"];
+
+                //                        }
+
+                //                        dr["Totalexp"] = r1.DebitAmount;
+                //                        totalexp += Convert.ToDouble(r1.DebitAmount);
+                //                        dr["KasarAmount"] = "";
+                //                        if (Convert.ToString(r1.DebitAmount) == "")
+                //                        {
+                //                            dr["Totalexp"] = "";
+                //                        }
+
+                //                        amt += Convert.ToDecimal(r1.Amount);
+                //                        dtDummy.Rows.Add(dr.ItemArray);
+
+                //                    }
+
+                //              //  }
+                //            }
+                //            amt = 0.00M;
+                //        }
+                //    }
+                //}
+                // amt = 0.00M;
+            }
+            catch (Exception ex)
+            {
+                string rr = ex.Message;
+            }
+           
+
+
+           
+
+        }
+
+        protected void ASPxGridView1_SummaryDisplayText(object sender, ASPxGridViewSummaryDisplayTextEventArgs e)
+        {
+            //string parsed = balayer.ConvertToIndCurrency(e.Value.ToString());
+            decimal cre = Convert.ToDecimal(grid.GetTotalSummaryValue(grid.TotalSummary["Total"]));
+            decimal deb = Convert.ToDecimal(grid.GetTotalSummaryValue(grid.TotalSummary["Totalexp"]));
+
+            //ASPxSummaryItem x = (ASPxSummaryItem)e.Item;
+            //if (x.FieldName.ToString() == "Balance")
+            //{
+            //    if (cre > deb)
+            //    {
+            //        x.DisplayFormat = "Cr.Bal.";
+
+            //    }
+            //    else
+            //    {
+            //        x.DisplayFormat = "Dr.Bal.";
+            //    }
+            //}
+            if (e.Item.FieldName == "Groupno")
+            {
+                e.Text = "Total";
+            }
+            if (e.Item.FieldName == "Total")
+            {
+                e.Text = balayer.ConvertToIndCurrency(e.Value.ToString());
+            }
+            if (e.Item.FieldName == "PrizedAmount")
+            {
+                e.Text = balayer.ConvertToIndCurrency(e.Value.ToString());
+            }
+            if (e.Item.FieldName == "TotalCommission")
+            {
+                e.Text = balayer.ConvertToIndCurrency(e.Value.ToString());
+            }
+            if (e.Item.FieldName == "Totalexp")
+            {
+                e.Text = balayer.ConvertToIndCurrency(e.Value.ToString());
+            }
+            if (e.Item.FieldName == "Amount")
+            {
+                if (e.Value != null)
+                    e.Text = balayer.ConvertToIndCurrency(e.Value.ToString());
+                else
+                    e.Text = "0";
+            }
+            if (e.Item.FieldName == "KasarAmount")
+            {
+                e.Text = balayer.ConvertToIndCurrency(e.Value.ToString());
+            }
+            if (e.Item.FieldName == "KasarAmountc")
+            {
+                e.Text = balayer.ConvertToIndCurrency(e.Value.ToString());
+            }
+
+        }
+
+
+       
+
+        
+
+
+        protected void ASPxGridView1_OnCustomSummaryCalculate(object sender, CustomSummaryEventArgs e)
+        {
+            ASPxSummaryItem x = (ASPxSummaryItem)e.Item;
+            if (x.FieldName.ToString() == "Balance")
+            {
+                decimal cre = Convert.ToDecimal(grid.GetTotalSummaryValue(grid.TotalSummary["Total"]));
+                decimal deb = Convert.ToDecimal(grid.GetTotalSummaryValue(grid.TotalSummary["Totalexp"]));
+                if (cre > deb)
+                {
+
+                    x.DisplayFormat = "CrBal.";
+                    
+                    e.TotalValue = cre - deb;
+                    e.TotalValueReady = true;
+                }
+                else if(cre < deb)
+                {
+                    x.DisplayFormat = "DrBal.";
+                    e.TotalValue = deb - cre;
+                    e.TotalValueReady = true;
+                }
+               
+                else
+                {
+                    e.TotalValue = "0.00.";
+                    e.TotalValueReady = true;
+                }
+            }
+        }
+
+        protected void btnExportExcel_Click1(object sender, EventArgs e)
+        {
+            gridexcel.FileName = "DayBook"+ DateTime.Now.Millisecond.ToString();
+            grid.Dispose();
+
+           // dataGridView1.Refresh();
+            using (this.headerImage = System.Drawing.Image.FromFile(Server.MapPath("~\\Images\\visalam.png")))
+            {
+
+              
+                gridexcel.Styles.Header.VerticalAlign = VerticalAlign.Middle;
+                gridexcel.Styles.Header.Wrap = DevExpress.Utils.DefaultBoolean.True;
+                gridexcel.Styles.Footer.HorizontalAlign = HorizontalAlign.Right;
+                PrintingSystem ps = new PrintingSystem();
+                PrintableComponentLink gridPayment1 = new PrintableComponentLink(ps);
+                gridPayment1.Component = gridexcel;
+                PrintableComponentLink gridPaymentprv = new PrintableComponentLink(ps);
+                //  gridPaymentprv.Component = gridExportprv;
+                Link header = new Link();
+                CompositeLink compositeLink = new CompositeLink(ps);
+                header.CreateDetailArea += new CreateAreaEventHandler(header_CreateDetailArea);
+
+                compositeLink.Links.AddRange(new object[] { header, gridPayment1 });
+
+                //   string leftColumn = "Pages : [Page # of Pages #]";
+                //    string rightColumn = "Date: [Date Printed]\r\nTime: " + DateTime.Now;
+                PageHeaderFooter phf = compositeLink.PageHeaderFooter as PageHeaderFooter;
+                phf.Footer.Content.Clear();
+                //         phf.Footer.Content.AddRange(new string[] { rightColumn, leftColumn });
+                phf.Footer.LineAlignment = BrickAlignment.Center;
+                gridexcel.WriteXlsToResponse();
+                //using (MemoryStream stream = new MemoryStream())
+                //{
+                //    //   compositeLink.PaperKind = System.Drawing.Printing.PaperKind.Legal;
+                //   // compositeLink.Landscape = true;
+                //    compositeLink.CreateDocument(false);
+                //    compositeLink.PrintingSystem.Document.AutoFitToPagesWidth = 1;
+                //    compositeLink.PrintingSystem.ExportToPdf(stream);
+                //   // gridexcel.WriteXlsToResponse();
+                //     WriteToResponse("Daybook", true, "xls", stream);
+                //}
+            }
+                //grid.DataBind();
+                //gridexcel.WriteXlsToResponse();
+            }
+        //protected void select_Existing()
+        //{
+        //    grid.SettingsPager.Mode = GridViewPagerMode.ShowAllRecords;
+
+        //    // DataTable dtm = balayer.GetDataTable("select distinct ChoosenDate from voucher where `ChoosenDate` between '" + balayer.indiandateToMysqlDate(dateFromConsolidated.Text) + "'  and '" + balayer.indiandateToMysqlDate(dateToConsolidated.Text) + "' and ChitGroupId =" + DD_GP.SelectedValue + "");
+        //    DataTable dtDummy = new DataTable();
+        //    dtDummy.Columns.Add("Date", typeof(string));
+        //    dtDummy.Columns.Add("GROUPNO", typeof(string));
+        //    dtDummy.Columns.Add("Amount", typeof(string));
+        //    dtDummy.Columns.Add("Voucher_No", typeof(string));
+        //    dtDummy.Columns.Add("TotalCommission", typeof(string));
+        //    dtDummy.Columns.Add("PrizedAmount", typeof(string));
+        //    dtDummy.Columns.Add("KasarAmount", typeof(string));
+        //    dtDummy.Columns.Add("Balance", typeof(string));
+        //    dtDummy.Columns.Add("Total", typeof(string));
+        //    dtDummy.Columns.Add("Totalexp", typeof(string));
+        //    DataRow dr = dtDummy.NewRow();
+        //    DataTable pr = new DataTable();
+        //    double KasarAmount = 0;
+        //    double DtAmount = 0;
+        //    //if (dtm.Rows.Count > 0)
+        //    //{
+        //    //    for (int i = 0; i < dtm.Rows.Count; i++)
+        //    //    {
+        //    //if (i != 0)
+        //    //{
+
+        //    //DataTable dt = balayer.GetDataTable("select date_format(ChoosenDate,'%d-%m-%Y') as Date,g1.GrpMemberID,t1.PrizedAmount as PrizedAmount,v1.Voucher_No,a1.TotalCommission,g1.MemberName,a1.KasarAmount,g1.Head_Id,sum(case when (v1.Voucher_Type='C' ) then Amount else 0.00 end) as Credit,sum(case when (v1.Voucher_Type='D') then Amount else 0.00 end) as Debit,(case when (sum(case when (v1.Voucher_Type='C' ) then Amount else 0.00 end)>sum(case when (v1.Voucher_Type='D' ) then Amount else 0.00 end) ) then 'Cr' else (case when (sum(case when (v1.Voucher_Type='C' ) then Amount else 0.00 end)<sum(case when (v1.Voucher_Type='D' ) then Amount else 0.00 end) ) then 'Dr' else 'CrDr' end) end) as CrDr ,(case when (sum(case when (v1.Voucher_Type='C' ) then Amount else 0.00 end)>sum(case when (v1.Voucher_Type='D' ) then Amount else 0.00 end) ) then sum(case when (v1.Voucher_Type='C' ) then Amount else 0.00 end)-sum(case when (v1.Voucher_Type='D' ) then Amount else 0.00 end) else (case when (sum(case when (v1.Voucher_Type='C' ) then Amount else 0.00 end)<sum(case when (v1.Voucher_Type='D' ) then Amount else 0.00 end) ) then sum(case when (v1.Voucher_Type='D' ) then Amount else 0.00 end)-sum(case when (v1.Voucher_Type='C' ) then Amount else 0.00 end)else '0.00' end) end) as Balance from voucher as v1 join membertogroupmaster as g1 on (v1.Head_Id=g1.Head_Id) join trans_payment as t1 on (t1.TokenNumber = g1.Head_Id) join auctiondetails as a1 on (a1.PrizedMemberID=v1.Head_Id) where v1.BranchID=" + Session["Branchid"] + " and  v1.Rootid=5 and v1.ChitGroupId =" + DD_GP.SelectedValue + " and v1.ChoosenDate between '" + balayer.indiandateToMysqlDate(dateFromConsolidated.Text) + "' and  '" + balayer.indiandateToMysqlDate(dateToConsolidated.Text) + "'");
+        //    DataTable dt = balayer.GetDataTable("select  date_format(ChoosenDate,'%d-%m-%Y') as Date,v1.Amount,g1.GrpMemberID,t1.PrizedAmount as PrizedAmount,v1.Voucher_No,a1.TotalCommission,g1.MemberName,a1.KasarAmount,g1.Head_Id from voucher as v1 left join auctiondetails as a1 on (a1.PrizedMemberID=v1.Head_Id) left join membertogroupmaster as g1 on (v1.Head_Id=g1.Head_Id) left join trans_payment as t1 on (t1.TokenNumber = g1.Head_Id) where v1.ChoosenDate between '" + balayer.indiandateToMysqlDate(dateFromConsolidated.Text) + "'  and '" + balayer.indiandateToMysqlDate(dateToConsolidated.Text) + "' and v1.ChitGroupId =" + DD_GP.SelectedValue + " and v1.Rootid=5 and v1.Voucher_Type='C' and v1.Other_Trans_Type <> 5 order by ChoosenDate asc");
+
+        //    decimal amt = 0.00M;
+
+        //    #region Existing Bind
+
+
+        //    for (int i = 0; i < dt.Rows.Count; i++)
+        //    {
+        //        if (dt.Rows.Count > 0)
+        //        {
+        //            if (dt.Rows[i]["Head_Id"].ToString() != "")
+        //            {
+        //                pr = new DataTable();
+        //                pr = balayer.GetDataTable("select t1.PrizedAmount as PrizedAmount,a1.TotalCommission,a1.KasarAmount,a1.PrizedMemberID,t1.PaymentDate " +
+        //               "from auctiondetails as a1 join  voucher as v1 on (a1.PrizedMemberID=v1.Head_Id)  join membertogroupmaster as g1 on " +
+        //              "(v1.Head_Id=g1.Head_Id) join trans_payment as t1 on (t1.TokenNumber = g1.Head_Id) where a1.PrizedMemberID=" + dt.Rows[i]["Head_Id"] + " and  a1.GroupID=" + DD_GP.SelectedValue + " and t1.PaymentDate='" + balayer.changedateformat(Convert.ToDateTime(dt.Rows[i]["Date"]), 2) + "'");
+        //            }
+        //            else
+        //            {
+        //                pr = new DataTable();
+        //                pr = balayer.GetDataTable("select t1.PrizedAmount as PrizedAmount,a1.TotalCommission,a1.KasarAmount,a1.PrizedMemberID,t1.PaymentDate " +
+        //               "from auctiondetails as a1 join  voucher as v1 on (a1.PrizedMemberID=v1.Head_Id)  join membertogroupmaster as g1 on " +
+        //              "(v1.Head_Id=g1.Head_Id) join trans_payment as t1 on (t1.TokenNumber = g1.Head_Id) where t1.TokenNumber  is null  and  a1.GroupID=" + DD_GP.SelectedValue + "and t1.PaymentDate='" + balayer.changedateformat(Convert.ToDateTime(dt.Rows[i]["ChoosenDate"]), 2) + "'");
+
+        //            }
+        //            if (dt.Rows[i]["Date"].ToString() != "")
+        //            {
+        //                if (pr.Rows.Count > 0)
+        //                {
+        //                    dr["Date"] = dt.Rows[i]["Date"];
+
+        //                    string memberid = Convert.ToString(dt.Rows[i]["GrpMemberID"]);
+        //                    string MemberName = Convert.ToString(dt.Rows[i]["MemberName"]);
+
+        //                    dr["GROUPNO"] = MemberName + "  " + memberid;
+        //                    // dr["Amount"] = dt.Rows[i]["Amount"];
+        //                    if (Convert.ToString(pr.Rows[0]["KasarAmount"]) != "")
+        //                    {
+        //                        KasarAmount = Convert.ToDouble(pr.Rows[0]["KasarAmount"]);
+        //                    }
+        //                    else
+        //                    {
+        //                        KasarAmount = 0;
+        //                    }
+        //                    if (Convert.ToString(dt.Rows[i]["Amount"]) != "")
+        //                    {
+        //                        DtAmount = Convert.ToDouble(dt.Rows[i]["Amount"]);
+        //                    }
+        //                    else
+        //                    {
+        //                        DtAmount = 0;
+        //                    }
+
+
+        //                    dr["Total"] = KasarAmount + DtAmount;
+        //                    dr["Voucher_No"] = dt.Rows[i]["Voucher_No"];
+        //                    dr["TotalCommission"] = pr.Rows[0]["TotalCommission"];
+        //                    dr["PrizedAmount"] = pr.Rows[0]["PrizedAmount"];
+        //                    dr["KasarAmount"] = pr.Rows[0]["KasarAmount"];
+        //                    //dr["KasarAmount"] = dt.Rows[j]["KasarAmount"];
+        //                    if (Convert.ToString(pr.Rows[0]["KasarAmount"]) != "")
+        //                    {
+        //                        objCOM.KasarAmount = Convert.ToDecimal(pr.Rows[0]["KasarAmount"]);
+        //                    }
+        //                    else
+        //                    {
+        //                        objCOM.KasarAmount = 0;
+        //                    }
+
+        //                    if (Convert.ToString(pr.Rows[0]["TotalCommission"]) != "")
+        //                    {
+        //                        objCOM.TotalCommission = Convert.ToDecimal(pr.Rows[0]["TotalCommission"]);
+        //                    }
+        //                    else
+        //                    {
+        //                        objCOM.TotalCommission = 0;
+        //                    }
+        //                    dr["Totalexp"] = Convert.ToInt32(pr.Rows[0]["PrizedAmount"]) + objCOM.KasarAmount + Convert.ToInt32(objCOM.TotalCommission);
+
+        //                    //Int32 totexp = Convert.ToInt32(pr.Rows[0]["PrizedAmount"]) + Convert.ToInt32(pr.Rows[0]["KasarAmount"]) + Convert.ToInt32(pr.Rows[0]["TotalCommission"]);                                       
+        //                    // dr["Balance"] = (Convert.ToInt32(pr.Rows[0]["PrizedAmount"]) + Convert.ToInt32(pr.Rows[0]["KasarAmount"]) + Convert.ToInt32(pr.Rows[0]["TotalCommission"])) - (Convert.ToInt32(pr.Rows[0]["KasarAmount"]) + Convert.ToInt32(dt.Rows[i]["Amount"]));
+        //                    dr["Balance"] = (Convert.ToInt32(pr.Rows[0]["PrizedAmount"]) + Convert.ToInt32(objCOM.KasarAmount) + Convert.ToInt32(objCOM.TotalCommission)) - (objCOM.KasarAmount) + Convert.ToInt32(dt.Rows[i]["Amount"]);
+        //                    amt += Convert.ToDecimal(dt.Rows[i]["Amount"]);
+        //                }
+        //                else
+        //                {
+        //                    dr["Date"] = dt.Rows[i]["Date"];
+
+        //                    string memberid = Convert.ToString(dt.Rows[i]["GrpMemberID"]);
+        //                    string MemberName = Convert.ToString(dt.Rows[i]["MemberName"]);
+
+        //                    dr["GROUPNO"] = MemberName + "  " + memberid;
+        //                    if (Convert.ToString(dt.Rows[i]["Amount"]) != "")
+        //                    {
+        //                        DtAmount = Convert.ToDouble(dt.Rows[i]["Amount"]);
+        //                    }
+        //                    else
+        //                    {
+        //                        DtAmount = 0;
+        //                    }
+        //                    dr["Amount"] = DtAmount;
+
+        //                    dr["Total"] = Convert.ToInt32(dt.Rows[i]["Amount"]);
+        //                    dr["Voucher_No"] = dt.Rows[i]["Voucher_No"];
+        //                    dr["TotalCommission"] = "";
+        //                    dr["PrizedAmount"] = "";
+        //                    dr["KasarAmount"] = "";
+        //                    dr["Totalexp"] = "";
+        //                    //dr["KasarAmount"] = dt.Rows[j]["KasarAmount"];
+        //                    dr["Balance"] = "";
+        //                    amt += Convert.ToDecimal(dt.Rows[i]["Amount"]);
+
+        //                }
+        //                dtDummy.Rows.Add(dr.ItemArray);
+        //            }
+        //            amt = 0.00M;
+        //        }
+        //    #endregion
+
+        //        // objVar.GtDt = new DataTable();
+        //        //objVar.varQuery="select "
+        //        //objVar.GtDt
+        //        #region Foreman Payment
+
+        //        #endregion
+
+        //    }
+
+        //    grid.DataSource = dtDummy;
+        //    ViewState["Exportdt"] = dtDummy;
+        //    grid.DataBind();
+        //}
+        public void LoadGrpId(DropDownList ddl, int iType)
+        {
+            try
+            {
+                Tempdic.Clear();
+                switch (iType)
+                {
+                    case 1:
+                        qry = "select Head_Id,Groupno from groupmaster where BranchId=" + Convert.ToInt32(Session["Branchid"]) + "";
+                        Tempdic = balayer.CmnList(qry);
+                        ddl.DataValueField = "Key";
+                        ddl.DataTextField = "Value";
+                        ddl.DataSource = Tempdic;
+                        ddl.DataBind();
+                        break;
+
+                    case 2:
+                        qry = "select Head_Id,concat(GrpMemberID,' | ', MemberName) as 'CustomerName' from membertogroupmaster where BranchID=" + Convert.ToInt32(Session["Branchid"]) + " and GroupID=" + DD_GP.SelectedValue + "";
+                        Tempdic = balayer.CmnList(qry);
+                        ddl.DataValueField = "Key";
+                        ddl.DataTextField = "Value";
+                        ddl.DataSource = Tempdic;
+                        ddl.DataBind();
+                        break;
+                }
+
+            }
+            catch (Exception) { }
+        }
+        protected void BtnStatisticsGo_Click(object sender, EventArgs e)
+        {
+            select();
+           // grid.DataBind();
+        }
+
+
+        protected void Export_click(object sender, MenuItemEventArgs e)
+        {
+            using (this.headerImage = System.Drawing.Image.FromFile(Server.MapPath("~\\Images\\visalam.png")))
+            {
+                if (e.Item.Text.ToString() == "PDF")
+                {
+                    grid.DataSource = (DataTable)ViewState["Exportdt"];
+                    grid.DataBind();
+                 //   gridprev.DataSource = (DataTable)ViewState["Exportdt1"];
+                 //   gridprev.DataBind();
+                    //   gridExport.Styles.Header.HorizontalAlign = HorizontalAlign.Center;
+                    gridExport.Styles.Header.VerticalAlign = VerticalAlign.Middle;
+                    gridExport.Styles.Header.Wrap = DevExpress.Utils.DefaultBoolean.True;
+                    gridExport.Styles.Footer.HorizontalAlign = HorizontalAlign.Right;
+                    PrintingSystem ps = new PrintingSystem();
+                    PrintableComponentLink gridPayment = new PrintableComponentLink(ps);
+                    gridPayment.Component = gridExport;
+                    PrintableComponentLink gridPaymentprv = new PrintableComponentLink(ps);
+                  //  gridPaymentprv.Component = gridExportprv;
+                    Link header = new Link();
+                    CompositeLink compositeLink = new CompositeLink(ps);
+                    header.CreateDetailArea += new CreateAreaEventHandler(header_CreateDetailArea);
+
+                    compositeLink.Links.AddRange(new object[] { header, gridPayment });
+
+                    //   string leftColumn = "Pages : [Page # of Pages #]";
+                    //    string rightColumn = "Date: [Date Printed]\r\nTime: " + DateTime.Now;
+                    PageHeaderFooter phf = compositeLink.PageHeaderFooter as PageHeaderFooter;
+                    phf.Footer.Content.Clear();
+                    //         phf.Footer.Content.AddRange(new string[] { rightColumn, leftColumn });
+                    phf.Footer.LineAlignment = BrickAlignment.Center;
+
+                    using (MemoryStream stream = new MemoryStream())
+                    {
+                        compositeLink.PaperKind = System.Drawing.Printing.PaperKind.Legal;
+                        compositeLink.Landscape = true;
+                        compositeLink.CreateDocument(false);
+                        compositeLink.PrintingSystem.Document.AutoFitToPagesWidth = 1;
+                        compositeLink.PrintingSystem.ExportToPdf(stream);
+                        WriteToResponse("Daybook", true, "pdf", stream);
+                    }
+                }
+
+                else if (e.Item.Text.ToString() == "XLSX")
+                {
+                    gridExport.WriteXlsxToResponse();
+                }
+            }
+            ViewState["Exportdt"] = null;
+        }
+
+        void header_CreateDetailArea(object sender, CreateAreaEventArgs e)
+        {
+            e.Graph.BorderWidth = -50;
+            Rectangle r = new Rectangle(50, 80, 80, 50);
+            e.Graph.DrawImage(headerImage, r);
+            TextBrick tb9 = new TextBrick();
+            tb9.Text="FormR15";
+            tb9.Font = new Font("Arial", 17);
+            tb9.Rect = new RectangleF(15, 5, (e.Graph.ClientPageSize.Width / 1), 20);
+            tb9.BorderWidth = 0;
+            tb9.BackColor = Color.Transparent;
+           tb9.HorzAlignment = DevExpress.Utils.HorzAlignment.Default;
+            tb9.VertAlignment = DevExpress.Utils.VertAlignment.Top;
+            e.Graph.DrawBrick(tb9);
+            TextBrick tb = new TextBrick();
+            tb.Text = "Sree Visalam Chit Fund Limited";
+            tb.Font = new Font("Arial", 35);
+            tb.Rect = new RectangleF(1300, 50, (e.Graph.ClientPageSize.Width / 1), 40);
+            tb.BorderWidth = 0;
+            tb.BackColor = Color.Transparent;
+            tb.HorzAlignment = DevExpress.Utils.HorzAlignment.Center;
+            tb.VertAlignment = DevExpress.Utils.VertAlignment.Top;
+            e.Graph.DrawBrick(tb);
+
+            TextBrick tb1 = new TextBrick();
+           //objCOM.RegOfcename = balayer.GetSingleValue("select PSODROffice from svcf.groupmaster where Head_Id=" + DD_GP.SelectedValue + "");
+           objCOM.RegOfcename = "Tirunelveli-627 006";
+            tb1.Text = "Registered Office : " + objCOM.RegOfcename;
+            tb1.Font = new Font("Arial", 25);
+            tb1.Rect = new RectangleF(1300, 100, (e.Graph.ClientPageSize.Width / 1), 95);
+            tb1.BorderWidth = 0;
+            tb1.BackColor = Color.Transparent;
+            tb1.HorzAlignment = DevExpress.Utils.HorzAlignment.Center;
+            tb1.VertAlignment = DevExpress.Utils.VertAlignment.Top;
+            e.Graph.DrawBrick(tb1);
+
+            TextBrick tb2 = new TextBrick();
+
+            tb2.Text = "Branch : " + Session["BranchName"];
+            tb2.Font = new Font("Arial", 22);
+            tb2.Rect = new RectangleF(1300, 150, (e.Graph.ClientPageSize.Width / 1), 100);
+            tb2.BorderWidth = 0;
+            tb2.BackColor = Color.Transparent;
+            tb2.HorzAlignment = DevExpress.Utils.HorzAlignment.Center;
+            tb2.VertAlignment = DevExpress.Utils.VertAlignment.Top;
+            e.Graph.DrawBrick(tb2);
+
+            TextBrick tb3 = new TextBrick();
+            tb3.Text = "Day Book Maintained Under Secion 23 of the Chit Funds Act 1982 Rule 25  of the Tamilnadu Chit Funds Rule 1984  ";
+            tb3.Font = new Font("Arial", 22);
+            tb3.Rect = new RectangleF(1300, 200, (e.Graph.ClientPageSize.Width / 1), 150);
+            tb3.BorderWidth = 0;
+            tb3.BackColor = Color.Transparent;
+            tb3.HorzAlignment = DevExpress.Utils.HorzAlignment.Center;
+            tb3.VertAlignment = DevExpress.Utils.VertAlignment.Top;
+            e.Graph.DrawBrick(tb3);
+
+            TextBrick tb4 = new TextBrick();
+            //string txtToDate.Text = DateTime.Now.ToString("" + DateTime.DaysInMonth(DateTime.Now.Year, DateTime.Now.Month) + "/MM/yyyy");
+            DateTime dtTo = Convert.ToDateTime(dateToConsolidated.Text).AddMonths(1);
+            string chitaggrementno = balayer.GetSingleValue("select concat(cast(ChitAgreementNo as char),'/',cast(ChitAgreementYear as char)) as ChitAgreementNo from groupmaster where  Head_Id=" + DD_GP.SelectedValue + "");
+            //"date_format(a1.AuctionDate,'%m/%Y') between '" + dtTo.ToString("yyyy-MM-01") + "' and '" + dtTo.ToString("yyyy-MM-dd") + "' AND  g1.Head_Id=" + DD_GP.SelectedValue + "");
+            tb4.Text = "Registration Number of the Chit Agreement " + chitaggrementno;
+            tb4.Font = new Font("Arial", 22);
+            tb4.Rect = new RectangleF(1300, 300, (e.Graph.ClientPageSize.Width / 1), 170);
+            tb4.BorderWidth = 0;
+            tb4.BackColor = Color.Transparent;
+            tb4.HorzAlignment = DevExpress.Utils.HorzAlignment.Center;
+            tb4.VertAlignment = DevExpress.Utils.VertAlignment.Top;
+            e.Graph.DrawBrick(tb4);
+
+            TextBrick tb5 = new TextBrick();
+            string jj = balayer.GetSingleValue("select PSODROffice from svcf.groupmaster where Head_Id=" + DD_GP.SelectedValue + "");
+            //   tb5.Text = "Office where the Chit Agreement of the Chit is Registered: " + Session["BranchName"];
+            tb5.Text = "Office where the Chit Agreement of the Chit is Registered: "+ jj;
+            tb5.Font = new Font("Arial", 22);
+            tb5.Rect = new RectangleF(1300, 350, (e.Graph.ClientPageSize.Width / 1), 190);
+            tb5.BorderWidth = 0;
+            tb5.BackColor = Color.Transparent;
+            tb5.HorzAlignment = DevExpress.Utils.HorzAlignment.Center;
+            tb5.VertAlignment = DevExpress.Utils.VertAlignment.Top;
+            e.Graph.DrawBrick(tb5);
+
+
+
+            TextBrick TB6 = new TextBrick();
+            string grpno = balayer.GetSingleValue("select Groupno from groupmaster where Head_Id=" + DD_GP.SelectedValue + " ");
+            TB6.Text = grpno+"   " +"Chit Day Book"+"  "+ dateFromConsolidated.Text +"to"+ dateToConsolidated.Text;
+            TB6.Font = new Font("Arial", 22);
+            TB6.Rect = new RectangleF(1385, 400, (e.Graph.ClientPageSize.Width / 1), 100);
+            TB6.BorderWidth = 0;
+            TB6.BackColor = Color.Transparent;
+            TB6.HorzAlignment = DevExpress.Utils.HorzAlignment.Center;
+            TB6.VertAlignment = DevExpress.Utils.VertAlignment.Top;
+            e.Graph.DrawBrick(TB6);
+
+
+            //RectangleF r1;
+            //r1 = new RectangleF(e.Graph.ClientPageSize.Width / 2, 10, e.Graph.ClientPageSize.Width / 2, 20);
+            //e.Graph.DrawString("Sree Visalam Chit Fund Limited", r1);
+            //r1 = new RectangleF(e.Graph.ClientPageSize.Width / 2, 25, e.Graph.ClientPageSize.Width / 2, 20);
+            //e.Graph.DrawString("Branch : " + Session["BranchName"], r1);
+        }
+        void WriteToResponse(string fileName, bool saveAsFile, string fileFormat, MemoryStream stream)
+        {
+            if (Page == null || Page.Response == null)
+                return;
+            string disposition = saveAsFile ? "attachment" : "inline";
+            Page.Response.Clear();
+            Page.Response.Buffer = false;
+            Page.Response.AppendHeader("Content-Type", string.Format("application/{0}", fileFormat));
+            Page.Response.AppendHeader("Content-Transfer-Encoding", "binary");
+            Page.Response.AppendHeader("Content-Disposition",
+                string.Format("{0}; filename={1}.{2}", disposition, fileName, fileFormat));
+            Page.Response.BinaryWrite(stream.GetBuffer());
+            Page.Response.End();
+        }
+
+        protected void RadLedger_CheckedChanged(object sender, EventArgs e)
+        {
+            if (RadLedger.Checked == true)
+            {
+                divDayBook.Visible = false;
+                divLedger.Visible = true;
+                RadDayBook.Checked = false;
+            }
+            else
+            {
+            }
+        }
+
+        protected void RadDayBook_CheckedChanged(object sender, EventArgs e)
+        {
+            if (RadDayBook.Checked == true)
+            {
+                divDayBook.Visible = true;
+                divLedger.Visible = false;
+                RadLedger.Checked = false;
+            }
+        }
+
+        protected void DD_GP_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            // select();
+        }
+
+        public override void VerifyRenderingInServerForm(Control control)
+        {
+            //
+        }
+    }
+}

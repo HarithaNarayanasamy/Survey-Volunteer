@@ -1,0 +1,228 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2008/09/mapping/cs">
+  <EntityContainerMapping StorageEntityContainer="svcfModelStoreContainer" CdmEntityContainer="svcfEntities">
+    <EntitySetMapping Name="auctiondetails">
+      <EntityTypeMapping TypeName="svcfModel.auctiondetail">
+        <MappingFragment StoreEntitySet="auctiondetails">
+          <ScalarProperty Name="inccolumn" ColumnName="inccolumn" />
+          <ScalarProperty Name="BranchID" ColumnName="BranchID" />
+          <ScalarProperty Name="GroupID" ColumnName="GroupID" />
+          <ScalarProperty Name="AuctionDate" ColumnName="AuctionDate" />
+          <ScalarProperty Name="ReBidNO" ColumnName="ReBidNO" />
+          <ScalarProperty Name="DrawNO" ColumnName="DrawNO" />
+          <ScalarProperty Name="PrizedMemberID" ColumnName="PrizedMemberID" />
+          <ScalarProperty Name="MemberID" ColumnName="MemberID" />
+          <ScalarProperty Name="IsPrized" ColumnName="IsPrized" />
+          <ScalarProperty Name="IsReAuction" ColumnName="IsReAuction" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
+          <ScalarProperty Name="ISActive" ColumnName="ISActive" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="groupmasters">
+      <EntityTypeMapping TypeName="svcfModel.groupmaster">
+        <MappingFragment StoreEntitySet="groupmaster">
+          <ScalarProperty Name="aid" ColumnName="aid" />
+          <ScalarProperty Name="Head_Id" ColumnName="Head_Id" />
+          <ScalarProperty Name="BranchID" ColumnName="BranchID" />
+          <ScalarProperty Name="GROUPNO" ColumnName="GROUPNO" />
+          <ScalarProperty Name="PSOOrderNo" ColumnName="PSOOrderNo" />
+          <ScalarProperty Name="PSOOrderDate" ColumnName="PSOOrderDate" />
+          <ScalarProperty Name="PSODROffice" ColumnName="PSODROffice" />
+          <ScalarProperty Name="ChitAgreementNo" ColumnName="ChitAgreementNo" />
+          <ScalarProperty Name="ChitAgreementYear" ColumnName="ChitAgreementYear" />
+          <ScalarProperty Name="AgreementDate" ColumnName="AgreementDate" />
+          <ScalarProperty Name="ChitPeriod" ColumnName="ChitPeriod" />
+          <ScalarProperty Name="ChitCategory" ColumnName="ChitCategory" />
+          <ScalarProperty Name="ChitStartDate" ColumnName="ChitStartDate" />
+          <ScalarProperty Name="ChitEndDate" ColumnName="ChitEndDate" />
+          <ScalarProperty Name="NoofMembers" ColumnName="NoofMembers" />
+          <ScalarProperty Name="AuctionDate" ColumnName="AuctionDate" />
+          <ScalarProperty Name="AuctionTime" ColumnName="AuctionTime" />
+          <ScalarProperty Name="AuctionEndTime" ColumnName="AuctionEndTime" />
+          <ScalarProperty Name="DueDate" ColumnName="DueDate" />
+          <ScalarProperty Name="PriorIntimationDate" ColumnName="PriorIntimationDate" />
+          <ScalarProperty Name="SDP_FDRNO" ColumnName="SDP_FDRNO" />
+          <ScalarProperty Name="SDP_Bank" ColumnName="SDP_Bank" />
+          <ScalarProperty Name="SDP_BankPlace" ColumnName="SDP_BankPlace" />
+          <ScalarProperty Name="SDP_Commencement" ColumnName="SDP_Commencement" />
+          <ScalarProperty Name="SDP_Maturity" ColumnName="SDP_Maturity" />
+          <ScalarProperty Name="SDP_PeriodinMonths" ColumnName="SDP_PeriodinMonths" />
+          <ScalarProperty Name="IsFinished" ColumnName="IsFinished" />
+          <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
+          <ScalarProperty Name="ISActive" ColumnName="ISActive" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="headstrees">
+      <EntityTypeMapping TypeName="svcfModel.headstree">
+        <MappingFragment StoreEntitySet="headstree">
+          <ScalarProperty Name="NodeID" ColumnName="NodeID" />
+          <ScalarProperty Name="ParentID" ColumnName="ParentID" />
+          <ScalarProperty Name="Node" ColumnName="Node" />
+          <ScalarProperty Name="TreeHint" ColumnName="TreeHint" />
+          <ScalarProperty Name="Branchid" ColumnName="Branchid" />
+          <ScalarProperty Name="App_Branchid" ColumnName="App_Branchid" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
+          <ScalarProperty Name="ISActive" ColumnName="ISActive" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="membermasters">
+      <EntityTypeMapping TypeName="svcfModel.membermaster">
+        <MappingFragment StoreEntitySet="membermaster">
+          <ScalarProperty Name="MemberIDNew" ColumnName="MemberIDNew" />
+          <ScalarProperty Name="BranchId" ColumnName="BranchId" />
+          <ScalarProperty Name="CustomerName" ColumnName="CustomerName" />
+          <ScalarProperty Name="TypeOfMember" ColumnName="TypeOfMember" />
+          <ScalarProperty Name="Gender" ColumnName="Gender" />
+          <ScalarProperty Name="Age" ColumnName="Age" />
+          <ScalarProperty Name="DOB" ColumnName="DOB" />
+          <ScalarProperty Name="FatherHusbandName" ColumnName="FatherHusbandName" />
+          <ScalarProperty Name="MotherWifeName" ColumnName="MotherWifeName" />
+          <ScalarProperty Name="ProprietorName" ColumnName="ProprietorName" />
+          <ScalarProperty Name="PartnersName" ColumnName="PartnersName" />
+          <ScalarProperty Name="DateOfPartnershipWithAmendment" ColumnName="DateOfPartnershipWithAmendment" />
+          <ScalarProperty Name="compxerox" ColumnName="compxerox" />
+          <ScalarProperty Name="dateofResol" ColumnName="dateofResol" />
+          <ScalarProperty Name="ProfessionBusiness" ColumnName="ProfessionBusiness" />
+          <ScalarProperty Name="NatureofProfessionBusiness" ColumnName="NatureofProfessionBusiness" />
+          <ScalarProperty Name="ResidentialAddress" ColumnName="ResidentialAddress" />
+          <ScalarProperty Name="AddressForCommunication" ColumnName="AddressForCommunication" />
+          <ScalarProperty Name="ProofofResidence" ColumnName="ProofofResidence" />
+          <ScalarProperty Name="AddressProfessionBusiness" ColumnName="AddressProfessionBusiness" />
+          <ScalarProperty Name="TelephoneNoProfessionBusiness" ColumnName="TelephoneNoProfessionBusiness" />
+          <ScalarProperty Name="TelephoneNoResidence" ColumnName="TelephoneNoResidence" />
+          <ScalarProperty Name="MobileNo" ColumnName="MobileNo" />
+          <ScalarProperty Name="SalesTaxRegistrationNoTNGST" ColumnName="SalesTaxRegistrationNoTNGST" />
+          <ScalarProperty Name="CSTRegistrationNumber" ColumnName="CSTRegistrationNumber" />
+          <ScalarProperty Name="IncomeTaxPANoWardandCircle" ColumnName="IncomeTaxPANoWardandCircle" />
+          <ScalarProperty Name="BankName" ColumnName="BankName" />
+          <ScalarProperty Name="BranchName" ColumnName="BranchName" />
+          <ScalarProperty Name="SavingsCurrentAccountNo" ColumnName="SavingsCurrentAccountNo" />
+          <ScalarProperty Name="ProspectID" ColumnName="ProspectID" />
+          <ScalarProperty Name="MemberID" ColumnName="MemberID" />
+          <ScalarProperty Name="Title" ColumnName="Title" />
+          <ScalarProperty Name="ApprovedStatus" ColumnName="ApprovedStatus" />
+          <ScalarProperty Name="ReffererDetails" ColumnName="ReffererDetails" />
+          <ScalarProperty Name="ApprovedorRejectedDate" ColumnName="ApprovedorRejectedDate" />
+          <ScalarProperty Name="ProspectDate" ColumnName="ProspectDate" />
+          <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
+          <ScalarProperty Name="ISActive" ColumnName="ISActive" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="membertogroupmasters">
+      <EntityTypeMapping TypeName="svcfModel.membertogroupmaster">
+        <MappingFragment StoreEntitySet="membertogroupmaster">
+          <ScalarProperty Name="BranchID" ColumnName="BranchID" />
+          <ScalarProperty Name="MemberName" ColumnName="MemberName" />
+          <ScalarProperty Name="MemberID" ColumnName="MemberID" />
+          <ScalarProperty Name="MemberAddress" ColumnName="MemberAddress" />
+          <ScalarProperty Name="Head_Id" ColumnName="Head_Id" />
+          <ScalarProperty Name="GroupID" ColumnName="GroupID" />
+          <ScalarProperty Name="GrpMemberID" ColumnName="GrpMemberID" />
+          <ScalarProperty Name="NomineeName" ColumnName="NomineeName" />
+          <ScalarProperty Name="NomineeAddress" ColumnName="NomineeAddress" />
+          <ScalarProperty Name="card" ColumnName="card" />
+          <ScalarProperty Name="Isremoved" ColumnName="Isremoved" />
+          <ScalarProperty Name="B_Id" ColumnName="B_Id" />
+          <ScalarProperty Name="M_Id" ColumnName="M_Id" />
+          <ScalarProperty Name="EstCallNoOfAuction" ColumnName="EstCallNoOfAuction" />
+          <ScalarProperty Name="EstSuretyDocument" ColumnName="EstSuretyDocument" />
+          <ScalarProperty Name="PoolNo" ColumnName="PoolNo" />
+          <ScalarProperty Name="Flag" ColumnName="Flag" />
+          <ScalarProperty Name="headofficesuggession" ColumnName="headofficesuggession" />
+          <ScalarProperty Name="aid" ColumnName="aid" />
+          <ScalarProperty Name="SuggestDate" ColumnName="SuggestDate" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
+          <ScalarProperty Name="ISActive" ColumnName="ISActive" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="trans_payment">
+      <EntityTypeMapping TypeName="svcfModel.trans_payment">
+        <MappingFragment StoreEntitySet="trans_payment">
+          <ScalarProperty Name="TransactionKey_Bank" ColumnName="TransactionKey_Bank" />
+          <ScalarProperty Name="TransactionKey" ColumnName="TransactionKey" />
+          <ScalarProperty Name="DualTransactionKey" ColumnName="DualTransactionKey" />
+          <ScalarProperty Name="BranchID" ColumnName="BranchID" />
+          <ScalarProperty Name="ChitGroupID" ColumnName="ChitGroupID" />
+          <ScalarProperty Name="TokenNumber" ColumnName="TokenNumber" />
+          <ScalarProperty Name="DrawNo" ColumnName="DrawNo" />
+          <ScalarProperty Name="NextDrawNo" ColumnName="NextDrawNo" />
+          <ScalarProperty Name="PaymentApplyedOn" ColumnName="PaymentApplyedOn" />
+          <ScalarProperty Name="ApprovedOn" ColumnName="ApprovedOn" />
+          <ScalarProperty Name="PaymentDate" ColumnName="PaymentDate" />
+          <ScalarProperty Name="GuarantorID" ColumnName="GuarantorID" />
+          <ScalarProperty Name="Description" ColumnName="Description" />
+          <ScalarProperty Name="AuctionDate" ColumnName="AuctionDate" />
+          <ScalarProperty Name="AOSanctionNo" ColumnName="AOSanctionNo" />
+          <ScalarProperty Name="GuarantorName" ColumnName="GuarantorName" />
+          <ScalarProperty Name="autoid" ColumnName="autoid" />
+          <ScalarProperty Name="Flags" ColumnName="Flags" />
+          <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
+          <ScalarProperty Name="ISActive" ColumnName="ISActive" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="vouchers">
+      <EntityTypeMapping TypeName="svcfModel.voucher">
+        <MappingFragment StoreEntitySet="voucher">
+          <ScalarProperty Name="TransactionKey" ColumnName="TransactionKey" />
+          <ScalarProperty Name="DualTransactionKey" ColumnName="DualTransactionKey" />
+          <ScalarProperty Name="BranchID" ColumnName="BranchID" />
+          <ScalarProperty Name="CurrDate" ColumnName="CurrDate" />
+          <ScalarProperty Name="Voucher_No" ColumnName="Voucher_No" />
+          <ScalarProperty Name="Voucher_Type" ColumnName="Voucher_Type" />
+          <ScalarProperty Name="Head_Id" ColumnName="Head_Id" />
+          <ScalarProperty Name="ChoosenDate" ColumnName="ChoosenDate" />
+          <ScalarProperty Name="Narration" ColumnName="Narration" />
+          <ScalarProperty Name="Series" ColumnName="Series" />
+          <ScalarProperty Name="ReceievedBy" ColumnName="ReceievedBy" />
+          <ScalarProperty Name="Trans_Type" ColumnName="Trans_Type" />
+          <ScalarProperty Name="T_Day" ColumnName="T_Day" />
+          <ScalarProperty Name="T_Month" ColumnName="T_Month" />
+          <ScalarProperty Name="T_Year" ColumnName="T_Year" />
+          <ScalarProperty Name="MemberID" ColumnName="MemberID" />
+          <ScalarProperty Name="Trans_Medium" ColumnName="Trans_Medium" />
+          <ScalarProperty Name="RootID" ColumnName="RootID" />
+          <ScalarProperty Name="ChitGroupId" ColumnName="ChitGroupId" />
+          <ScalarProperty Name="Other_Trans_Type" ColumnName="Other_Trans_Type" />
+          <ScalarProperty Name="IsDeleted" ColumnName="IsDeleted" />
+          <ScalarProperty Name="IsAccepted" ColumnName="IsAccepted" />
+          <ScalarProperty Name="ApprovedDate" ColumnName="ApprovedDate" />
+          <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+          <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
+          <ScalarProperty Name="ISActive" ColumnName="ISActive" />
+          <ScalarProperty Name="AppReceiptno" ColumnName="AppReceiptno" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="branchdetails">
+      <EntityTypeMapping TypeName="svcfModel.branchdetail">
+        <MappingFragment StoreEntitySet="branchdetails">
+          <ScalarProperty Name="Place" ColumnName="Place" />
+          <ScalarProperty Name="aid" ColumnName="aid" />
+          <ScalarProperty Name="Head_Id" ColumnName="Head_Id" />
+          <ScalarProperty Name="B_DOC" ColumnName="B_DOC" />
+          <ScalarProperty Name="B_EMail" ColumnName="B_EMail" />
+          <ScalarProperty Name="B_PhoneNo" ColumnName="B_PhoneNo" />
+          <ScalarProperty Name="B_Address" ColumnName="B_Address" />
+          <ScalarProperty Name="B_Head" ColumnName="B_Head" />
+          <ScalarProperty Name="B_Name" ColumnName="B_Name" />
+          <ScalarProperty Name="B_Code" ColumnName="B_Code" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+  </EntityContainerMapping>
+</Mapping>

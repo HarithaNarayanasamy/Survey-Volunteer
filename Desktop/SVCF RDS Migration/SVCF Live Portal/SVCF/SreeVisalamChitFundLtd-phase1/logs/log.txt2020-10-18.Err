@@ -1,0 +1,17 @@
+INFO  2020-10-18 19:56:17,606 190763ms Home                   Page_Load          - Logged into Site at: 18-10-2020 7:56:17 PM
+INFO  2020-10-18 21:31:53,388 46682ms Home                   Page_Load          - Logged into Site at: 18-10-2020 9:31:53 PM
+INFO  2020-10-18 21:34:00,411 173704ms Home                   Page_Load          - Logged into Site at: 18-10-2020 9:34:00 PM
+INFO  2020-10-18 21:36:04,348 297642ms Home                   Page_Load          - Logged into Site at: 18-10-2020 9:36:04 PM
+INFO  2020-10-18 21:38:08,505 421799ms Home                   Page_Load          - Logged into Site at: 18-10-2020 9:38:08 PM
+INFO  2020-10-18 21:40:13,660 546954ms Terminate              Page_Load          - Trial and Arrear - at: 18/10/2020 21:40:13 by: admin@svcf.com
+INFO  2020-10-18 21:40:34,211 567505ms Terminate              Page_Load          - Trial and Arrear - at: 18/10/2020 21:40:34 by: admin@svcf.com
+INFO  2020-10-18 22:19:07,537 2880831ms Terminate              Page_Load          - Trial and Arrear - at: 18/10/2020 22:19:07 by: admin@svcf.com
+INFO  2020-10-18 22:51:30,695 4823988ms Terminate              Page_Load          - Trial and Arrear - at: 18/10/2020 22:51:30 by: admin@svcf.com
+INFO  2020-10-18 22:52:52,007 4905301ms Terminate              Page_Load          - Trial and Arrear - at: 18/10/2020 22:52:52 by: admin@svcf.com
+INFO  2020-10-18 23:00:10,431 5343725ms Terminate              Page_Load          - Trial and Arrear - at: 18/10/2020 23:00:10 by: admin@svcf.com
+INFO  2020-10-18 23:31:00,268 7193562ms Terminate              Page_Load          - Trial and Arrear - at: 18/10/2020 23:31:00 by: admin@svcf.com
+INFO  2020-10-18 23:34:16,607 7389901ms Terminate              Page_Load          - Trial and Arrear - at: 18/10/2020 23:34:16 by: admin@svcf.com
+INFO  2020-10-18 23:35:03,217 7436511ms Terminate              Page_Load          - Trial and Arrear - at: 18/10/2020 23:35:03 by: admin@svcf.com
+INFO  2020-10-18 23:36:04,778 7498072ms Terminate              Page_Load          - Trial and Arrear - at: 18/10/2020 23:36:04 by: admin@svcf.com
+INFO  2020-10-18 23:40:46,350 7779643ms Terminate              Page_Load          - Trial and Arrear - at: 18/10/2020 23:40:46 by: admin@svcf.com
+INFO  2020-10-18 23:41:32,062 7825356ms Terminate              Page_Load          - Trial and Arrear - at: 18/10/2020 23:41:32 by: admin@svcf.com

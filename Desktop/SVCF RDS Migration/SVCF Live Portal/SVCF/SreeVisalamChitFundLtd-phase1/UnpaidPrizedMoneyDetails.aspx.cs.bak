@@ -1,0 +1,153 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+using System.Data;
+using DevExpress.Web.ASPxGridView;
+using System.IO;
+using System.Drawing;
+using DevExpress.XtraPrinting;
+using DevExpress.XtraPrintingLinks;
+using DevExpress.Web.ASPxMenu;
+using SVCF_BusinessAccessLayer;
+using SVCF_DataAccessLayer;
+using SVCF_TransactionLayer;
+using log4net;
+using log4net.Config;
+
+namespace SreeVisalamChitFundLtd_phase1
+{
+    public partial class UnpaidPrizedMoneyDetails : System.Web.UI.Page
+    {
+        #region Object
+        BusinessLayer balayer = new BusinessLayer();
+        TransactionLayer trn = new TransactionLayer();
+        #endregion
+        ILog logger = log4net.LogManager.GetLogger(typeof(UnpaidPrizedMoneyDetails));
+
+        private System.Drawing.Image headerImage;
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            if (!IsPostBack)
+            {
+                ddlBranch.DataSource = null;
+                DataTable dt = balayer.GetDataTable("select Head_Id,`branchdetails`.`B_Name` from `svcf`.`branchdetails`");
+                ddlBranch.DataSource = dt;
+                ddlBranch.DataTextField = "B_Name";
+                ddlBranch.DataValueField = "Head_Id";
+                ddlBranch.DataBind();
+                ListItem li = new ListItem("--select--","--select--");
+                ddlBranch.Items.Insert(0,li);
+                ddlBranch.SelectedValue = balayer.ToobjectstrEvenNull( Session["Branchid"]);
+                select();
+                balayer.GetInsertItem("CREATE OR REPLACE VIEW `unpaidprizedmoney` AS select `voucher`.`Head_Id` AS `Head_Id`, `membertogroupmaster`.`GrpMemberID` AS `GrpMemberID`, (case when (`voucher`.`Voucher_Type` = 'C') then sum(`voucher`.`Amount`) else 0.00 end) AS `Credit`, (case when (`voucher`.`Voucher_Type` = 'D') then sum(`voucher`.`Amount`) else 0.00 end) AS `Debit`, ((case when (`voucher`.`Voucher_Type` = 'C') then sum(`voucher`.`Amount`) else 0.00 end) - (case when (`voucher`.`Voucher_Type` = 'D') then sum(`voucher`.`Amount`) else 0.00 end)) AS `AmountActuallyremittedbytheParty` from (`voucher` join `membertogroupmaster` ON ((`voucher`.`Head_Id` = `membertogroupmaster`.`Head_Id`))) group by `voucher`.`Head_Id`");
+                foreach (GridViewColumn column in gridBranch.Columns)
+                {
+                    if (column is GridViewDataColumn)
+                    {
+                        ((GridViewDataColumn)column).Settings.AutoFilterCondition = AutoFilterCondition.Contains;
+                    }
+                }
+            }
+            //select();
+            logger.Info("Unpaid Prized Money at : " + DateTime.Now + " by: " + Convert.ToString(Session["UserName"]) + "");
+        }
+        void select()
+        {
+            if (ddlBranch.SelectedIndex != 0)
+            {
+
+                DataSourceEmployee.ConnectionString = CommonClassFile.ConnectionString;
+                DataSourceEmployee.SelectCommand = @"SELECT `auctiondetails`.`PrizedMemberID`,`membertogroupmaster`.`GrpMemberID` AS `ChitNumber`,`auctiondetails`.`DrawNO` AS `DRAWAL_Instmnt.`,DATE_FORMAT(`auctiondetails`.`AuctionDate`,'%d/%m/%Y') AS `DRAWAL_Date`,`membertogroupmaster`.`MemberName`,`auctiondetails`.`PrizedAmount` AS `OUTSTANDING_PrizedAmount`,`auctiondetails`.`KasarAmount` AS `OUTSTANDING_Kasar`,(`auctiondetails`.`PrizedAmount`+`auctiondetails`.`KasarAmount`) as `OUTSTANDING_Total`,`commissiondetails`.`Commission` AS `UNPAID_Commision`,`commissiondetails`.`ChitValue` AS `UNPAID_PrizeMoney`,`UnPaidPrizedMoney`.`AmountActuallyremittedbytheParty`,(`commissiondetails`.`ChitValue`-`UnPaidPrizedMoney`.`AmountActuallyremittedbytheParty`) AS Arrears FROM svcf.auctiondetails JOIN membertogroupmaster ON (`auctiondetails`.`PrizedMemberID`=`membertogroupmaster`.`Head_Id`) LEFT JOIN `svcf`.`groupmaster` ON (`auctiondetails`.`GroupID`=`groupmaster`.`Head_Id`) JOIN `svcf`.`commissiondetails` ON (`groupmaster`.`ChitValue`=`commissiondetails`.`ChitValue`) join `svcf`.`UnPaidPrizedMoney` on (`auctiondetails`.`PrizedMemberID`=`UnPaidPrizedMoney`.`Head_Id`) WHERE `auctiondetails`.`IsPrized`='N' and `auctiondetails`.`BranchID`=" + ddlBranch.SelectedItem.Value;
+            }
+            else
+            {
+                DataSourceEmployee.ConnectionString = CommonClassFile.ConnectionString;
+                DataSourceEmployee.SelectCommand = @"";
+            }
+            gridBranch.DataBind();
+        }
+        protected void BranchName_OnClick(object sender, EventArgs e)
+        {
+            select();
+        }
+        protected void Export_click(object sender, MenuItemEventArgs e)
+        {
+            if (e.Item.Text.ToString() == "PDF")
+            {
+                using (this.headerImage = System.Drawing.Image.FromFile(Server.MapPath("~\\Images\\visalam.png")))
+                {
+                    PrintingSystem ps = new PrintingSystem();
+                    PrintableComponentLink gridcheque = new PrintableComponentLink(ps);
+                    gridcheque.Component = gridExport;
+                    gridcheque.PaperKind = System.Drawing.Printing.PaperKind.A4;
+                    gridcheque.Landscape = true;
+                    Link header = new Link();
+                    CompositeLink compositeLink = new CompositeLink(ps);
+                    header.CreateDetailArea += new CreateAreaEventHandler(header_CreateDetailArea);
+                    compositeLink.Links.AddRange(new object[] { header, gridcheque });
+                    string leftColumn = "Pages : [Page # of Pages #]";
+                    string rightColumn = "Date: [Date Printed]\r\nTime: " + DateTime.Now.ToString("hh:mm tt");
+                    PageHeaderFooter phf = compositeLink.PageHeaderFooter as PageHeaderFooter;
+                    phf.Footer.Content.Clear();
+                    phf.Footer.Content.AddRange(new string[] { rightColumn, leftColumn });
+                    phf.Footer.LineAlignment = BrickAlignment.Center;
+
+                    using (MemoryStream stream = new MemoryStream())
+                    {
+                        compositeLink.PaperKind = System.Drawing.Printing.PaperKind.A4;
+                        compositeLink.Landscape = true;
+                        compositeLink.CreateDocument(false);
+                        compositeLink.PrintingSystem.Document.AutoFitToPagesWidth = 1;
+                        compositeLink.PrintingSystem.ExportToPdf(stream);
+                        WriteToResponse("ParticularsofOutstandingUnpaidPrizeMoneyDetails", true, "pdf", stream);
+                    }
+                }
+            }
+            else if (e.Item.Text.ToString() == "XLSX")
+            {
+                gridExport.WriteXlsxToResponse();
+            }
+        }
+        void header_CreateDetailArea(object sender, CreateAreaEventArgs e)
+        {
+            e.Graph.BorderWidth = 0;
+            Rectangle r = new Rectangle(0, 0, 50, 50);
+            e.Graph.DrawImage(headerImage, r);
+            TextBrick tb = new TextBrick();
+            tb.Text = "SREE VISALAM CHIT FUND LTD.,";
+            tb.Font = new Font("Arial", 11, FontStyle.Bold);
+            tb.Rect = new RectangleF(55, 15, 280, 19);
+            tb.BorderWidth = 0;
+            tb.BackColor = Color.Transparent;
+            tb.HorzAlignment = DevExpress.Utils.HorzAlignment.Center;
+            tb.VertAlignment = DevExpress.Utils.VertAlignment.Top;
+            e.Graph.DrawBrick(tb);
+            TextBrick tb1 = new TextBrick();
+            tb1.Text = "BRANCH : " + Session["BranchName"];
+            tb1.Font = new Font("Arial", 10, FontStyle.Bold);
+            tb1.Rect = new RectangleF(55, 34, 280, 25);
+            tb1.BorderWidth = 0;
+            tb1.BackColor = Color.Transparent;
+            tb1.HorzAlignment = DevExpress.Utils.HorzAlignment.Center;
+            tb1.VertAlignment = DevExpress.Utils.VertAlignment.Top;
+            e.Graph.DrawBrick(tb1);
+        }
+        void WriteToResponse(string fileName, bool saveAsFile, string fileFormat, MemoryStream stream)
+        {
+            if (Page == null || Page.Response == null)
+                return;
+            string disposition = saveAsFile ? "attachment" : "inline";
+            Page.Response.Clear();
+            Page.Response.Buffer = false;
+            Page.Response.AppendHeader("Content-Type", string.Format("application/{0}", fileFormat));
+            Page.Response.AppendHeader("Content-Transfer-Encoding", "binary");
+            Page.Response.AppendHeader("Content-Disposition",
+                string.Format("{0}; filename={1}.{2}", disposition, fileName, fileFormat));
+            Page.Response.BinaryWrite(stream.GetBuffer());
+            Page.Response.End();
+        }
+    }
+}

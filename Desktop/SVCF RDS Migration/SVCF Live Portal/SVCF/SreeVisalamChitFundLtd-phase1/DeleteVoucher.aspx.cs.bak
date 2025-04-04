@@ -1,0 +1,330 @@
+﻿using System;
+using System.Collections;
+using System.Configuration;
+using System.Data;
+using System.Linq;
+using System.Web;
+using System.Web.Security;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+using System.Web.UI.WebControls.WebParts;
+using System.Web.UI.HtmlControls;
+using System.Xml.Linq;
+using DevExpress.Web.ASPxGridView;
+using System.Collections.Generic;
+using System.Drawing;
+using SVCF_BusinessAccessLayer;
+using SVCF_TransactionLayer;
+using SVCF_DataAccessLayer;
+using log4net;
+using log4net.Config;
+
+namespace SreeVisalamChitFundLtd_phase1
+{
+    public partial class DeleteVoucher : System.Web.UI.Page
+    {
+        #region VarDeclaration
+        BusinessLayer balayer = new BusinessLayer();
+        TransactionLayer tranlayer = new TransactionLayer();
+        string userinfo = "";
+        string qry = "";
+        string usrRole = "";
+        #endregion
+
+        ILog logger = log4net.LogManager.GetLogger(typeof(DeleteVoucher));
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            if (!IsPostBack)
+            {
+                if (Request.QueryString["from"] == null && Request.QueryString["to"] == null)
+                {                 
+                    
+                    deChoosenDate.Text = DateTime.Now.ToString("dd/MM/yyyy");
+                    txtToDate.Text = DateTime.Now.ToString("dd/MM/yyyy");
+                }
+                else
+                {
+                    deChoosenDate.Text = Request.QueryString["from"].ToString();
+                    txtToDate.Text = Request.QueryString["to"].ToString();
+                }
+                foreach (GridViewColumn column in grid.Columns)
+                {
+                    if (column is GridViewDataColumn)
+                    {
+                        ((GridViewDataColumn)column).Settings.AutoFilterCondition = AutoFilterCondition.Contains;
+                    }
+                }
+                userinfo= HttpContext.Current.User.Identity.Name;
+                qry = "select rs.name from roles as rs inner join rights as rt on (rt.roleid=rs.id) where memberid=" + userinfo + "";
+                usrRole = balayer.GetSingleValue(qry);
+                if (usrRole == "Report")
+                {
+                    //Response.Redirect("Home.aspx", false);
+                    //ASPxButton1.Visible = true;
+                    ASPxButton1.Visible = false;
+                    Edit.Visible = false;
+                }
+                else if (usrRole == "Administrator")
+                {
+                    ASPxButton1.Visible = true;
+                }
+                else
+                {
+                    ASPxButton1.Visible = false;
+                }
+            }
+            BindData();
+        }
+
+        protected void btnEdit_click(object sender, EventArgs e)
+        {
+            if (grid.Selection.Count == 1)
+            {
+                string DualTransactionKey = "0x" + grid.GetSelectedFieldValues("key1")[0].ToString().Replace("-", "");
+                Response.Cookies.Add(new HttpCookie("mylist", DualTransactionKey));             
+                Response.Redirect("DeleteVocherEdit.aspx?from=" + deChoosenDate.Text + "&to=" + txtToDate.Text, false);
+            }
+        }
+        protected void btnExportExcel_Click1(object sender, EventArgs e)
+        {
+            gridexcel.FileName = "Undo Voucher " + DateTime.Now.Millisecond.ToString();
+            BindData();
+            grid.DataBind();
+
+            gridexcel.WriteXlsToResponse();
+        }
+        protected void ASPxGridView1_HtmlRowPrepared(object sender, DevExpress.Web.ASPxGridView.ASPxGridViewTableRowEventArgs e)
+        {
+            ColorGroupRow(e, Color.Pink, 0);
+        }
+
+        private void ColorGroupRow(ASPxGridViewTableRowEventArgs e, Color backColor, int rowIndex)
+        {
+            if (e.RowType == GridViewRowType.Group && grid.GetRowLevel(e.VisibleIndex) == rowIndex)
+                e.Row.BackColor = backColor;
+            else
+            {
+                if (e.Row.Cells.Count > rowIndex)
+                    e.Row.Cells[rowIndex].BackColor = backColor;
+                if (rowIndex == 0)
+                    ColorGroupRow(e, Color.Lavender, 1);
+            }
+        }
+
+        protected void btnno_Click(object sender, EventArgs e)
+        {
+            if (lblHintConfirmation.Text == "Nothing")
+            {
+                lblHintConfirmation.Text = "";
+                Response.Redirect(Request.Url.AbsolutePath.ToString()+"?from="+txtToDate.Text+"&to="+deChoosenDate.Text,false);
+            }
+        }
+
+        protected void btnyes_Click(object sender, EventArgs e)
+        {
+            if (lblHintConfirmation.Text == "Nothing")
+            {
+                lblHintConfirmation.Text = "";
+                Response.Redirect(Request.Url.AbsolutePath.ToString() + "?from=" + txtToDate.Text + "&to=" + deChoosenDate.Text,false);
+            }
+            TransactionLayer trn = new TransactionLayer();
+            string currdate = "", chosendt = "";
+            try
+            {
+                if (lblHintConfirmation.Text != "")
+                {
+                    string DualTransactionKey = lblHintConfirmation.Text;                  
+                    DataTable vcdt = new DataTable();
+                    qry = "select * from voucher where DualTransactionKey=" + DualTransactionKey + " and  Series<>'A' and BranchID=" + Session["Branchid"] + " and Narration not like '%carry over%' and ChoosenDate='" + balayer.changedateformat(Convert.ToDateTime(lblChoosenDate.Text), 2) + "'";
+                    vcdt = balayer.GetDataTable(qry);
+
+                    DateTime presentdt = DateTime.UtcNow;
+                    string ipaddress;
+                    string narr = "";
+                    ipaddress = Request.ServerVariables["HTTP_X_FORWARDED_FOR"];
+                    if (ipaddress == "" || ipaddress == null)
+                        ipaddress = Request.ServerVariables["REMOTE_ADDR"];
+                    string hostname = Request.UserHostName;
+                    hostname = hostname + ":" + ipaddress;
+                    var voucher_no = string.Empty;
+                    for (int i = 0; i <= vcdt.Rows.Count - 1; i++)
+                    {
+                        narr = vcdt.Rows[i][8].ToString();
+                        narr = narr.Replace("'", "");
+                        currdate = vcdt.Rows[i][3].ToString();
+                        chosendt = vcdt.Rows[i][7].ToString();
+                        voucher_no = vcdt.Rows[i][4].ToString();
+                        qry = "insert into voucherdeleted(TransactionKey, DualTransactionKey, BranchID, CurrDate, Voucher_No, Voucher_Type, Head_Id, ChoosenDate, Narration, " +
+                            "Amount, Series, ReceievedBy,Trans_Type, T_Day, T_Month, T_Year, MemberID, Trans_Medium, RootID, ChitGroupId,Other_Trans_Type, IsDeleted," +
+                            "ApprovedDate,CreatedDate, ModifiedDate, ISActive, AppReceiptno,removedDt,sysip) values(" + vcdt.Rows[i][0].ToString() + ",'" + vcdt.Rows[i][1].ToString() + "'," +
+                            "" + vcdt.Rows[i][2].ToString() + ",'" + balayer.changedateformat(Convert.ToDateTime(currdate), 1) + "'," + vcdt.Rows[i][4].ToString() + ",'" + vcdt.Rows[i][5].ToString() + "'," +
+                            "'" + vcdt.Rows[i][6].ToString() + "','" + balayer.changedateformat(Convert.ToDateTime(chosendt), 2) + "','" + narr + "'," + vcdt.Rows[i][9].ToString() + "," +
+                            "'" + vcdt.Rows[i][10].ToString() + "','" + vcdt.Rows[i][11].ToString() + "'," + vcdt.Rows[i][12].ToString() + "," + vcdt.Rows[i][13].ToString() + "," +
+                            "" + vcdt.Rows[i][14].ToString() + "," + vcdt.Rows[i][15].ToString() + "," + vcdt.Rows[i][16].ToString() + "," + vcdt.Rows[i][17].ToString() + "," +
+                            "" + vcdt.Rows[i][18].ToString() + "," + vcdt.Rows[i][19].ToString() + "," + vcdt.Rows[i][20].ToString() + ",'" + vcdt.Rows[i][21].ToString() + "'," +
+                            "'" + vcdt.Rows[i][22].ToString() + "','" + vcdt.Rows[i][23].ToString() + "','" + vcdt.Rows[i][24].ToString() + "','" + vcdt.Rows[i][25].ToString() + "'," +
+                            "'" + vcdt.Rows[i][26].ToString() + "','" + balayer.changedateformat(presentdt, 1) + "','" + hostname + "')";
+                        balayer.GetInsertItem(qry);
+                    }
+
+                    if (vcdt.Rows.Count > 0)
+                    {
+                        trn.insertorupdateTrn("delete FROM `svcf`.`voucher` where DualTransactionKey=" + DualTransactionKey + " and  Series<>'A' and Narration not like '%carry over%' and ChoosenDate='" + balayer.changedateformat(Convert.ToDateTime(lblChoosenDate.Text), 2) + "'");
+                        trn.insertorupdateTrn("delete FROM `svcf`.`transbank` where DualTransactionKey=" + DualTransactionKey);
+                        trn.insertorupdateTrn("delete FROM `svcf`.`transcourt` where DualTransactionKey=" + DualTransactionKey);
+                        trn.insertorupdateTrn("delete FROM `svcf`.`transloan` where DualTransactionKey=" + DualTransactionKey);
+                        trn.insertorupdateTrn("delete FROM `svcf`.`transprofitandloss` where DualTransactionKey=" + DualTransactionKey);
+                        trn.insertorupdateTrn("delete FROM `svcf`.`transadvance` where DualTransactionKey=" + DualTransactionKey);
+                        trn.insertorupdateTrn("delete FROM svcf.depositpayment where DualTransactionKey=" + DualTransactionKey);
+                        trn.insertorupdateTrn("delete FROM svcf.fd where DualTransactionKey=" + DualTransactionKey);
+                        trn.insertorupdateTrn("delete FROM svcf.filingfees where DualTransactionKey=" + DualTransactionKey);
+                        trn.insertorupdateTrn("delete FROM svcf.branchpayment where DualTransactionKey=" + DualTransactionKey);
+                    }
+                    BindData();
+                    grid.DataBind();
+                    gvConfirm.DataSource = null;
+                    gvConfirm.DataBind();
+                    lblHeadingConfirmation.Text = "Status";
+                    lblContentConfirmation.Text = "Transaction Deleted Successfully!!!";
+                    lblHintConfirmation.Text = "Nothing";
+                    ModalPopupExtender1.Show();
+                    pnlConfirmation.Visible = true;
+                    trn.CommitTrn();
+                    LogCls.LogUpdate(voucher_no, Convert.ToInt32(Session["Branchid"]), "Voucher Updated Successfully");
+                    logger.Info("DeleteVoucher.aspx - btnYes_Click():  Completed: " + DateTime.Now + " by: " + Convert.ToString(Session["UserName"]) + "");
+                }
+            }
+            catch (Exception ex)
+            {
+                try
+                {
+                    trn.RollbackTrn();                  
+                    LogCls.LogError(ex, "DeleteVoucher : Btnyes_click()");
+                    logger.Info("DeleteVoucher.aspx - btnYes_Click():  Error: " + ex.Message + ": " + DateTime.Now + " by: " + Convert.ToString(Session["UserName"]) + "");
+                    lblHintConfirmation.Text = "Nothing";
+                }
+                catch {
+                    lblHintConfirmation.Text = "Nothing";
+                }
+                finally { }
+            }
+            finally {
+                trn.DisposeTrn();
+                
+            }
+        }
+
+        protected void btnOK_Click(object sender, EventArgs e)
+        {
+
+        }
+        protected void btnDelete_click(object sender, EventArgs e)
+        {
+            if (grid.Selection.Count == 1)
+            {
+                string frm_mindt = "";                
+                
+
+                frm_mindt = balayer.GetSingleValue("SELECT DATE_FORMAT( MinimumDate, '%d/%m/%Y') MinimumDate FROM svcf.restrictionmaster where BranchID=" + Session["Branchid"]);
+               // mindt = Convert.ToDateTime(frm_mindt, "dd/mm/yyyy");
+
+                IFormatProvider culture3 = new System.Globalization.CultureInfo("fr-FR", true);
+                DateTime mindt = DateTime.Parse(frm_mindt, culture3, System.Globalization.DateTimeStyles.AssumeLocal);
+             
+                IFormatProvider culture2 = new System.Globalization.CultureInfo("fr-FR", true);
+                DateTime choosendt = DateTime.Parse(deChoosenDate.Text, culture2, System.Globalization.DateTimeStyles.AssumeLocal);
+
+                if (choosendt >= mindt)
+                {
+                    string DualTransactionKey = "0x" + grid.GetSelectedFieldValues("key1")[0].ToString().Replace("-", "");
+
+                    //string voucher_no = grid.GetSelectedFieldValues("key1")[2].ToString();
+                    lblHintConfirmation.Text = DualTransactionKey;
+                    lblChoosenDate.Text=grid.GetSelectedFieldValues("ChoosenDate")[0].ToString();
+                    DataTable dtConfirm = balayer.GetDataTable("select t3.Node as SubHead,(case when t1.Voucher_Type='C' then t1.Amount else 0.00 end )as `Credit Amount`,(case when t1.Voucher_Type='D' then t1.Amount else 0.00 end )as `Debit Amount` from voucher as t1   Join headstree as t3 on t1.Head_ID=t3.NodeID  where `t1`.`DualTransactionKey` = " + DualTransactionKey + " and (t1.Trans_Type=1 or t1.Trans_Type=0 or t1.Trans_Type=2) and t1.BranchId=" + Session["Branchid"] + "");
+                    gvConfirm.DataSource = dtConfirm;
+                    gvConfirm.DataBind();
+                    if (dtConfirm.Rows.Count == 2)
+                    {
+                        lblContentConfirmation.Text = "Do You Wish To Delete Following Transaction ???" + Environment.NewLine;
+                        lblHeadingConfirmation.Text = "Undo Single Transaction ";
+                        lblContentConfirmation.ForeColor = System.Drawing.Color.Brown;
+                        //  balayer.GetInsertItem("delete  FROM `svcf`.`voucher` where uuid_from_bin(DualTransactionKey)=uuid_from_bin(" + DualTransactionKey + ");delete  FROM `svcf`.`transbank` where uuid_from_bin(DualTransactionKey)=uuid_from_bin(" + DualTransactionKey + ");");
+                    }
+                    else
+                    {
+                        lblHeadingConfirmation.Text = "Undo Multiple Transaction ";
+                        lblContentConfirmation.Text = "Do You Wish To Delete Following Transaction ???" + Environment.NewLine;
+                        lblContentConfirmation.ForeColor = System.Drawing.Color.Red;
+                    }
+                    ModalPopupExtender1.Show();
+                    pnlConfirmation.Visible = true;
+                }
+            }
+        }
+
+        protected void ASPxGridView1_CommandButtonInitialize(object sender, ASPxGridViewCommandButtonEventArgs e)
+        {
+            if (grid.Selection.Count == 1 && !grid.Selection.IsRowSelected(e.VisibleIndex))
+                e.Enabled = false;
+        }
+
+        protected void btnLoad_click(object sender, EventArgs e)
+        {
+            BindData();
+        }
+
+        protected void BindData()
+        {
+            if (Convert.ToInt32(Session["Branchid"]) == 161)
+            {                
+                AccessDataSource1.ConnectionString = CommonClassFile.ConnectionString;
+                AccessDataSource1.SelectCommand = @"SELECT DATE_FORMAT( v1.`ChoosenDate`, '%d/%m/%Y') as ChoosenDate,v1.TransactionKey,uuid_from_bin(v1.DualTransactionKey) as key1, ht1.Node as Head, v1.Amount , v1. Voucher_No,v1.Series ,v1.Narration ,(case when v1.`Voucher_Type`='C' then 'Credit' else 'Debit' end) as Voucher_Type ,(case when v1.`Trans_Type`=0 then 'Voucher' else 'Receipt' end) as TransationType FROM voucher as v1 left Join headstree as ht1 on (v1.Head_Id=ht1.NodeID) where v1.`ChoosenDate` between '" + balayer.indiandateToMysqlDate(deChoosenDate.Text) + "' and '" + balayer.indiandateToMysqlDate(txtToDate.Text) + "' and (v1.`BranchID`=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " or v1.`BranchID`=160 or v1.`BranchID`=162) and ( v1.Trans_Type=0  or v1.Trans_Type=1 or v1.Trans_Type=2) and if(ChitGroupId<>0,ChitGroupId,`Other_Trans_Type`<>5)";                
+            }
+            else
+            {
+                AccessDataSource1.ConnectionString = CommonClassFile.ConnectionString;              
+                AccessDataSource1.SelectCommand = @"SELECT DATE_FORMAT( v1.`ChoosenDate`, '%d/%m/%Y') as ChoosenDate,v1.TransactionKey,uuid_from_bin(v1.DualTransactionKey) as key1, ht1.Node as Head, v1.Amount , v1. Voucher_No,v1.Series ,v1.Narration ,(case when v1.`Voucher_Type`='C' then 'Credit' else 'Debit' end) as Voucher_Type ,(case when v1.`Trans_Type`=0 then 'Voucher' else 'Receipt' end) as TransationType FROM voucher as v1 left Join headstree as ht1 on (v1.Head_Id=ht1.NodeID) where v1.`ChoosenDate` between '" + balayer.indiandateToMysqlDate(deChoosenDate.Text) + "' and '" + balayer.indiandateToMysqlDate(txtToDate.Text) + "' and v1.`BranchID`=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + "  and ( v1.Trans_Type=0  or v1.Trans_Type=1 or v1.Trans_Type=2) and if(ChitGroupId<>0,ChitGroupId,`Other_Trans_Type`<>5)";                
+            }
+            grid.DataBind();
+        }
+
+        protected void ASPxButton1_Command(object sender, CommandEventArgs e)
+        {
+
+        }
+
+        protected void grid_CustomSummaryCalculate(object sender, DevExpress.Data.CustomSummaryEventArgs e)
+        {
+            if (e.SummaryProcess == DevExpress.Data.CustomSummaryProcess.Finalize)
+            {
+                //double sum = 0.00;
+                //ASPxGridView grid = (ASPxGridView)sender;
+                //for (int i = grid.VisibleStartIndex; i < grid.VisibleStartIndex + grid.SettingsPager.PageSize; i++)
+                //    if (i < grid.VisibleRowCount)
+                //        sum = sum + double.Parse(grid.GetRowValues(i, new string[] { "Amount" }).ToString());
+                //e.TotalValue = sum;
+            }
+        }
+
+        protected void grid_SummaryDisplayText(object sender, ASPxGridViewSummaryDisplayTextEventArgs e)
+        {
+            if (e.IsTotalSummary)
+            {
+                double creditSum = 0.00;
+                double debitSum = 0.00;
+                ASPxGridView grid = (ASPxGridView)sender;
+                for (int i = grid.VisibleStartIndex; i < grid.VisibleStartIndex + grid.SettingsPager.PageSize; i++)
+                    if (i < grid.VisibleRowCount)
+                    {
+                        if (grid.GetRowValues(i, new string[] { "Voucher_Type" }).ToString() == "Credit")
+                            creditSum = creditSum + double.Parse(grid.GetRowValues(i, new string[] { "Amount" }).ToString());
+                        else if (grid.GetRowValues(i, new string[] { "Voucher_Type" }).ToString() == "Debit")
+                            debitSum = debitSum + double.Parse(grid.GetRowValues(i, new string[] { "Amount" }).ToString());
+                    }
+
+                e.Text = Convert.ToString("Credit : " + creditSum + " | " + "Debit : " + debitSum);
+            }
+        }
+    }
+}

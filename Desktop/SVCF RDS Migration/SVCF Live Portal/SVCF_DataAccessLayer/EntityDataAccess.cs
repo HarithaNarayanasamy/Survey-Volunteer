@@ -1,0 +1,455 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Data.Entity.Core.Objects;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Entity;
+namespace SVCF_DataAccessLayer
+{
+    public class EntityDataAccess : ClsEntity
+    {
+        svcfEntities context = new svcfEntities();
+
+        public void GetallBranches()
+        {
+            var getall = context.headstrees.Where(x => x.ParentID == 1).Select(x => new { x.NodeID, x.Node }).ToList();
+        }
+
+        public IEnumerable<headstree> GetallBranch()
+        {
+            return context.headstrees.ToList();
+        }
+
+        public ObjectResult<getbranches_Result> trailbalance(int branchid, DateTime fromdate, DateTime todate)
+        {
+            try
+            {
+                return context.getbranches(branchid, fromdate, todate);
+            }
+            catch (Exception Ex)
+            {
+                throw;
+            }
+        }
+
+
+        public ObjectResult<Investments_GroupHead_Result> Dl_Invesments(int branchid, DateTime fromdate, DateTime todate)
+        {
+            try
+            {
+                return context.Investments_GroupHead(branchid, fromdate, todate);
+            }
+            catch (Exception Ex)
+            {
+                throw;
+            }
+        }
+
+        public ObjectResult<Investments_GroupHead_Result> Dl_InvesmentsNode(int branchid, DateTime fromdate, DateTime todate)
+        {
+            try
+            {
+                return context.Investments_GroupHead(branchid, fromdate, todate);
+            }
+            catch (Exception Ex)
+            {
+                throw;
+            }
+        }
+
+        public ObjectResult<BkBindAdvance_Result> BindAdvances_ClosingBalance()
+        {
+            try
+            {
+                int branchid = 1481;
+                DateTime todate = DateTime.Parse("2018/03/31");
+                int rootid = 9;
+                return context.BkBindAdvance(branchid, rootid, todate);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public ObjectResult<BkBindAdvancePart2_Result> BindAdvancesPart2_ClosingBalance(DateTime todate,int branchid)
+        {
+            try
+            {
+                //int branchid = 1481;
+                //DateTime todate = DateTime.Parse("2018/03/31");
+                return context.BkBindAdvancePart2(todate, branchid);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public ObjectResult<BkBindDecree1_Result> BindDecree_ClosingBalance()
+        {
+            try
+            {
+                int branchid = 1481;
+                DateTime todate = DateTime.Parse("2018/03/31");
+                return context.BkBindDecree1(branchid, todate);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+
+        public string GetHeadName(long NodeId)
+        {
+            try
+            {
+                return (from hd in context.headstrees
+                        where hd.NodeID == NodeId
+                        select hd.Node).FirstOrDefault().ToString();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public string GetParentHeadName(long NodeId)
+        {
+            try
+            {
+                var parentid = (from hd in context.headstrees
+                                where hd.NodeID == NodeId
+                                select hd.ParentID).FirstOrDefault();
+                return (from hd in context.headstrees
+                        where hd.NodeID == parentid
+                        select hd.Node).FirstOrDefault();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+
+
+
+        public ObjectResult<BkBindAdvancePart2_Result> BindAdvancesPart2_OpeningBalance(DateTime todate,int branchid)
+        {
+            try
+            {
+                //int branchid = 1481;
+                //DateTime todate = DateTime.Parse("2018/04/01");
+                return context.BkBindAdvancePart2(todate, branchid);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public string GetChitName_fromChitHeads(long head_id)
+        {
+            string chitname = "";
+            try
+            {
+                chitname = context.chitheads.Where(x => x.HeadId == head_id).Select(x => x.ChitName).FirstOrDefault();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            return chitname;
+        }
+
+        public string GetMemberName_fromChitHeads(long head_id)
+        {
+            string membername = "";
+            try
+            {
+                membername = context.chitheads.Where(x => x.HeadId == head_id).Select(x => x.MemberName).FirstOrDefault();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            return membername;
+        }
+
+        public ObjectResult<BkBindAdvance_Result> BindAdvances_OpeningBalance(int branchid, int rootid, DateTime todate)
+        {
+            try
+            {
+                return context.BkBindAdvance(branchid, rootid, todate);
+
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+       
+
+        public ObjectResult<BkBindDecree1_Result> Decree_OpeningBalance(int branchid, DateTime todate)
+        {
+            try
+            {
+                return context.BkBindDecree1(branchid, todate);
+            }
+            catch (Exception err)
+            {
+                throw;
+            }
+        }
+
+      
+
+        public virtual ObjectResult<BkBindPandL_Result> GetPandL_OpeningBalance()
+        {
+            try
+            {
+                int bid = 1481;
+                DateTime frmdt = DateTime.Parse("2018-04-01");
+                DateTime todte = DateTime.Parse("2019/03/31");
+                return context.BkBindPandL(bid, frmdt, todte);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public virtual ObjectResult<BkBindPandL_Result> GetPandL_ClosingBalance()
+        {
+            try
+            {
+                int bid = 1481;
+                DateTime frmdt = DateTime.Parse("2018-04-01");
+                DateTime todte = DateTime.Parse("2019-03-31");
+                return context.BkBindPandL(bid, frmdt, todte);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public virtual ObjectResult<BkBindBankSB_Result> GetScheduledBank_Openingbalance(DateTime todte, int bid)
+        {
+            try
+            {
+                return context.BkBindBankSB(todte, bid);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public virtual ObjectResult<BkBindBankSB_Result> GetScheduledBank_Closingbalance()
+        {
+            try
+            {
+                int bid = 1481;
+                DateTime todte = DateTime.Parse("2019-03-31");
+                return context.BkBindBankSB(todte, bid);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        //public virtual ObjectResult<BkBindBankFD_Result> GetFDwithBank_Openingbalance()
+        //{
+        //    try
+        //    {
+        //        int bid = 1481;
+        //        DateTime todte = DateTime.Parse("2019-03-31");
+        //        return context.BkBindBankFD(todte, bid);
+        //    }
+        //    catch (Exception err)
+        //    {
+        //        throw;
+        //    }
+        //}
+        public virtual ObjectResult<BkBindBankFD_Result> GetFDwithBank_Openingbalance(DateTime todte, int bid)
+        {
+            try
+            {
+                return context.BkBindBankFD(todte, bid);
+            }
+            catch (Exception err)
+            {
+                throw;
+            }
+        }
+
+        public virtual ObjectResult<BkBindBankFD_Result> GetFDwithBank_Closingbalance()
+        {
+            try
+            {
+                int bid = 1481;
+                DateTime todte = DateTime.Parse("2019-03-31");
+                return context.BkBindBankFD(todte, bid);
+            }
+            catch (Exception err)
+            {
+                throw;
+            }
+        }
+        public ObjectResult<TrialBalanceofOtherItems_Result> triotheritem(int BranchID, DateTime date)
+        {
+            try
+            {
+                return context.TrialBalanceofOtherItems(BranchID, date);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public ObjectResult<Loans_Result> triloandate(int BranchID, DateTime date)
+        {
+            try
+            {
+                return context.Loans(BranchID, date);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+        public IEnumerable<chithead> GetallChitheads()
+        {
+            try
+            {
+                return context.chitheads.ToList();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public string DL_Branch(int BranchID)
+        {
+            try
+            {
+                var branch = context.headstrees.Where(x => x.ParentID == 1 && x.NodeID == BranchID).Select(x => x.Node).FirstOrDefault();
+                return branch;
+            }
+            catch (Exception ex)
+              {
+                throw;
+            }
+        }
+        public ObjectResult<MonthlyChit_Result> Mothlychit(int BranchID, DateTime date)
+        {
+            try
+            { 
+            return context.MonthlyChit(BranchID, date);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+        public ObjectResult<TrimonthlyChits_Result> TrimonthlyChits(int BranchID, DateTime date)
+        {
+            try
+            {
+                return context.TrimonthlyChits(BranchID, date);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+        public ObjectResult<FortnightlyChits_Result> FortnightlyChits(int BranchID, DateTime date)
+        {
+            try
+            {
+                return context.FortnightlyChits(BranchID, date);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+        public ObjectResult<OutStanding_Result> OutStanding(int BranchID, DateTime date)
+        {
+            try
+            {
+                return context.OutStanding(BranchID, date);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+        public ObjectResult<UnpaidPrizeMoney_Result> UnpaidPrizeMoney(int BranchID, DateTime date)
+        {
+            try
+            { 
+            return context.UnpaidPrizeMoney(BranchID, date);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+        public ObjectResult<UnpaidPrizemoneypayable_Result> UnpaidPrizemoneypayable(int BranchID, DateTime date)
+        {
+            try
+            { 
+            return context.UnpaidPrizemoneypayable(BranchID, date);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+        public ObjectResult<RCM1Credit_Result> RCM1Credit(int BranchID, DateTime date)
+        {
+            try
+            { 
+            return context.RCM1Credit(BranchID, date);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+        public ObjectResult<RCM2Credit_Result> RCM2Credit(int BranchID, DateTime date)
+        {
+            try
+            { 
+            return context.RCM2Credit(BranchID, date);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public ObjectResult<ChitCredit_Result> ChitCredit(int BranchID, DateTime date)
+        {
+            try
+            { 
+            return context.ChitCredit(BranchID, date);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+
+
+    }
+}

@@ -1,0 +1,568 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="Branch.Master.cs" Inherits="SreeVisalamChitFundLtd_phase1.Branch" %>
+
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1.0" />
+<head id="Head1" runat="server">
+    <asp:ContentPlaceHolder ID="cphHead" runat="server">
+    </asp:ContentPlaceHolder>
+    <link href="Styles/ajaxcalendar.css" rel="stylesheet" type="text/css" />
+    <link media="print" href="Styles/Print.css" type="text/css" rel="stylesheet"  />
+    <link href="Styles/MsgBox.css" rel="stylesheet" type="text/css" />
+    <script src="https://code.jquery.com/jquery-2.2.4.js"></script>
+    <script src="pertho_admin_v1.3/js/jquery.min.js"></script>
+    <script src="pertho_admin_v1.3/lib/jQueryUI/jquery-ui-1.8.18.custom.min.js"></script>
+    <script src="pertho_admin_v1.3/js/s_scripts.js"></script>
+    <script src="pertho_admin_v1.3/js/jquery.ui.extend.js"></script>
+    <script src="pertho_admin_v1.3/lib/qtip2/jquery.qtip.min.js"></script>
+    <script src="pertho_admin_v1.3/js/jquery.stickyPanel.min.js"></script>
+    <script src="pertho_admin_v1.3/js/jquery.mask.js" type="text/javascript"></script>
+    <script src="pertho_admin_v1.3/js/jquery.inputmask.js" type="text/javascript"></script>
+    <script src="pertho_admin_v1.3/js/jquery.inputmask.extentions.js" type="text/javascript"></script>
+    <script src="Scripts/jquery.ui.spinner.js" type="text/javascript"></script>
+    <script src="Scripts/jquery.numeric.js" type="text/javascript"></script>
+    <script src="pertho_admin_v1.3/js/pertho.js"></script>
+    <script src="pertho_admin_v1.3/js/jquery.st_accordion.js"></script>
+    <script src="pertho_admin_v1.3/lib/syntaxhighlighter/scripts/shCore.js"></script>
+    <script src="pertho_admin_v1.3/lib/syntaxhighlighter/scripts/shBrushCss.js"></script>
+    <script src="pertho_admin_v1.3/lib/syntaxhighlighter/scripts/shBrushXml.js"></script>
+    <script src="pertho_admin_v1.3/lib/syntaxhighlighter/scripts/shBrushJScript.js"></script>
+    <script src="pertho_admin_v1.3/lib/chosen/chosen.jquery.min.js"></script>
+    <script src="pertho_admin_v1.3/js/ui.spinner.js"></script>
+    <script src="Scripts/jquery.numeric.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            prth_common.init();
+            prth_main_nav.sticky_menu();
+        });
+        function ClearHistory() {
+            var backlen = history.length;
+            history.go(-backlen);
+            window.location.href = "Login.aspx"
+        }
+        //function disableBack() { window.history.forward() }
+        //window.onload = disableBack();
+        //window.onpageshow = function (evt) { if (evt.persisted) disableBack() }
+    </script>
+    <%--<script type="text/javascript" src="Scripts/jquery-ui.min.js"></script>    --%>
+    <script type="text/javascript" src="Scripts/gridviewScroll.min.js"></script>
+    <link href="Styles/Stage.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="Styles/ControlsCss.css" />
+    <link rel="stylesheet" type="text/css" href="Styles/Validation.css" />
+    <link rel="stylesheet" type="text/css" href="Styles/Accordion.css" />
+    <link rel="stylesheet" type="text/css" href="Styles/PopUpMessageBox.css" />
+    <link rel="stylesheet" type="text/css" href="Styles/GridviewScroll.css" />
+    <link rel="stylesheet" type="text/css" href="Styles/GVScrolll.css" />
+    <script type="text/javascript" src="Scripts/jquery.ui.tabs.js"></script>
+    <script type="text/javascript" src="Scripts/jquery.ui.accordion.js"></script>
+    <script type="text/javascript" src="Scripts/jquery.ui.position.js"></script>
+    <script type="text/javascript" src="Scripts/jquery.ui.menu.js"></script>
+    <script type="text/javascript" src="Scripts/jquery.idle-timer.js"></script>
+    
+    
+    <meta name="robots" content="noindex,follow" />
+    <title>SVCF Admin Panel</title>
+    <link rel="stylesheet" href="pertho_admin_v1.3/lib/chosen/chosen.css" media="all" />
+    <link rel="stylesheet" href="pertho_admin_v1.3/foundation/stylesheets/foundation.css" />
+    <link rel="stylesheet" href="pertho_admin_v1.3/lib/jQueryUI/css/Aristo/Aristo.css"
+        media="all" />
+    <link rel="stylesheet" href="pertho_admin_v1.3/lib/fancybox/jquery.fancybox-1.3.4.css"
+        media="all" />
+    <link rel="stylesheet" href="pertho_admin_v1.3/lib/chosen/chosen.css" media="all" />
+    <link rel="stylesheet" href="pertho_admin_v1.3/lib/qtip2/jquery.qtip.min.css" />
+    <link rel="stylesheet" href="pertho_admin_v1.3/css/style.css" />
+    <link href="pertho_admin_v1.3/css/Open_Sans_Condensed_300.css" rel="stylesheet" type="text/css" />
+    <link href="pertho_admin_v1.3/css/Terminal_Dosis.css" rel="stylesheet" type="text/css" />
+    <link href="../Styles/svcf_master.css" rel="stylesheet" />
+    <link rel="apple-touch-icon-precomposed" href="pertho_admin_v1.3/icon.png" />
+    <style type="text/css">
+        .selected {
+            background-color: red;
+        }
+    </style>
+</head>
+<body class="ptrn_a grdnt_a mhover_a">
+    <form id="form1" defaultbutton="btnesc" runat="server">
+    <asp:Button Enabled="False" Style="display: none" ID="btnesc" runat="server" />
+    <header>
+			<div class="container head_s_a">
+				<div class="row sepH_b">
+					<div class="columns" style="width: 100%;">
+						<div class="row">
+							<div class="phone-two columns" style="width: 100%;">
+								<div id="logo" style="margin-top:-15px;">
+								<table style="width: 100%;">
+								<tr>
+								<td>
+								<a href="Home.aspx"> <img src="Styles/Image/logo_New.png" alt="SVCF Admin" /></a>
+								</td>
+								
+								<td style="white-space:nowrap;width:auto;vertical-align: middle;">
+								<h2 style="margin-top:15px;" class="sepH_b">Sree Visalam Chit Fund Ltd.,</h2>
+								</td>
+
+                                    <td class="columns">
+						<div class="user_box cf" style="margin-top:10%;display: inline-flex;">
+							<div class="user_avatar">
+								<img src="pertho_admin_v1.3/img/user_male.png" alt="" style="padding: 0;" />
+							</div>
+							<div class="user_info user_sep">
+								<p class="sepH_a">
+									<strong><asp:Label Style="color: Black; font-size: 1.2em; font-weight: bolder;" runat="server"
+                        Text="" ID="lblUserName">          </asp:Label></strong>
+								</p>
+								<span>
+									<strong><asp:Label  CssClass="sep" Style="color: Black; font-size: 1.2em; font-weight: bolder;" runat="server"
+                        Text="" ID="lblBranchName" >          </asp:Label></strong>                                    
+									<asp:LinkButton ToolTip="LogOut" TabIndex="-1" CausesValidation="false" style="color:#21759b !important;"
+                          ID="btnlogout" runat="server"
+                        OnClick="btn_Logout_Click" Text="Log out" PostBackUrl="#"></asp:LinkButton>   
+                                       <%-- OnClick="btn_Logout_Click" Text="Log out" PostBackUrl="#" OnClientClick="ClearHistory();"></asp:LinkButton>--%>
+								</span>
+							</div>
+							<div class="ntf_bar user_sep"  style="height: auto;padding: 4px 0 2px 10px;">
+								<a href="#ntf_mail_panel" class="ntf_item" style="background-image: url(pertho_admin_v1.3/img/ico/icSw2/32-Mail.png)">
+									<span class="ntf_tip ntf_tip_red"><span id="datecount" runat="server"></span></span>
+								</a>
+								<a href="#ntf_tickets_panel" class="ntf_item" style="background-image: url(pertho_admin_v1.3/img/ico/icSw2/32-Day-Calendar.png)">
+									<span class="ntf_tip ntf_tip_red"><span id="count" runat="server"></span></span>
+								</a>
+                                <a href="#ntf_comments_panel" class="ntf_item" style="background-image: url(pertho_admin_v1.3/img/ico/icSw2/32-Speech-Bubble.png)">
+                                    <span class="ntf_tip ntf_tip_blue"><span id="idcount" runat="server"></span></span>
+                                </a>                          
+                                <a href="#ntf_comments_panel1" class="ntf_item" style="background-image: url(pertho_admin_v1.3/img/ico/icSw2/32-Speech-Bubble.png)">
+                                    <span class="ntf_tip ntf_tip_blue"><span id="Span1" runat="server"></span></span>
+                                </a>
+                                <a href="#ntf_Salary_panel" class="ntf_item" style="background-image: url(pertho_admin_v1.3/img/ico/icSw2/32-Mail.png)">
+									<span class="ntf_tip ntf_tip_red"><span id="Span2" runat="server"></span></span>
+								</a>
+							</div>
+						</div>
+					</td>
+
+								</tr>
+								</table>
+								</div>
+							</div>
+							<div class="seven phone-two columns">
+								
+							</div>
+						</div>
+					</div>
+					
+				</div>
+
+                <style>
+                    .marquee {
+                        animation-name: scroll-left;
+                        background-color:aliceblue;
+                        position: static;
+                        text-align: center;
+                        animation-duration: 80s;
+                        animation: scroll-left 50s linear infinite;
+                        overflow:auto;
+                        animation-delay:20s;
+                        animation-direction:normal;
+                        height:30px;
+                        color:red;
+                    }
+
+                   
+                    @keyframes scroll-left{
+                        from{right:10px;}
+                        to{left:10px}
+                    }
+                    
+                   .TamilFont{
+                       font-family:Bamini;
+                   }
+                   .ScrollLabel{
+                       display:inline;
+                       width:auto;
+                       color:green;
+                   }
+                </style>
+                <div class="row">
+                    <div class="marquee" >
+                        <asp:Panel ID="panel1" runat="server" Height="20px" Wrap="false" ScrollBars="None" HorizontalAlign="Left" CssClass="marquee" >
+                        </asp:Panel>
+
+                    </div>
+                </div>
+				<div class="row">
+					<div class="twelve columns" style="margin-bottom:-25px;">
+						<nav id="smoothmenu_h" class="ddsmoothmenu">
+							<ul class="cf">
+								<li>
+									<a href="javascript:void(0)" class="mb_parent first_el">Statistics</a>
+									<ul style="display:none">
+										<%--<li><a href="DashBoard.aspx">Dashboard</a></li> --%>
+										<li>
+                                            <a href="#">Report</a>
+										    <ul style="display:none">
+                                                <li><a href="DiarySm.aspx">Diary</a></li>
+                                                <li><a href="BookletExport.aspx">Booklet</a></li>
+									            <li><a href="FindCustomerDetails.aspx">Trace Customer</a></li>
+										        <li><a href="CRRReport.aspx">Cash Received Register</a></li>
+										        <li><a href="TRRReport.aspx">Transfer Remittance Register</a></li>
+                                                <li>
+                                                    <a href="#">Trial and Arriers  </a>
+                                                    <ul style="display:none">
+                                                        <li><a href="ChitAbstract.aspx">Chit Abstract</a></li>                                                        
+                                                        <li><a href="TrialandArrear.aspx">Running</a></li>
+									                    <li><a href="Terminate.aspx">Terminated</a></li>
+                                                    </ul>
+                                                </li>
+										        <li><a href="PaymentRegister.aspx">Drawals and Prize Money Register  </a></li>
+                                                <li><a href="Booklet.aspx">Full Report</a></li>
+                                                <li><a href="topcolumndaybookreport.aspx">Top Column Day Book</a></li>
+                                                <li><a href="MoneyCollectorArrear.aspx">Money Collector Arrear</a></li>
+                                                <li id="billCollector" runat="server"><a href="MoneyCollectorPartyList.aspx">Bill Collector wise Party List</a></li>
+                                                <li id="PandL" runat="server"><a href="PandLCompilation.aspx">P&L Compilation</a></li>
+                                                <li><a href="BranchArrears.aspx">Branch Arrear</a></li>
+                                                <li><a href="YearEndingBooklet.aspx">Year Ending Booklet</a></li>
+									        </ul>
+									    </li>
+									
+									<li><a href="#">Account Copy</a>
+										<ul style="display:none">
+										<li><a href="DirectBranchLedger.aspx">Branches</a>
+                                            <ul>
+                                                        <li id="pal1" runat="server"><a href="Pallathurbranch.aspx">Branch 1</a></li>                                                        
+                                                        <li id="pal2" runat="server"><a href="Pallathurbranch2.aspx">Branch 2</a></li>
+									                    <li id="pal3" runat="server"><a href="Pallathurbranch3.aspx">Branch 3</a></li>                                                 
+                                             </ul>
+										</li>
+										<li><a href="DirectInvestmentLedger.aspx">Investments</a></li>
+										<li><a href="DirectBankLedger.aspx">Banks</a></li>
+										<li><a href="DirectOtherItemsLedger.aspx">Other Items</a></li>
+										<li><a href="DirectChitsLedger.aspx">Chits</a></li>
+										<li><a href="DirectForemanChitsLedger.aspx">Company/Forman Chits</a></li>
+										<li><a href="DirectDecreeDebtorsLedger.aspx">Decree Debtors</a></li>
+										<li><a href="DirectLoanLedger.aspx">Loans</a></li>
+										<li><a href="DirectSundriesAndAdvancesLedger.aspx">Advances</a></li>
+										<li><a href="DirectStampsLedger.aspx">Stamps</a></li>
+										<li><a href="DirectProfitAndLossAccountLedger.aspx">Profit And Loss Account</a></li>
+										<li><a href="DirectCashLedger.aspx">Cash On Hand</a></li>
+                                        <li><a href="DayBook.aspx">Day Book / Ledger</a></li>
+									</ul>
+										
+										
+										</li>
+									</ul>
+								</li>
+								<li>
+									<a href="javascript:void(0)" class="mb_parent">Transactions</a>
+									<ul style="display:none">
+                                        <%--<li><a href="#">Receipt Details</a>--%>
+                                        <li id="receiptMenu" runat="server"><a href="#">Receipt Details</a>
+                                            <ul style="list-style-type: none">
+                                                <li>
+                                                    <a href="#" >CRR</a>
+                                                    <ul style="list-style-type: none">
+                                                        <li class="selected"><a href="crrnew.aspx">Cash Receipt (Current Branch)</a></li>
+                                                        <li><a href="CRROtherBranch.aspx">Cash Receipt (Other Branch)</a></li>
+                                                    </ul>
+                                                </li>
+                                                <li>
+                                                    <a href="#" >TRR</a>
+                                                    <ul  style="list-style-type: none">
+                                                        <li><a href="trr.aspx" >Cheque Receipt (Current Branch)</a></li>
+                                                        <li><a href="TRROtherBranch.aspx" >Cheque Receipt (Other Branch)</a></li>
+                                                    </ul>
+                                                </li>           
+
+                                            </ul>  
+                                        </li>
+                                        <li id="paymentMenu" runat="server"><a href="#">Payment Details</a>
+                                             <ul  style="list-style-type: none">
+                                                <li><a href="paymentnew.aspx" >Payment</a></li>
+                                                <li>
+                                                    <a href="#" >Other Branch Payment</a>
+                                                    <ul  style="list-style-type: none">
+                                                        <li><a href="OBPvoucher.aspx" >Other Branch Payment(Permanent)</a></li>
+                                                        <li><a href="OtherBranchPayment.aspx" >Other Branch Payment(Temporary)</a></li>
+                                                    </ul>
+                                                </li>
+                                                <li><a href="CompanySubstitutedChitPayment.aspx" >Foreman Substituted Payment</a></li> 
+                                                <li><a href="CompanyPayment.aspx" >Foreman Payment</a></li>                         
+                                                <li><a href="undoPayment.aspx" >Undo Payment</a></li>
+                                                <li><a href="Redraw.aspx">Redraw Payment</a></li>
+                                             </ul>  
+                                        </li>
+                                        <li><a href="#">Voucher</a>
+                                         <ul  style="list-style-type: none">
+                                                <li id="v1Menu" runat="server"><a href="FilingDocument.aspx">Filing Voucher </a></li>
+                                                <li id="v2Menu" runat="server"><a href="FixedDepositRelease.aspx">Fixed Deposit Release </a></li>
+                                                <li id="v3Menu" runat="server"><a href="RCMRelease.aspx">RCM Deposit Release </a></li>
+                                                <li id="v4Menu" runat="server"><a href="DepositPayment.aspx">Deposit Voucher </a></li>
+                                                <li id="v5Menu" runat="server"><a href="DDecree.aspx">Decree and Court cost Debit</a></li>
+                                                <li id="v6Menu" runat="server"><a href="CDecree.aspx">Decree and Court cost Credit</a></li>
+                                                <li id="v7Menu" runat="server"><a href="VoucherMultiple.aspx">Cash / Cheque / Advise Voucher </a></li>
+                                                <li id="v8Menu" runat="server"><a href="VoucherMultiple_New.aspx">Testing Advise Voucher </a></li>
+                                                <li id="v9Menu" runat="server"><a href="AdjustmentVoucher.aspx">Adjustment Voucher</a></li>
+                                                <li id="v10Menu" runat="server"><a href="AppVoucherApproval.aspx">AppVoucherApproval</a> </li>
+                                                <li id="v11Menu" runat="server"><a href="AddSalaryDetails.aspx">Salary Voucher</a></li>
+                                                <li id="v12Menu" runat="server"><a href="AccruedVoucherMultiple.aspx">Investment Voucher</a></li>
+                                                <li id="v13Menu" runat="server"><a href="DeleteVoucher.aspx">Undo Voucher</a></li>
+                                                <li id="v14Menu" runat="server"><a href="AfterClosing.aspx">YearEndingAfterClosing</a></li>
+                                        </ul>
+										</li>
+                                        <li id="adjustMenu" runat="server"><a href="#">Received Adjustment / Advices </a>
+                                             <ul  style="list-style-type: none">
+                                                <li><a href="ReceivedAdvices.aspx" >Advices</a></li>
+                                                <li><a href="ReceivedAdjustments.aspx" >Adjustments</a></li>
+                                                <li><a href="OtherBranchPaymentPermanent.aspx" >Payment Advices</a></li> 
+                                             </ul>  
+                                        </li>
+                                        <li id="suggestMenu" runat="server"><a href="#">Suggest Transactions</a>
+                                            <ul style="list-style-type: none">
+                                                <li><a href="ChitLoan.aspx" >Loan</a></li>
+                                                <li><a href="Advances.aspx" >Advances</a></li>
+                                                <li><a href="CourtCost.aspx" >Decree Debtors</a></li>
+                                                <li><a href="PLMultiple.aspx" >Profit and Loss</a></li>
+                                            </ul>  
+                                        </li>
+                                        <li id="approvalMenu" runat="server"><a href="#">Approval/Disapproval Transactions</a>
+                                            <ul style="list-style-type: none">
+                                                <li><a href="AcceptLoan.aspx" >Loan</a></li>
+                                                <li><a href="AcceptAdvance.aspx" >Advances</a></li>
+                                                <li><a href="AcceptCourt.aspx" >Decree Debtors</a></li>
+                                                <li><a href="acceptprofitloss.aspx" >P & L</a></li>
+                                                <li><a href="CRRApply.aspx" >CRR Approval</a></li>
+                                                <li><a href="TRRApply.aspx" >TRR Approval</a></li>
+                                            </ul>  
+                                        </li>
+                                        <li id="otherMenu" runat="server"><a href="#">Other Transactions</a>
+                                            <ul style="list-style-type: none">
+                                                <li><a href="loaninsertion.aspx" >Loan</a></li>
+                                                <li><a href="advanceinsertion.aspx" >Advances</a></li>
+                                                <li><a href="courtinsertion.aspx" >Decree Debtors</a></li>
+                                            </ul>  
+                                        </li>
+										
+									</ul>
+								</li>
+                                <li id="groupMenu" runat="server">
+									<a href="javascript:void(0)" class="mb_parent">Group and Confidential Report</a>
+									<ul style="display:none">
+										
+										 <li><a href="#" >Chit Group</a>
+                                                 <ul  style="list-style-type: none">
+                                                     <%--<li><a href="groups.aspx" >Chit Group Addition</a>--%>
+                                                <li id="chitAddMenu" runat="server"><a href="#">Chit Group Addition</a>
+                                                         <ul style="list-style-type:none">
+                                                             <li><a href="ChitGroupDetails.aspx">Group Addition</a></li>
+                                                             <li><a href="FdrandPsoDetails.aspx">Add FDR and PSO Details</a></li>
+                                                             <li><a href="AgreementandAuctionDetails.aspx">Agreement and Auction Details</a></li>
+                                                         </ul>
+                                                     </li>
+                                                <li id="chitviewMenu" runat="server"><a href="EditGroupMaster1.aspx">Chit Group View / Edit</a></li>
+                                                     <li><a href="ChitGropMemberDetails.aspx" >Chit Group Details</a></li>
+                                                 </ul>
+                                          </li>
+                                        <li id="auctionMenu" runat="server"><a href="#">Auction</a>
+                                                 <ul  style="list-style-type: none" >
+                                                    <li><a href="AuctionForms.aspx" >Feed</a></li>
+                                                    <li><a href="UndoRedo_Auction.aspx" >Undo/ReDo</a></li>
+                                                    <li><a href="EditAuctionDetails.aspx" >Edit</a></li>
+                                                 </ul>
+                                          </li>
+                                        <li id="newGroupMenu" runat="server"><a href="#">For New Group</a>
+                                             <ul  style="list-style-type: none">
+                                                <li><a href="SuggestMembertoChit.aspx" >Suggest</a></li>
+                                                <li><a href="MembertoGroupApproval.aspx" >Approval</a></li>
+                                                <li><a href="AssiggnMemberToGroup.aspx" >Allocation</a></li>
+                                                 <li><a  href="NewgroupRevert.aspx">New Group Revert</a></li>
+                                             </ul>
+                                      </li>
+                                        <li id="transferMenu" runat="server"><a href="#">For Transfer</a>
+                                             <ul  style="list-style-type: none">
+                                                 <li><a href="Transfer_Suggestor.aspx" >Suggest</a></li>
+                                                <li><a href="Transfer_Suggestor_Approval.aspx" >Approval</a></li>
+                                                <li><a href="Assiggn_Trans_MemberToGroup.aspx" >Allocation</a></li>
+                                                  <li><a href="TransfergroupRevert.aspx" >TransfergroupRevert</a></li>
+                                             </ul>
+                                      </li>
+                                        <li id="removalMenu" runat="server"><a href="#">For Removal</a>
+										  <ul  style="list-style-type: none">
+                                                <li><a href="RemovalandSubstitution.aspx" >Suggest</a></li>
+                                                <li><a href="AcceptRemoval.aspx" >Approval</a></li>
+                                                <li><a href="suggestremovemebers.aspx" >Allocation</a></li>
+                                              <li><a href="RemovalRevert.aspx" >RemovegroupRevert</a></li>
+                                             </ul>
+										</li>
+                                        
+									</ul>
+								</li>
+								<li>
+									<a href="javascript:void(0)" class="mb_parent">Member</a>
+									<ul style="display:none">
+										 <li><a href="#" >Subscriber</a>
+                                                 <ul  style="list-style-type: none">
+                                                <li id="subsAddMenu" runat="server"><a href="MemberAddition.aspx">Subscriber Addtion</a></li>
+                                                <li id="subsViewMenu" runat="server"><a href="Editmembermaster3.aspx">Subscriber View / Edit</a></li>
+                                                <li id="subsMCMenu" runat="server"><a href="updateMID.aspx">Assign Money Collector</a></li>
+                                                <li id="subsEditMenu" runat="server"><a href="EditMemtoGrp.aspx">Edit Member to Group</a></li>
+                                                <li id="subsPaidMenu" runat="server"><a href="Subscriber_PaidDetails.aspx">Subscriber Paid Details</a></li>
+                                                    </ul>
+                                          </li>
+									</ul>
+								</li>
+								<li>
+									<a href="javascript:void(0)" class="mb_parent">Internal</a>
+									<ul style="display:none">
+
+                                        <li id="intimationMenu" runat="server"><a href="AuctionInitimationLetter.aspx">Auction Intimation</a> </li>
+                                        <li id="partyMenu" runat="server"><a href="PartyConfimation.aspx">Party Confirmation</a> </li>
+                                         <%--<li>
+                                           <a href="PallathurVoucherMultiples.aspx" >PallathurVoucher</a>  
+                                          </li>       --%>                        
+                                        <li id="branchMenu" runat="server"><a href="#">Branch Details</a>
+                                                 <ul style="list-style-type: none">
+                                                    <li><a href="BranchDetails.aspx" >Branch Addtion</a></li>
+                                                    <li><a href="EditBranchDetails.aspx" >Branch View / Edit</a></li>                                                 
+                                                   
+                                                  </ul>
+                                         </li>
+                                        <li id="BCMenu" runat="server"><a href="#">Money/Bill Collector</a>
+                                             <ul  style="list-style-type: none">
+                                                <li><a href="Dailycollection.aspx">Daily Collection</a></li>
+                                                <li><a href="MoneyCollector.aspx" >Collector Addition</a></li>
+                                                <li><a href="EditMonyCollector.aspx" >Collector View / Edit</a></li>
+                                                <li><a href="AssignReceiptBook.aspx" >Assign ReceiptBook</a></li>
+                                                <li><a href="EditAssignReceiptBook.aspx">Edit Assign ReceiptBook</a></li>
+                                                <li><a href="receiptbook.aspx">Receipt Book</a></li>
+                                             </ul>
+                                      </li>
+
+                                        <li id="empMenu" runat="server"><a href="#">Employee</a>
+										 <ul  style="list-style-type: none">
+                                                <li><a href="EmployeeDetails.aspx" >Employee Addition</a></li>
+                                               <li><a href="AddNewDesignation.aspx" >Add New Designation</a></li>
+                                                <li><a href="EditEmpDetails.aspx" >Employee View / Edit</a></li>                                             
+                                              <li><a href="SalaryDetails.aspx" >Employee Salary Details </a></li>
+                                             </ul>
+										</li>
+                                        <li id="bankMenu" runat="server"><a href="#">Bank Details</a>
+										<ul  style="list-style-type: none">
+                                                    <li><a href="BankDetails.aspx" >Bank Addition</a></li>
+                                                    <li><a href="EditBankDetails1.aspx" >Bank View / Edit</a></li>
+                                                    
+                                                 </ul>
+										
+										</li>
+                                        <li id="usersMenu" runat="server"><a href="#">Users</a>
+                                                 <ul  style="list-style-type: none">
+                                                    <li><a href="CreateAccount.aspx" >Create Account</a></li>
+                                                    <li><a href="ChangeAccount.aspx" >Change Password</a></li>
+                                                 </ul>
+                                          </li>
+										
+                                        <li id="commiMenu" runat="server"><a href="#">Commision Details</a>
+										<ul  style="list-style-type: none">
+                                                <li><a href="commissiondetails.aspx" >Edit Commision Details</a></li>
+                                                    
+                                        </ul>
+										
+										</li>
+                                        <li id="headsMenu" runat="server"><a href="#">Heads Addition</a>
+										<ul  style="list-style-type: none">
+                                        <li>
+                                            <a href="HeadsInsertion.aspx">Heads Insertion</a>
+									        <a href="ChitsUnderHeads.aspx">Add Chits Under Heads </a>
+                                            <a href="EditHead.aspx">Edit Head</a>
+                                            <a href="CourtAdvocateDegree.aspx">Add / Edit Court Details </a>
+                                            <a href="Addcustomerbank.aspx">Add Customer Bank</a>
+										</li>
+                                        </ul>
+                                        </li>
+                                        <li id="blockMenu" runat="server"><a href="Limit.aspx">Block Date</a>
+                                        </li>
+									</ul>
+								</li>
+                                <li id="notiMenu" runat="server">
+                                    <a href="Notification.aspx">Notifications</a>
+                                </li>
+							</ul>
+						</nav>
+					</div>
+				</div>
+			</div>
+			<!-- notifications content -->
+			<div style="display:none">
+				<div id="ntf_tickets_panel" style="display:none">
+					<p class="sticky-title">Adjustments</p>
+					<ul class="sticky-list">
+                       <li runat="server" id="ra1">
+							<a href="ReceivedAdjustments.aspx"><asp:Label runat="server" ID="lblra1"></asp:Label></a>
+						</li>
+						<li runat="server" id="ra2">
+							<a href="ReceivedAdjustments.aspx"><asp:Label runat="server" ID="lblra2"></asp:Label></a>
+						</li>
+					</ul>
+					<a href="ReceivedAdjustments.aspx" class="gh_button btn-small">Show all Adjustments</a>
+				</div>
+				<div id="ntf_comments_panel" style="display:none">
+					<p class="sticky-title">Payment Advices</p>
+					<ul class="sticky-list">
+                       <li runat="server" id="pa1">
+                            <asp:LinkButton ID="lnkpa11" runat="server" OnClick="lnkpa11_Click"></asp:LinkButton> 
+                            <asp:HiddenField ID="HD_lnkpa11" runat="server" />
+                            <asp:HiddenField ID="HD_HeadId1" runat="server" />
+
+                            
+							<%--<a href="OtherBranchPaymentPermanent.aspx"><asp:Label runat="server" ID="lblpa1"></asp:Label></a>--%>
+						</li>
+						<li runat="server" id="pa2">
+                            <asp:LinkButton ID="lnkpal2" runat="server" OnClick="lnkpal2_Click"></asp:LinkButton>
+                              <asp:HiddenField ID="HD_lnkpal2" runat="server" /> <asp:HiddenField ID="HD_HeadId2" runat="server" /> 
+							<%--<a href="OtherBranchPaymentPermanent.aspx"><asp:Label runat="server" ID="lblpa2"></asp:Label></a>--%>
+						</li>
+					</ul>
+					<a href="OtherBranchPaymentPermanent.aspx" class="gh_button btn-small">Show all Payment Advices</a>
+                    </div>
+                   <div id="ntf_comments_panel1" style="display:none">
+                    	<p class="sticky-title">Group Approval </p>
+					<ul class="sticky-list">
+                       <li runat="server" id="pn1_li1">
+							<a href="MembertoGroupApproval.aspx"><asp:Label runat="server" ID="lblmtog1"></asp:Label></a>
+						</li>
+						<li runat="server" id="pn1_li2">
+							<a href="MembertoGroupApproval.aspx"><asp:Label runat="server" ID="lblmtog2"></asp:Label></a>
+						</li>
+					</ul>
+					<a href="MembertoGroupApproval.aspx" class="gh_button btn-small">Show all </a>
+				</div>
+			
+				<div id="ntf_mail_panel" style="display:none">
+					<p class="sticky-title">Advices</p>
+					<ul class="sticky-list">
+						<li runat="server" id="rv1">
+							<a href="ReceivedAdvices.aspx"><asp:Label runat="server" ID="lblrv1"></asp:Label></a>
+						</li>
+						<li runat="server" id="rv2">
+							<a href="ReceivedAdvices.aspx"><asp:Label runat="server" ID="lblrv2"></asp:Label></a>
+						</li>
+					</ul>
+					<a href="ReceivedAdvices.aspx" class="gh_button btn-small">Show all Advices</a>
+				</div>
+                <div id="ntf_Salary_panel">
+					<p class="sticky-title">Salary Advices</p>					
+                     <a href="SalaryAdvices.aspx">Salary Advices</a>
+					<a href="SalaryAdvices.aspx" class="gh_button btn-small">Show all Salary Advices</a>                 
+				</div>
+			</div>
+		</header>
+    <div class="container">
+        <asp:ContentPlaceHolder ID="cphMainContent" runat="server">
+        </asp:ContentPlaceHolder>
+    </div>
+    <div class="sw_width">
+        <img class="sw_full" title="switch to full width" alt="" src="img/blank.gif" />
+        <img style="display: none" class="sw_fixed" title="switch to fixed width (980px)"
+            alt="" src="img/blank.gif" />
+    </div>
+    </form>
+</body>
+</html>

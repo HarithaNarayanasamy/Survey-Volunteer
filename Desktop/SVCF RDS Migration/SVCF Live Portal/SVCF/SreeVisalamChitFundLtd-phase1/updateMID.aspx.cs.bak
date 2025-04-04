@@ -1,0 +1,205 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+using System.Data;
+using SVCF_BusinessAccessLayer;
+using SVCF_TransactionLayer;
+using SVCF_DataAccessLayer;
+using log4net;
+using log4net.Config;
+
+namespace SreeVisalamChitFundLtd_phase1
+{
+    public partial class updateMID : System.Web.UI.Page
+    {
+        ILog logger = log4net.LogManager.GetLogger(typeof(updateMID));
+        #region VarDeclaration
+        Dictionary<string, string> Tempdic = new Dictionary<string, string>();
+        List<string> TempList = new List<string>();
+       
+        string qry = "";
+        #endregion
+
+        #region VarDeclaration
+        BusinessLayer balayer = new BusinessLayer();
+        TransactionLayer tranlayer = new TransactionLayer();
+        #endregion
+
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            if (!Page.IsPostBack)
+            {
+                LoadGrpId(DD_Gid, 1);
+                LoadGrpId(DD_MCList, 2);
+                LoadGD_MemberList();
+            }
+
+        }
+
+        public void LoadGrpId(DropDownList ddl,int iType)
+        {
+            try
+            {
+                Tempdic.Clear();
+                switch (iType)
+                {                       
+                    case 1:
+                      qry = "select Head_Id,GROUPNO from groupmaster where BranchId=" + Convert.ToInt32(Session["Branchid"]) + "";
+                      Tempdic = balayer.CmnList(qry);
+                      ddl.DataValueField = "Key";
+                      ddl.DataTextField = "Value";
+                      ddl.DataSource = Tempdic;
+                      ddl.DataBind();
+                      break;
+
+                    case 2:
+                        qry = "select m.moneycollid,concat(m.moneycollname," + "' | '" + ",(SELECT Node FROM svcf.headstree where NodeID=m.BranchID))as moneycollname FROM moneycollector m;";
+                        Tempdic = balayer.CmnList(qry);
+                      ddl.DataValueField = "Key";
+                      ddl.DataTextField = "Value";
+                      ddl.DataSource = Tempdic;
+                      ddl.DataBind();
+                      break;
+                }               
+
+            }
+            catch (Exception) { }
+        }
+        //public void LoadGD_MemberList()
+        //{
+        //    try
+        //    {
+        //        //qry = "select Head_Id,MemberName,MemberAddress,GrpMemberID from membertogroupmaster where GroupID=" + DD_Gid.SelectedValue + " and BranchID=" + Convert.ToInt32(Session["Branchid"]) + "";
+        //        qry = "select mt.Head_Id as  'Head_Id' ,mt.MemberName as 'MemberName',mt.MemberAddress as 'Address',mt.GrpMemberID as 'GrpMemberID', "+
+        //                "mc.moneycollname as 'Money-collectorName' from membertogroupmaster as mt left join moneycollector as mc on mt.M_Id=mc.moneycollid where mt.GroupID=" +
+        //                ""+ DD_Gid.SelectedValue + " and mt.BranchID=" + Convert.ToInt32(Session["Branchid"]) + " ";
+        //        DataTable dt = new DataTable();
+        //        dt = balayer.GetDataTable(qry);
+        //        GridUpdateMID.DataSource = dt;
+        //        GridUpdateMID.DataBind();
+        //    }
+        //    catch (Exception) { }
+        //}
+        public void LoadGD_MemberList()
+        {
+            try
+            {
+                DataTable dtBind = new DataTable();
+                dtBind.Columns.Add("GrpMemberID", typeof(int));
+                dtBind.Columns.Add("Head_Id");
+                dtBind.Columns.Add("TokenNumber");
+                dtBind.Columns.Add("MemberName");
+                dtBind.Columns.Add("Address");
+                dtBind.Columns.Add("Money-collectorName");
+                var GrpMemberid = string.Empty;
+                DataRow drBind = dtBind.NewRow();
+                if (DD_Gid.SelectedItem.Value != "--Select--")
+                {
+                    var dtHeads = balayer.GetDataTable(" select NodeID from headstree where ParentID=" + DD_Gid.SelectedItem.Value);
+                    for (int j = 0; j < dtHeads.Rows.Count; j++)
+                    {
+                        GrpMemberid = string.Empty;                       
+                        string tokennumber = balayer.GetSingleValue(@"select cast(digits(mg1.GrpMemberID) as unsigned)as ChitNo1 from membertogroupmaster as mg1 join voucher as v1 on v1.Head_Id=mg1.Head_Id join view_groupwisedue as vgwd1 on vgwd1.`GroupId`=" + DD_Gid.SelectedItem.Value + " left join trans_payment as tp1 on v1.Head_Id =tp1.TokenNumber join membermaster as mm on (mg1.MemberID=mm.MemberIDNew) where mg1.BranchID=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and mg1.GroupID=" + DD_Gid.SelectedItem.Value + " and v1.Head_Id=" + dtHeads.Rows[j]["NodeID"] + " group by v1.Head_Id order by cast(digits(mg1.GrpMemberID) as unsigned),v1.Voucher_Type DESC ;");
+                        if (string.IsNullOrEmpty(tokennumber))
+                        {
+                            GrpMemberid = balayer.GetSingleValue("select cast(digits(GrpMemberID) as unsigned) as GrpMemberID  from membertogroupmaster where Head_Id=" + dtHeads.Rows[j]["NodeID"]);
+                            if (!(string.IsNullOrEmpty(GrpMemberid)))
+                            {
+                                tokennumber = GrpMemberid;
+                                drBind["GrpMemberID"] = GrpMemberid;
+                            }
+                        }
+                        else
+                        {
+                            drBind["GrpMemberID"] = tokennumber;
+                        }
+                        if (!(string.IsNullOrEmpty(tokennumber)))
+                        {
+                            drBind["Head_Id"] = dtHeads.Rows[j]["NodeID"];
+                            drBind["TokenNumber"] = balayer.GetSingleValue("select GrpMemberID from membertogroupmaster where Head_Id=" + dtHeads.Rows[j]["NodeID"]);
+
+                            string MemberName = balayer.GetSingleValue(@"select concat(mg1.MemberName) as `MemberName` from membertogroupmaster as mg1 join voucher as v1 on v1.Head_Id=mg1.Head_Id join view_groupwisedue as vgwd1 on vgwd1.`GroupId`=" + DD_Gid.SelectedItem.Value + " left join trans_payment as tp1 on v1.Head_Id =tp1.TokenNumber join membermaster as mm on (mg1.MemberID=mm.MemberIDNew) where mg1.BranchID=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and mg1.GroupID=" + DD_Gid.SelectedItem.Value + " and v1.Head_Id=" + dtHeads.Rows[j]["NodeID"] + " group by v1.Head_Id order by v1.ChoosenDate DESC ;");
+                            if (string.IsNullOrEmpty(MemberName))
+                            {
+                                string strMemID = balayer.GetSingleValue("SELECT MemberID FROM svcf.membertogroupmaster where Head_id=" + dtHeads.Rows[j]["NodeID"]);
+                                drBind["MemberName"] = balayer.GetSingleValue("SELECT CustomerName FROM svcf.membermaster where MemberIDNew=" + strMemID);
+                            }
+                            else
+                            {
+                                drBind["MemberName"] = MemberName;
+                            }
+                            string memberaddress = balayer.GetSingleValue(@"select concat(mg1.MemberAddress) as `MemberAddress` from membertogroupmaster as mg1 join voucher as v1 on v1.Head_Id=mg1.Head_Id join view_groupwisedue as vgwd1 on vgwd1.`GroupId`=" + DD_Gid.SelectedItem.Value + " left join trans_payment as tp1 on v1.Head_Id =tp1.TokenNumber join membermaster as mm on (mg1.MemberID=mm.MemberIDNew) where mg1.BranchID=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and mg1.GroupID=" + DD_Gid.SelectedItem.Value + " and v1.Head_Id=" + dtHeads.Rows[j]["NodeID"] + " group by v1.Head_Id order by v1.ChoosenDate DESC ;");
+                            if (string.IsNullOrEmpty(memberaddress))
+                            {
+                                drBind["Address"] = balayer.GetSingleValue("select MemberAddress from membertogroupmaster where Head_Id=" + dtHeads.Rows[j]["NodeID"]);
+                            }
+                            else
+                            {
+                                drBind["Address"] = memberaddress;
+                            }
+                            string moneycollectorname = balayer.GetSingleValue(@"select moneycollname from membertogroupmaster as mg1 join voucher as v1 on v1.Head_Id=mg1.Head_Id join view_groupwisedue as vgwd1 on vgwd1.`GroupId`=" + DD_Gid.SelectedItem.Value + " left join moneycollector as mc on mg1.M_Id=mc.moneycollid left join trans_payment as tp1 on v1.Head_Id =tp1.TokenNumber join membermaster as mm on (mg1.MemberID=mm.MemberIDNew) where mg1.BranchID=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and mg1.GroupID=" + DD_Gid.SelectedItem.Value + " and v1.Head_Id=" + dtHeads.Rows[j]["NodeID"] + " group by v1.Head_Id order by v1.ChoosenDate DESC ");
+                            if (string.IsNullOrEmpty(moneycollectorname))
+                            {
+                                string moneyname = balayer.GetSingleValue("SELECT M_Id FROM svcf.membertogroupmaster where Head_id=" + dtHeads.Rows[j]["NodeID"]);
+                                drBind["Money-collectorName"] = balayer.GetSingleValue("select moneycollname from moneycollector where moneycollid=" + moneyname);
+                            }
+                            else
+                            {
+                                drBind["Money-collectorName"] = moneycollectorname;
+                            }
+
+                            dtBind.Rows.Add(drBind.ItemArray);
+                        }
+                    }
+                    DataView dv = dtBind.DefaultView;
+                    dv.Sort = "GrpMemberID asc";
+                    DataTable sortedDT = dv.ToTable();
+                    GridUpdateMID.DataSource = sortedDT;
+                }
+
+                GridUpdateMID.DataBind();
+            }
+            catch (Exception err)
+            {
+                logger.Error(DateTime.Now + " | " + "updateMID.aspx - LoadGD_MemberList():  Error: " + err.Message + " |  by: " + Convert.ToString(Session["Branchid"]) + "");
+            }
+        }
+        protected void DD_Gid_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            try
+            {
+                LoadGD_MemberList();
+            }
+            catch (Exception err)
+            {
+                logger.Error(DateTime.Now + " | " + "updateMID.aspx - DD_Gid_SelectedIndexChanged():  Error: " + err.Message + " |  by: " + Convert.ToString(Session["Branchid"]) + "");
+            }
+        }
+
+        protected void BtnUpdate_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                for (int i = 0; i <= GridUpdateMID.Rows.Count - 1; i++)
+                {
+                    if (((CheckBox)GridUpdateMID.Rows[i].FindControl("ChkMid")).Checked)
+                    {
+                        Label headid = (Label)GridUpdateMID.Rows[i].FindControl("lblheadid");
+                        qry = "update membertogroupmaster set M_Id=" + DD_MCList.SelectedValue + " where GroupID=" + DD_Gid.SelectedValue + " and BranchId=" + Convert.ToInt32(Session["Branchid"]) + " and Head_ID=" + Convert.ToInt32(headid.Text) + "";
+                        balayer.ExecuteQuery(qry);
+                        //CheckBox chk = (CheckBox)GridUpdateMID.Rows[i].FindControl("ChkMid");
+                        // chk.Checked = false;
+                    }
+                }
+                LoadGD_MemberList();
+            }
+            catch (Exception err)
+            {
+                logger.Error(DateTime.Now + " | " + "updateMID.aspx - BtnUpdate_Click():  Error: " + err.Message + " |  by: " + Convert.ToString(Session["Branchid"]) + "");
+            }
+        }
+    }
+}

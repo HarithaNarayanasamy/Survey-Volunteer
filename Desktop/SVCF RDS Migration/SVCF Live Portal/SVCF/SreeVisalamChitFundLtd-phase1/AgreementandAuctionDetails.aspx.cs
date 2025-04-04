@@ -1,0 +1,494 @@
+﻿using log4net;
+using SVCF_BusinessAccessLayer;
+using SVCF_TransactionLayer;
+using System;
+using System.Linq;
+using System.Web;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+using System.Data;
+
+namespace SreeVisalamChitFundLtd_phase1
+{
+    public partial class AgreementandAuctionDetails : System.Web.UI.Page
+    {
+        #region Object
+        BusinessLayer balayer = new BusinessLayer();
+        TransactionLayer trn = new TransactionLayer();
+        #endregion
+        string monthlyvalue = "";
+        ILog logger = log4net.LogManager.GetLogger(typeof(groups));
+
+        protected void Page_PreInit(object sender, EventArgs e)
+        {
+            if (Session["UserName"] == null || Session["Branchid"] == null || Session["BranchName"] == null)
+            {
+                Response.Redirect(Page.ResolveUrl("~/Login.aspx"), true);
+            }
+        }
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            if (!IsPostBack)
+            {
+                //09/09/2021
+                DateTime dt = DateTime.Parse("12:00 PM");
+                MKB.TimePicker.TimeSelector.AmPmSpec am_pm;
+                if (dt.ToString("tt") == "AM")
+                {
+                    am_pm = MKB.TimePicker.TimeSelector.AmPmSpec.AM;
+                }
+                else
+                {
+                    am_pm = MKB.TimePicker.TimeSelector.AmPmSpec.PM;
+                }
+                TimeSelector8.SetTime(dt.Hour, dt.Minute, am_pm);
+                
+
+
+                DateTime dt1 = DateTime.Parse("12:00 PM");
+                MKB.TimePicker.TimeSelector.AmPmSpec am_pm1;
+                if (dt1.ToString("tt") == "AM")
+                {
+                    am_pm1 = MKB.TimePicker.TimeSelector.AmPmSpec.AM;
+                }
+                else
+                {
+                    am_pm1 = MKB.TimePicker.TimeSelector.AmPmSpec.PM;
+                }
+                TimeSelector1.SetTime(dt1.Hour, dt1.Minute, am_pm1);
+//
+                var userinfo = HttpContext.Current.User.Identity.Name;
+                var qry = "select rs.name from roles as rs inner join rights as rt on (rt.roleid=rs.id) where memberid=" + userinfo + "";
+                var usrRole = balayer.GetSingleValue(qry);
+                if (usrRole == "Report")
+                {
+                    Response.Redirect("Home.aspx", false);
+                }
+
+                Session["CheckRefresh"] = System.Guid.NewGuid().ToString();
+                //  txtgroup_no.Focus();
+                ddlChitGroup.DataSource = null;
+                ddlChitGroup.Items.Clear();
+                ddlChitGroup.DataBind();
+                DataTable dtGroups;
+                //dtGroups = balayer.GetDataTable("SELECT t1.GroupNo as GroupNo,t1.Head_Id,Count(t2.GroupID) as NoofFilledToken,t1.NoofMembers FROM `groupmaster` as t1 left Join  membertogroupmaster as t2 on   t1.Head_Id=t2.GroupID join svcf.auctiondetails as a1 on(t1.Head_Id=a1.GroupID) where t1.`BranchID`=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and t1.Head_Id not in(a1.GroupID)   Group by t1.Head_Id HAVING Count(t2.GroupID)<>NoofMembers");
+                //FDR and PSO page Filling Mandatory
+                dtGroups = balayer.GetDataTable("select GroupNo as GROUPNO, Head_Id from groupmaster where Head_Id not in(select Head_Id from groupmaster as g1 join auctiondetails as ac on ac.GroupID = g1.Head_Id where g1.BranchID = " + balayer.ToobjectstrEvenNull(Session["Branchid"]) + ")and branchid = " + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and (PSOOrderNo<>'' or PSOOrderNo<>null);");
+                if(dtGroups.Rows.Count>0)
+                {
+                    DataRow dr = dtGroups.NewRow();
+                    dr[0] = "--Select--";
+                    dr[1] = "0";
+
+                    ddlChitGroup.DataSource = dtGroups;
+                    ddlChitGroup.DataTextField = "GROUPNO";
+                    ddlChitGroup.DataValueField = "Head_Id";
+                    dtGroups.Rows.InsertAt(dr, 0);
+                    ddlChitGroup.DataBind();
+                    txtauction_dt1.ToolTip = "Ex. " + DateTime.Now.ToString("dd/MM/yyyy") + " (dd/mm/yyyy)";
+                    txtauction_dt.ToolTip = "Ex. " + DateTime.Now.ToString("dd/MM/yyyy") + " (dd/mm/yyyy)";
+                    txtdt_of_agree.ToolTip = "Ex. " + DateTime.Now.ToString("dd/MM/yyyy") + " (dd/mm/yyyy)";
+                    txtchit_start_dt.ToolTip = "Ex. " + DateTime.Now.ToString("dd/MM/yyyy") + " (dd/mm/yyyy)";
+                    txtchit_end_dt.ToolTip = "Ex. " + DateTime.Now.ToString("dd/MM/yyyy") + " (dd/mm/yyyy)";
+                }
+            }
+        }
+        protected void Page_PreRender(object sender, EventArgs e)
+        {
+            ViewState["CheckRefresh"] = Session["CheckRefresh"];
+        }
+
+        protected void btnclose(object sender, EventArgs e)
+        {
+            clearGroup();
+        }
+
+        protected void btnaddGroup_click(object sender, EventArgs e)
+        {
+            Page.Validate("group");
+            if (!Page.IsValid)
+            {
+                return;
+            }
+            if (Session["CheckRefresh"].ToString() != ViewState["CheckRefresh"].ToString())
+            {
+                return;
+            }
+            TransactionLayer trn = new TransactionLayer();
+            string DualTransactionKey = "";
+            try
+            {
+                int count = Convert.ToInt32(balayer.GetSingleValue("SELECT count(*) FROM  `groupmaster` where GROUPNO='" + balayer.MySQLEscapeString(ddlChitGroup.SelectedItem.Value) + "'"));
+                if (count > 0)
+                {
+                    ScriptManager.RegisterStartupScript(this, GetType(), "Warning", "alert('" + balayer.MySQLEscapeString(ddlChitGroup.SelectedItem.Text) + " Already Exists!!!');", true);
+                   // txtgroup_no.Text = "";
+                    //txtgroup_no.Focus();
+                    return;
+                }
+                int parentID = 0;
+                string strPreviousID = "";
+                long iresult = 0;
+                string strIdtoInsert = "";
+               
+                decimal chitvalue = 0;
+                string headid="";
+                long strCall;
+                long strPrized;
+
+                
+               
+                
+                string branch = balayer.GetSingleValue("SELECT B_Code FROM svcf.branchdetails where Head_Id=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + "");
+                DataTable selectedBranchTable = balayer.GetDataTable("select MemberID,AddressForCommunication from membermaster where BranchId=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + "");
+                string MemberID = balayer.ToobjectstrEvenNull(selectedBranchTable.Rows[0]["MemberID"]);
+                string AddressForCommunication = balayer.MySQLEscapeString(balayer.ToobjectstrEvenNull(selectedBranchTable.Rows[0]["AddressForCommunication"]));
+
+                // string MemIDTab = balayer.GetSingleValue("select MemberIDNew from membermaster where CustomerName like '%Visalam%' and branchid=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + "");
+                string iresult1 =Convert.ToString( balayer.GetSingleValue("select NodeID from svcf.headstree where ParentID="+ ddlChitGroup.SelectedItem.Value));
+
+                //09/09/2021
+                int AucHour = int.Parse(string.Format("{0}", TimeSelector8.Hour));
+                int AucMin = int.Parse(string.Format("{0}", TimeSelector8.Minute));
+
+                string AucAMPM = "";
+                if (TimeSelector1.AmPm.ToString().Contains("AM"))
+                {
+                    AucAMPM = "AM";
+                }
+                else
+                {
+                    AucAMPM = "PM";
+                }
+
+                string AuctionTime = balayer.Get24HrTime(AucHour, AucMin, AucAMPM, 0.0);
+
+                int AucHour1 = int.Parse(string.Format("{0}", TimeSelector1.Hour));
+                int AucMin1 = int.Parse(string.Format("{0}", TimeSelector1.Minute));
+
+                string AucAMPM1 = "";
+                if (TimeSelector1.AmPm.ToString().Contains("AM"))
+                {
+                    AucAMPM1 = "AM";
+                }
+                else
+                {
+                    AucAMPM1 = "PM";
+                }
+                string AuctionEndTime = balayer.Get24HrTime(AucHour1, AucMin1, AucAMPM1, 0.0);
+
+                //
+                // Update Portion group master
+                //long insertCmd = trn.insertorupdateTrn("insert into groupmaster(BranchID,GROUPNO,PSOOrderNo,PSOOrderDate,PSODROffice,chitAgreementNo,ChitAgreementYear,AgreementDate,ChitValue,ChitPeriod,ChitCategory,ChitStartDate,ChitEndDate,NoofMembers,AuctionDate,AuctionTime,AuctionEndTime,`SDP_FDRNO`,`SDP_Bank`,`SDP_BankPlace`,`SDP_Commencement`,`SDP_Maturity`,`SDP_RateofInterest`,`SDP_PeriodinMonths`,`SDP_Amount`,`Head_Id`) values(" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + ",'" + balayer.MySQLEscapeString(ddlChitGroup.SelectedItem.Text)  + "','" + balayer.MySQLEscapeString(txtchit_agree_no.Text) + "'," + txtdt_of_agree.Text.Split('/')[2] + ",'" + balayer.indiandateToMysqlDate(txtdt_of_agree.Text)  + "','" + balayer.indiandateToMysqlDate(txtchit_start_dt.Text) + "','" + balayer.indiandateToMysqlDate(txtchit_end_dt.Text)  + ",'" + balayer.indiandateToMysqlDate(txtauction_dt.Text)  + "," + ddlChitGroup.SelectedItem.Value + ")");
+                //09/09/2021
+                //long insertCmd = trn.insertorupdateTrn("update groupmaster set chitAgreementNo='"+ balayer.MySQLEscapeString(txtchit_agree_no.Text) + "',ChitAgreementYear="+ txtdt_of_agree.Text.Split('/')[2] + ",AgreementDate='"+ balayer.indiandateToMysqlDate(txtdt_of_agree.Text) + "',ChitStartDate='"+ balayer.indiandateToMysqlDate(txtchit_start_dt.Text) + "',ChitEndDate='"+ balayer.indiandateToMysqlDate(txtchit_end_dt.Text) + "',AuctionDate='"+ balayer.indiandateToMysqlDate(txtauction_dt.Text) + "' where Head_Id=" + ddlChitGroup.SelectedItem.Value+"  ");
+                long insertCmd = trn.insertorupdateTrn("update groupmaster set AuctionTime='" + AuctionTime + "' ,AuctionEndTime='" + AuctionEndTime + "' ,chitAgreementNo='" + balayer.MySQLEscapeString(txtchit_agree_no.Text) + "',ChitAgreementYear=" + txtdt_of_agree.Text.Split('/')[2] + ",AgreementDate='" + balayer.indiandateToMysqlDate(txtdt_of_agree.Text) + "',ChitStartDate='" + balayer.indiandateToMysqlDate(txtchit_start_dt.Text) + "',ChitEndDate='" + balayer.indiandateToMysqlDate(txtchit_end_dt.Text) + "',AuctionDate='" + balayer.indiandateToMysqlDate(txtauction_dt.Text) + "' where Head_Id=" + ddlChitGroup.SelectedItem.Value + "  ");
+                //
+
+                string GrpNo = balayer.MySQLEscapeString(ddlChitGroup.SelectedItem.Text);
+
+                //get the value of monthly,trimonthly
+                 monthlyvalue = balayer.GetSingleValue("select ChitCategory from svcf.groupmaster where Head_Id="+ ddlChitGroup.SelectedItem.Value);
+
+                //get Number of Members
+                // int numberofDraw = Convert.ToInt32(txtno_of_members.Text);
+                int numberofDraw=Convert.ToInt16(balayer.GetSingleValue("select NoofMembers from svcf.groupmaster where Head_Id=" + ddlChitGroup.SelectedItem.Value));
+
+
+                System.Globalization.DateTimeFormatInfo usDtfi = new System.Globalization.CultureInfo("en-NZ", false).DateTimeFormat;
+                int RebidNo = 0;
+                string d = balayer.ToobjectstrEvenNull(txtauction_dt.Text);
+                DateTime dFirstAuctionDate = DateTime.Parse(d, usDtfi);
+                DateTime tempDAuctiondates = dFirstAuctionDate;
+                tempDAuctiondates = tempDAuctiondates.AddMonths(-1);
+
+                // get chit value
+                chitvalue = Convert.ToDecimal(balayer.GetSingleValue("select ChitValue from svcf.groupmaster where Head_Id=" + ddlChitGroup.SelectedItem.Value));
+                decimal currDueAmt = Convert.ToDecimal(chitvalue) / numberofDraw;
+
+
+
+                decimal nextDueAmt = currDueAmt;
+                //get the headid value
+                headid = balayer.GetSingleValue("select Head_Id from svcf.groupmaster where Head_Id = " + ddlChitGroup.SelectedItem.Value);
+                int noofmonths = AuctionDates();
+                string d1 = balayer.ToobjectstrEvenNull(txtauction_dt1.Text);
+                string d2 = System.DateTime.Now.ToString("d1");
+
+                //if (balayer.ToobjectstrEvenNull(cmbchit_category.SelectedItem) == "Fortnightly")
+                string s = "";
+                string s1 = "";
+                if (monthlyvalue == "Fortnightly")
+                {
+                    for (int drno = 1; drno <= numberofDraw; drno++)
+                    {
+                        Boolean b = Convert.ToBoolean("sunday".Equals(balayer.ToobjectstrEvenNull(tempDAuctiondates.Date.DayOfWeek), StringComparison.InvariantCultureIgnoreCase));
+                        s1 = "";
+                        if (b == true)
+                        {
+                            //dFirstAuctionDate = dFirstAuctionDate.AddDays(1);
+                            s1 = Convert.ToString(tempDAuctiondates.AddDays(1));
+                        }
+                         s = tempDAuctiondates.Date.ToString("dd/MM/yyyy");
+                        if(s1=="")
+                        {
+                            if ((drno != 1) && (drno != 2))
+                            {
+                                long inscmd = trn.insertorupdateTrn("insert into auctiondetails(`BranchID`,`GroupID`,`AuctionDate`,`ReBidNO`,`DrawNO`,`IsPrized`) values(" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + "," + ddlChitGroup.SelectedItem.Value + ",'" + balayer.changedateformat(Convert.ToDateTime(s), 2) + "'," + RebidNo + "," + drno + ",'I')");
+                                tempDAuctiondates = tempDAuctiondates.AddDays(15);
+                            }
+                        }
+                        else
+                        {
+                            if ((drno != 1) && (drno != 2))
+                            {
+                                long inscmd = trn.insertorupdateTrn("insert into auctiondetails(`BranchID`,`GroupID`,`AuctionDate`,`ReBidNO`,`DrawNO`,`IsPrized`) values(" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + "," + ddlChitGroup.SelectedItem.Value + ",'" + balayer.changedateformat(Convert.ToDateTime(s1), 2) + "'," + RebidNo + "," + drno + ",'I')");
+                                tempDAuctiondates = tempDAuctiondates.AddDays(15);
+                            }
+                        }
+                        if(s1=="")
+                        {
+                            if (drno == 1)
+                            {
+                                string fdfdfd = balayer.GetSingleValue("SELECT min(MemberIDNew) FROM svcf.membermaster where BranchId=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and CustomerName='Sree Visalam Chit Fund Ltd'");
+                                long inscmd = trn.insertorupdateTrn("insert into auctiondetails(`BranchID`,`GroupID`,`AuctionDate`,`ReBidNO`,`DrawNO`,`PrizedMemberID`,MemberID,`CurrentDueAmount`,`NextDueAmount`,PrizedAmount,`IsPrized`) values(" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + "," + ddlChitGroup.SelectedItem.Value + ",'" + balayer.indiandateToMysqlDate(d1) + "'," + RebidNo + "," + drno + "," + iresult1 + "," + fdfdfd + "," + currDueAmt + "," + nextDueAmt + "," + chitvalue + ",'F')");
+                                tempDAuctiondates = tempDAuctiondates.AddDays(15);
+                            }
+                        }
+                        else
+                        {
+                            if (drno == 1)
+                            {
+                                string fdfdfd = balayer.GetSingleValue("SELECT min(MemberIDNew) FROM svcf.membermaster where BranchId=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and CustomerName='Sree Visalam Chit Fund Ltd'");
+                                long inscmd = trn.insertorupdateTrn("insert into auctiondetails(`BranchID`,`GroupID`,`AuctionDate`,`ReBidNO`,`DrawNO`,`PrizedMemberID`,MemberID,`CurrentDueAmount`,`NextDueAmount`,PrizedAmount,`IsPrized`) values(" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + "," + ddlChitGroup.SelectedItem.Value + ",'" + balayer.indiandateToMysqlDate(s1) + "'," + RebidNo + "," + drno + "," + iresult1 + "," + fdfdfd + "," + currDueAmt + "," + nextDueAmt + "," + chitvalue + ",'F')");
+                                tempDAuctiondates = tempDAuctiondates.AddDays(15);
+                            }
+                        }
+                        if(s1=="")
+                        {
+                            if (drno == 2)
+                            {
+                                long inscmd = trn.insertorupdateTrn("insert into auctiondetails(`BranchID`,`GroupID`,`AuctionDate`,`ReBidNO`,`DrawNO`,`CurrentDueAmount`,`IsPrized`) values(" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + "," + ddlChitGroup.SelectedItem.Value + ",'" + balayer.changedateformat(Convert.ToDateTime(s), 2) + "'," + RebidNo + "," + drno + "," + currDueAmt + ",'I')");
+                                tempDAuctiondates = tempDAuctiondates.AddDays(15);
+                            }
+                        }
+                        else
+                        {
+                            if (drno == 2)
+                            {
+                                long inscmd = trn.insertorupdateTrn("insert into auctiondetails(`BranchID`,`GroupID`,`AuctionDate`,`ReBidNO`,`DrawNO`,`CurrentDueAmount`,`IsPrized`) values(" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + "," + ddlChitGroup.SelectedItem.Value + ",'" + balayer.changedateformat(Convert.ToDateTime(s1), 2) + "'," + RebidNo + "," + drno + "," + currDueAmt + ",'I')");
+                                tempDAuctiondates = tempDAuctiondates.AddDays(15);
+                            }
+                        }   
+                    }
+                }
+                else if (monthlyvalue == "Monthly")
+                {
+                    for (int drno = 1; drno <= numberofDraw; drno++)
+                    {
+                        Boolean b = Convert.ToBoolean("sunday".Equals(balayer.ToobjectstrEvenNull(tempDAuctiondates.Date.DayOfWeek), StringComparison.InvariantCultureIgnoreCase));
+                        s1 = "";
+                        if (b == true)
+                        {
+                            //dFirstAuctionDate = dFirstAuctionDate.AddDays(noofmonths);
+                            s1 = Convert.ToString(tempDAuctiondates.AddDays(noofmonths));
+                        }
+                          s = tempDAuctiondates.Date.ToString("dd/MM/yyyy");
+                        if (s1 == "")
+                        {
+                            if ((drno != 1) && (drno != 2))
+                            {
+                                long inscmd = trn.insertorupdateTrn("insert into auctiondetails(`BranchID`,`GroupID`,`AuctionDate`,`ReBidNO`,`DrawNO`,`IsPrized`) values(" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + "," + ddlChitGroup.SelectedItem.Value + ",'" + balayer.changedateformat(Convert.ToDateTime(s), 2) + "'," + RebidNo + "," + drno + ",'I')");
+                                tempDAuctiondates = tempDAuctiondates.AddMonths(noofmonths);
+                            }
+                        }
+                        else
+                        {
+                            if ((drno != 1) && (drno != 2))
+                            {
+                                long inscmd = trn.insertorupdateTrn("insert into auctiondetails(`BranchID`,`GroupID`,`AuctionDate`,`ReBidNO`,`DrawNO`,`IsPrized`) values(" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + "," + ddlChitGroup.SelectedItem.Value + ",'" + balayer.changedateformat(Convert.ToDateTime(s1), 2) + "'," + RebidNo + "," + drno + ",'I')");
+                                tempDAuctiondates = tempDAuctiondates.AddMonths(noofmonths);
+                            }
+                        }
+                        if (s1 == "")
+                        {
+                            if (drno == 1)
+
+                            {
+                                string fdfdfd = balayer.GetSingleValue("SELECT MemberIDNew FROM svcf.membermaster where BranchId=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and CustomerName='Sree Visalam Chit Fund Ltd'");
+                                long inscmd = trn.insertorupdateTrn("insert into auctiondetails(`BranchID`,`GroupID`,`AuctionDate`,`ReBidNO`,`DrawNO`,`PrizedMemberID`,MemberID,`CurrentDueAmount`,`NextDueAmount`,PrizedAmount,`IsPrized`) values(" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + "," + ddlChitGroup.SelectedItem.Value + ",'" + balayer.indiandateToMysqlDate(d1) + "'," + RebidNo + "," + drno + "," + iresult1 + "," + fdfdfd + "," + currDueAmt + "," + nextDueAmt + "," + chitvalue + ",'F')");
+                                tempDAuctiondates = tempDAuctiondates.AddMonths(noofmonths);
+                            }
+                        }
+                        else
+                        {
+                            if (drno == 1)
+
+                            {
+                                string fdfdfd = balayer.GetSingleValue("SELECT MemberIDNew FROM svcf.membermaster where BranchId=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and CustomerName='Sree Visalam Chit Fund Ltd'");
+                                //long inscmd = trn.insertorupdateTrn("insert into auctiondetails(`BranchID`,`GroupID`,`AuctionDate`,`ReBidNO`,`DrawNO`,`PrizedMemberID`,MemberID,`CurrentDueAmount`,`NextDueAmount`,PrizedAmount,`IsPrized`) values(" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + "," + ddlChitGroup.SelectedItem.Value + ",'" + balayer.indiandateToMysqlDate(s1) + "'," + RebidNo + "," + drno + "," + iresult1 + "," + fdfdfd + "," + currDueAmt + "," + nextDueAmt + "," + chitvalue + ",'F')");
+                                long inscmd = trn.insertorupdateTrn("insert into auctiondetails(`BranchID`,`GroupID`,`AuctionDate`,`ReBidNO`,`DrawNO`,`PrizedMemberID`,MemberID,`CurrentDueAmount`,`NextDueAmount`,PrizedAmount,`IsPrized`) values(" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + "," + ddlChitGroup.SelectedItem.Value + ",'" + balayer.changedateformat(Convert.ToDateTime(s1),2) + "'," + RebidNo + "," + drno + "," + iresult1 + "," + fdfdfd + "," + currDueAmt + "," + nextDueAmt + "," + chitvalue + ",'F')");
+                                tempDAuctiondates = tempDAuctiondates.AddMonths(noofmonths);
+                            }
+                        }
+                        if (s1 == "")
+                        {
+                            if (drno == 2)
+                            {
+                                long inscmd = trn.insertorupdateTrn("insert into auctiondetails(`BranchID`,`GroupID`,`AuctionDate`,`ReBidNO`,`DrawNO`,`CurrentDueAmount`,`IsPrized`) values(" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + "," + ddlChitGroup.SelectedItem.Value + ",'" + balayer.changedateformat(Convert.ToDateTime(s), 2) + "'," + RebidNo + "," + drno + "," + currDueAmt + ",'I')");
+                                tempDAuctiondates = tempDAuctiondates.AddMonths(noofmonths);
+                            }
+                        }
+                        else
+                        {
+                            if (drno == 2)
+                            {
+                                long inscmd = trn.insertorupdateTrn("insert into auctiondetails(`BranchID`,`GroupID`,`AuctionDate`,`ReBidNO`,`DrawNO`,`CurrentDueAmount`,`IsPrized`) values(" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + "," + ddlChitGroup.SelectedItem.Value + ",'" + balayer.changedateformat(Convert.ToDateTime(s1), 2) + "'," + RebidNo + "," + drno + "," + currDueAmt + ",'I')");
+                                tempDAuctiondates = tempDAuctiondates.AddMonths(noofmonths);
+                            }
+                        }
+                    }
+                }
+                else if (monthlyvalue == "Trimonthly")
+                {
+                    for (int drno = 1; drno <= numberofDraw; drno++)
+                    {
+                        Boolean b = Convert.ToBoolean("sunday".Equals(balayer.ToobjectstrEvenNull(tempDAuctiondates.Date.DayOfWeek), StringComparison.InvariantCultureIgnoreCase));
+                        s1 = "";
+                        if (b == true)
+                        {
+                            // dFirstAuctionDate = dFirstAuctionDate.AddDays(1);
+                            s1 = Convert.ToString(tempDAuctiondates.AddDays(1));
+                        }
+                         s = tempDAuctiondates.Date.ToString("dd/MM/yyyy");
+                        if(s1=="")
+                        {
+                            if ((drno != 1) && (drno != 2))
+                            {
+                                long inscmd = trn.insertorupdateTrn("insert into auctiondetails(`BranchID`,`GroupID`,`AuctionDate`,`ReBidNO`,`DrawNO`,`IsPrized`) values(" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + "," + ddlChitGroup.SelectedItem.Value + ",'" + balayer.changedateformat(Convert.ToDateTime(s), 2) + "'," + RebidNo + "," + drno + ",'I')");
+                                tempDAuctiondates = tempDAuctiondates.AddDays(10);
+                            }
+                        }
+                       else
+                        {
+                            if ((drno != 1) && (drno != 2))
+                            {
+                                long inscmd = trn.insertorupdateTrn("insert into auctiondetails(`BranchID`,`GroupID`,`AuctionDate`,`ReBidNO`,`DrawNO`,`IsPrized`) values(" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + "," + ddlChitGroup.SelectedItem.Value + ",'" + balayer.changedateformat(Convert.ToDateTime(s1), 2) + "'," + RebidNo + "," + drno + ",'I')");
+                                tempDAuctiondates = tempDAuctiondates.AddDays(10);
+                            }
+                        }
+                        if(s1=="")
+                        {
+                            if (drno == 1)
+                            {
+                                string fdfdfd = balayer.GetSingleValue("SELECT min(MemberIDNew) FROM svcf.membermaster where BranchId=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and CustomerName='Sree Visalam Chit Fund Ltd'");
+                                long inscmd = trn.insertorupdateTrn("insert into auctiondetails(`BranchID`,`GroupID`,`AuctionDate`,`ReBidNO`,`DrawNO`,`PrizedMemberID`,MemberID,`CurrentDueAmount`,`NextDueAmount`,PrizedAmount,`IsPrized`) values(" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + "," + ddlChitGroup.SelectedItem.Value + ",'" + balayer.indiandateToMysqlDate(d1) + "'," + RebidNo + "," + drno + "," + iresult1 + "," + fdfdfd + "," + currDueAmt + "," + nextDueAmt + "," + chitvalue + ",'F')");
+                                tempDAuctiondates = tempDAuctiondates.AddDays(10);
+                            }
+                        }
+                         else
+                        {
+                            if (drno == 1)
+                            {
+                                string fdfdfd = balayer.GetSingleValue("SELECT min(MemberIDNew) FROM svcf.membermaster where BranchId=" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + " and CustomerName='Sree Visalam Chit Fund Ltd'");
+                                //long inscmd = trn.insertorupdateTrn("insert into auctiondetails(`BranchID`,`GroupID`,`AuctionDate`,`ReBidNO`,`DrawNO`,`PrizedMemberID`,MemberID,`CurrentDueAmount`,`NextDueAmount`,PrizedAmount,`IsPrized`) values(" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + "," + ddlChitGroup.SelectedItem.Value + ",'" + balayer.indiandateToMysqlDate(s1) + "'," + RebidNo + "," + drno + "," + iresult1 + "," + fdfdfd + "," + currDueAmt + "," + nextDueAmt + "," + chitvalue + ",'F')");
+                                long inscmd = trn.insertorupdateTrn("insert into auctiondetails(`BranchID`,`GroupID`,`AuctionDate`,`ReBidNO`,`DrawNO`,`PrizedMemberID`,MemberID,`CurrentDueAmount`,`NextDueAmount`,PrizedAmount,`IsPrized`) values(" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + "," + ddlChitGroup.SelectedItem.Value + ",'" + balayer.changedateformat(Convert.ToDateTime(s1),2) + "'," + RebidNo + "," + drno + "," + iresult1 + "," + fdfdfd + "," + currDueAmt + "," + nextDueAmt + "," + chitvalue + ",'F')");
+                                tempDAuctiondates = tempDAuctiondates.AddDays(10);
+                            }
+                        } 
+                        if(s1=="")
+                        {
+                            if (drno == 2)
+                            {
+                                long inscmd = trn.insertorupdateTrn("insert into auctiondetails(`BranchID`,`GroupID`,`AuctionDate`,`ReBidNO`,`DrawNO`,`CurrentDueAmount`,`IsPrized`) values(" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + "," + ddlChitGroup.SelectedItem.Value + ",'" + balayer.changedateformat(Convert.ToDateTime(s), 2) + "'," + RebidNo + "," + drno + "," + currDueAmt + ",'I')");
+                                tempDAuctiondates = tempDAuctiondates.AddDays(10);
+                            }
+                        }
+                        else
+                        {
+                            if (drno == 2)
+                            {
+                                long inscmd = trn.insertorupdateTrn("insert into auctiondetails(`BranchID`,`GroupID`,`AuctionDate`,`ReBidNO`,`DrawNO`,`CurrentDueAmount`,`IsPrized`) values(" + balayer.ToobjectstrEvenNull(Session["Branchid"]) + "," + ddlChitGroup.SelectedItem.Value + ",'" + balayer.changedateformat(Convert.ToDateTime(s1), 2) + "'," + RebidNo + "," + drno + "," + currDueAmt + ",'I')");
+                                tempDAuctiondates = tempDAuctiondates.AddDays(10);
+                            }
+                        }
+                               
+                    }
+                }
+
+
+
+
+                ModalPopupExtender2.PopupControlID = "Pnlmsg";
+                this.ModalPopupExtender2.Show();
+                Pnlmsg.Visible = true;
+                lblT.Text = "Status";
+                lblContent.Text = "Group : " + ddlChitGroup.SelectedItem.Text + " inserted Successfully";
+                lblContent.ForeColor = System.Drawing.Color.Green;
+                trn.CommitTrn();
+                logger.Info("groups.aspx - btnaddGroup_Click():  Completed: " + DateTime.Now + " by: " + Convert.ToString(Session["UserName"]) + "");
+            }
+            catch (Exception error)
+            {
+                try
+                {
+                    trn.RollbackTrn();
+                    logger.Info("groups.aspx - btnaddGroup_Click():  Error:" + error.Message + ": " + DateTime.Now + " by: " + Convert.ToString(Session["UserName"]) + "");
+                }
+                catch { }
+                finally
+                {
+                    ScriptManager.RegisterStartupScript(this, GetType(), "Warning", "alert('" + error.Message.ToString().Replace("'", "\\'") + "');", true);
+                }
+            }
+            finally
+            {
+
+                trn.DisposeTrn();
+            }
+        }
+
+        private string AuctionDates(string headid)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected void IndianDateValidator_ServerValidate(object sender, ServerValidateEventArgs e)
+        {
+            DateTime d;
+            e.IsValid = DateTime.TryParseExact(e.Value, "dd/MM/yyyy", System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out d);
+        }
+
+        protected int AuctionDates()
+        {
+          //  Get Chit category Type
+               int numofmon;
+            monthlyvalue = balayer.GetSingleValue("select ChitCategory from svcf.groupmaster where Head_Id=" +ddlChitGroup.SelectedItem.Value);
+            if (monthlyvalue == "Monthly")
+            {
+                numofmon = 1;
+                return numofmon;
+            }
+            else
+                if (monthlyvalue == "Trimonthly")
+            {
+                numofmon = 3;
+                return numofmon;
+            }
+            else
+            {
+                return 0;
+            }
+        }
+
+        protected void clearGroup()
+        {
+            Response.Redirect(Request.Url.AbsolutePath.ToString());
+        }
+
+        protected void BtnCancel_click(object sender, EventArgs e)
+        {
+            clearGroup();
+        }
+    }
+}

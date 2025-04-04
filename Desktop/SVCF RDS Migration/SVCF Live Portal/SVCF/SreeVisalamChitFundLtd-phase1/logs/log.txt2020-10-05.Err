@@ -1,0 +1,11 @@
+INFO  2020-10-05 17:47:25,825 307290ms Home                   Page_Load          - Logged into Site at: 05-10-2020 5:47:25 PM
+INFO  2020-10-05 18:13:42,700 160773ms Home                   Page_Load          - Logged into Site at: 05-10-2020 6:13:42 PM
+INFO  2020-10-05 18:15:46,763 284836ms Home                   Page_Load          - Logged into Site at: 05-10-2020 6:15:46 PM
+INFO  2020-10-05 18:17:53,198 411271ms Home                   Page_Load          - Logged into Site at: 05-10-2020 6:17:53 PM
+INFO  2020-10-05 18:31:47,150 175218ms Home                   Page_Load          - Logged into Site at: 05-10-2020 6:31:47 PM
+INFO  2020-10-05 18:42:02,577 62231ms Home                   Page_Load          - Logged into Site at: 05-10-2020 6:42:02 PM
+INFO  2020-10-05 18:50:33,021 572675ms AccruedVoucherMultiple Page_Load          - Voucher Multiple: 05/10/2020 18:50:33 by: admin@svcf.com
+INFO  2020-10-05 21:04:19,252 64948ms Home                   Page_Load          - Logged into Site at: 05-10-2020 9:04:19 PM
+INFO  2020-10-05 21:05:44,131 149827ms AccruedVoucherMultiple Page_Load          - Voucher Multiple: 05/10/2020 21:05:44 by: admin@svcf.com
+INFO  2020-10-05 22:55:04,894 3954046ms Home                   Page_Load          - Logged into Site at: 05-10-2020 10:55:04 PM
+INFO  2020-10-05 22:55:48,622 3997773ms AccruedVoucherMultiple Page_Load          - Voucher Multiple: 05/10/2020 22:55:48 by: admin@svcf.com

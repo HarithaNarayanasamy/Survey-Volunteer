@@ -1,0 +1,460 @@
+C:\Kalpana\SVCF\June\30-06-2016_PM\SVCF_BusinessAccessLayer\bin\Release\SVCF_BusinessAccessLayer.dll
+C:\Kalpana\SVCF\June\30-06-2016_PM\SVCF_BusinessAccessLayer\bin\Release\SVCF_BusinessAccessLayer.pdb
+C:\Kalpana\SVCF\June\30-06-2016_PM\SVCF_BusinessAccessLayer\obj\Release\SVCF_BusinessAccessLayer.csprojResolveAssemblyReference.cache
+C:\Kalpana\SVCF\June\30-06-2016_PM\SVCF_BusinessAccessLayer\obj\Release\SVCF_BusinessAccessLayer.dll
+C:\Kalpana\SVCF\June\30-06-2016_PM\SVCF_BusinessAccessLayer\obj\Release\SVCF_BusinessAccessLayer.pdb
+C:\Kalpana\SVCF\June\3-tier\19-07-2016\SVCF_BusinessAccessLayer\bin\Release\SVCF_BusinessAccessLayer.dll
+C:\Kalpana\SVCF\June\3-tier\19-07-2016\SVCF_BusinessAccessLayer\bin\Release\SVCF_BusinessAccessLayer.pdb
+C:\Kalpana\SVCF\June\3-tier\19-07-2016\SVCF_BusinessAccessLayer\bin\Release\Microsoft.CSharp.dll
+C:\Kalpana\SVCF\June\3-tier\19-07-2016\SVCF_BusinessAccessLayer\bin\Release\SVCF_DataAccessLayer.dll
+C:\Kalpana\SVCF\June\3-tier\19-07-2016\SVCF_BusinessAccessLayer\bin\Release\System.Data.DataSetExtensions.dll
+C:\Kalpana\SVCF\June\3-tier\19-07-2016\SVCF_BusinessAccessLayer\bin\Release\System.Data.dll
+C:\Kalpana\SVCF\June\3-tier\19-07-2016\SVCF_BusinessAccessLayer\bin\Release\System.dll
+C:\Kalpana\SVCF\June\3-tier\19-07-2016\SVCF_BusinessAccessLayer\bin\Release\System.Web.dll
+C:\Kalpana\SVCF\June\3-tier\19-07-2016\SVCF_BusinessAccessLayer\bin\Release\System.Xml.dll
+C:\Kalpana\SVCF\June\3-tier\19-07-2016\SVCF_BusinessAccessLayer\bin\Release\System.Xml.Linq.dll
+C:\Kalpana\SVCF\June\3-tier\19-07-2016\SVCF_BusinessAccessLayer\bin\Release\SVCF_DataAccessLayer.pdb
+C:\Kalpana\SVCF\June\3-tier\19-07-2016\SVCF_BusinessAccessLayer\obj\Release\SVCF_BusinessAccessLayer.csprojResolveAssemblyReference.cache
+C:\Kalpana\SVCF\June\3-tier\19-07-2016\SVCF_BusinessAccessLayer\obj\Release\SVCF_BusinessAccessLayer.dll
+C:\Kalpana\SVCF\June\3-tier\19-07-2016\SVCF_BusinessAccessLayer\obj\Release\SVCF_BusinessAccessLayer.pdb
+C:\Kalpana\SVCF\August\17-08-2016\SVCF_BusinessAccessLayer\bin\Release\SVCF_BusinessAccessLayer.dll
+C:\Kalpana\SVCF\August\17-08-2016\SVCF_BusinessAccessLayer\bin\Release\SVCF_BusinessAccessLayer.pdb
+C:\Kalpana\SVCF\August\17-08-2016\SVCF_BusinessAccessLayer\bin\Release\Microsoft.CSharp.dll
+C:\Kalpana\SVCF\August\17-08-2016\SVCF_BusinessAccessLayer\bin\Release\SVCF_DataAccessLayer.dll
+C:\Kalpana\SVCF\August\17-08-2016\SVCF_BusinessAccessLayer\bin\Release\System.Data.DataSetExtensions.dll
+C:\Kalpana\SVCF\August\17-08-2016\SVCF_BusinessAccessLayer\bin\Release\System.Data.dll
+C:\Kalpana\SVCF\August\17-08-2016\SVCF_BusinessAccessLayer\bin\Release\System.dll
+C:\Kalpana\SVCF\August\17-08-2016\SVCF_BusinessAccessLayer\bin\Release\System.Web.dll
+C:\Kalpana\SVCF\August\17-08-2016\SVCF_BusinessAccessLayer\bin\Release\System.Xml.dll
+C:\Kalpana\SVCF\August\17-08-2016\SVCF_BusinessAccessLayer\bin\Release\System.Xml.Linq.dll
+C:\Kalpana\SVCF\August\17-08-2016\SVCF_BusinessAccessLayer\bin\Release\SVCF_DataAccessLayer.pdb
+C:\Kalpana\SVCF\August\17-08-2016\SVCF_BusinessAccessLayer\obj\Release\SVCF_BusinessAccessLayer.csprojResolveAssemblyReference.cache
+C:\Kalpana\SVCF\August\17-08-2016\SVCF_BusinessAccessLayer\obj\Release\SVCF_BusinessAccessLayer.dll
+C:\Kalpana\SVCF\August\17-08-2016\SVCF_BusinessAccessLayer\obj\Release\SVCF_BusinessAccessLayer.pdb
+C:\Kalpana\SVCF\August\30-08-2016\SVCF_BusinessAccessLayer\bin\Release\SVCF_BusinessAccessLayer.dll
+C:\Kalpana\SVCF\August\30-08-2016\SVCF_BusinessAccessLayer\bin\Release\SVCF_BusinessAccessLayer.pdb
+C:\Kalpana\SVCF\August\30-08-2016\SVCF_BusinessAccessLayer\bin\Release\Microsoft.CSharp.dll
+C:\Kalpana\SVCF\August\30-08-2016\SVCF_BusinessAccessLayer\bin\Release\SVCF_DataAccessLayer.dll
+C:\Kalpana\SVCF\August\30-08-2016\SVCF_BusinessAccessLayer\bin\Release\System.Data.DataSetExtensions.dll
+C:\Kalpana\SVCF\August\30-08-2016\SVCF_BusinessAccessLayer\bin\Release\System.Data.dll
+C:\Kalpana\SVCF\August\30-08-2016\SVCF_BusinessAccessLayer\bin\Release\System.dll
+C:\Kalpana\SVCF\August\30-08-2016\SVCF_BusinessAccessLayer\bin\Release\System.Web.dll
+C:\Kalpana\SVCF\August\30-08-2016\SVCF_BusinessAccessLayer\bin\Release\System.Xml.dll
+C:\Kalpana\SVCF\August\30-08-2016\SVCF_BusinessAccessLayer\bin\Release\System.Xml.Linq.dll
+C:\Kalpana\SVCF\August\30-08-2016\SVCF_BusinessAccessLayer\bin\Release\SVCF_DataAccessLayer.pdb
+C:\Kalpana\SVCF\August\30-08-2016\SVCF_BusinessAccessLayer\obj\Release\SVCF_BusinessAccessLayer.csprojResolveAssemblyReference.cache
+C:\Kalpana\SVCF\August\30-08-2016\SVCF_BusinessAccessLayer\obj\Release\SVCF_BusinessAccessLayer.dll
+C:\Kalpana\SVCF\August\30-08-2016\SVCF_BusinessAccessLayer\obj\Release\SVCF_BusinessAccessLayer.pdb
+C:\Kalpana\SVCF\September\12-09-2016\SVCF_BusinessAccessLayer\bin\Release\SVCF_BusinessAccessLayer.dll
+C:\Kalpana\SVCF\September\12-09-2016\SVCF_BusinessAccessLayer\bin\Release\SVCF_BusinessAccessLayer.pdb
+C:\Kalpana\SVCF\September\12-09-2016\SVCF_BusinessAccessLayer\bin\Release\Microsoft.CSharp.dll
+C:\Kalpana\SVCF\September\12-09-2016\SVCF_BusinessAccessLayer\bin\Release\SVCF_DataAccessLayer.dll
+C:\Kalpana\SVCF\September\12-09-2016\SVCF_BusinessAccessLayer\bin\Release\System.Data.DataSetExtensions.dll
+C:\Kalpana\SVCF\September\12-09-2016\SVCF_BusinessAccessLayer\bin\Release\System.Data.dll
+C:\Kalpana\SVCF\September\12-09-2016\SVCF_BusinessAccessLayer\bin\Release\System.dll
+C:\Kalpana\SVCF\September\12-09-2016\SVCF_BusinessAccessLayer\bin\Release\System.Web.dll
+C:\Kalpana\SVCF\September\12-09-2016\SVCF_BusinessAccessLayer\bin\Release\System.Xml.dll
+C:\Kalpana\SVCF\September\12-09-2016\SVCF_BusinessAccessLayer\bin\Release\System.Xml.Linq.dll
+C:\Kalpana\SVCF\September\12-09-2016\SVCF_BusinessAccessLayer\bin\Release\SVCF_DataAccessLayer.pdb
+C:\Kalpana\SVCF\September\12-09-2016\SVCF_BusinessAccessLayer\obj\Release\SVCF_BusinessAccessLayer.csprojResolveAssemblyReference.cache
+C:\Kalpana\SVCF\September\12-09-2016\SVCF_BusinessAccessLayer\obj\Release\SVCF_BusinessAccessLayer.dll
+C:\Kalpana\SVCF\September\12-09-2016\SVCF_BusinessAccessLayer\obj\Release\SVCF_BusinessAccessLayer.pdb
+C:\Kalpana\SVCF\September\15-09-2016\SVCF_BusinessAccessLayer\bin\Release\SVCF_BusinessAccessLayer.dll
+C:\Kalpana\SVCF\September\15-09-2016\SVCF_BusinessAccessLayer\bin\Release\SVCF_BusinessAccessLayer.pdb
+C:\Kalpana\SVCF\September\15-09-2016\SVCF_BusinessAccessLayer\bin\Release\Microsoft.CSharp.dll
+C:\Kalpana\SVCF\September\15-09-2016\SVCF_BusinessAccessLayer\bin\Release\SVCF_DataAccessLayer.dll
+C:\Kalpana\SVCF\September\15-09-2016\SVCF_BusinessAccessLayer\bin\Release\System.Data.DataSetExtensions.dll
+C:\Kalpana\SVCF\September\15-09-2016\SVCF_BusinessAccessLayer\bin\Release\System.Data.dll
+C:\Kalpana\SVCF\September\15-09-2016\SVCF_BusinessAccessLayer\bin\Release\System.dll
+C:\Kalpana\SVCF\September\15-09-2016\SVCF_BusinessAccessLayer\bin\Release\System.Web.dll
+C:\Kalpana\SVCF\September\15-09-2016\SVCF_BusinessAccessLayer\bin\Release\System.Xml.dll
+C:\Kalpana\SVCF\September\15-09-2016\SVCF_BusinessAccessLayer\bin\Release\System.Xml.Linq.dll
+C:\Kalpana\SVCF\September\15-09-2016\SVCF_BusinessAccessLayer\bin\Release\SVCF_DataAccessLayer.pdb
+C:\Kalpana\SVCF\September\15-09-2016\SVCF_BusinessAccessLayer\obj\Release\SVCF_BusinessAccessLayer.csprojResolveAssemblyReference.cache
+C:\Kalpana\SVCF\September\15-09-2016\SVCF_BusinessAccessLayer\obj\Release\SVCF_BusinessAccessLayer.dll
+C:\Kalpana\SVCF\September\15-09-2016\SVCF_BusinessAccessLayer\obj\Release\SVCF_BusinessAccessLayer.pdb
+C:\Kalpana\SVCF\September\22-09-2016\SVCF_BusinessAccessLayer\bin\Release\SVCF_BusinessAccessLayer.dll
+C:\Kalpana\SVCF\September\22-09-2016\SVCF_BusinessAccessLayer\bin\Release\SVCF_BusinessAccessLayer.pdb
+C:\Kalpana\SVCF\September\22-09-2016\SVCF_BusinessAccessLayer\bin\Release\Microsoft.CSharp.dll
+C:\Kalpana\SVCF\September\22-09-2016\SVCF_BusinessAccessLayer\bin\Release\SVCF_DataAccessLayer.dll
+C:\Kalpana\SVCF\September\22-09-2016\SVCF_BusinessAccessLayer\bin\Release\System.Data.DataSetExtensions.dll
+C:\Kalpana\SVCF\September\22-09-2016\SVCF_BusinessAccessLayer\bin\Release\System.Data.dll
+C:\Kalpana\SVCF\September\22-09-2016\SVCF_BusinessAccessLayer\bin\Release\System.dll
+C:\Kalpana\SVCF\September\22-09-2016\SVCF_BusinessAccessLayer\bin\Release\System.Web.dll
+C:\Kalpana\SVCF\September\22-09-2016\SVCF_BusinessAccessLayer\bin\Release\System.Xml.dll
+C:\Kalpana\SVCF\September\22-09-2016\SVCF_BusinessAccessLayer\bin\Release\System.Xml.Linq.dll
+C:\Kalpana\SVCF\September\22-09-2016\SVCF_BusinessAccessLayer\bin\Release\EntityFramework.dll
+C:\Kalpana\SVCF\September\22-09-2016\SVCF_BusinessAccessLayer\bin\Release\SVCF_DataAccessLayer.pdb
+C:\Kalpana\SVCF\September\22-09-2016\SVCF_BusinessAccessLayer\bin\Release\EntityFramework.xml
+C:\Kalpana\SVCF\September\22-09-2016\SVCF_BusinessAccessLayer\obj\Release\SVCF_BusinessAccessLayer.csprojResolveAssemblyReference.cache
+C:\Kalpana\SVCF\September\22-09-2016\SVCF_BusinessAccessLayer\obj\Release\SVCF_BusinessAccessLayer.dll
+C:\Kalpana\SVCF\September\22-09-2016\SVCF_BusinessAccessLayer\obj\Release\SVCF_BusinessAccessLayer.pdb
+C:\Kalpana\SVCF\September\29-09-2016\SVCF_BusinessAccessLayer\bin\Release\SVCF_BusinessAccessLayer.dll
+C:\Kalpana\SVCF\September\29-09-2016\SVCF_BusinessAccessLayer\bin\Release\SVCF_BusinessAccessLayer.pdb
+C:\Kalpana\SVCF\September\29-09-2016\SVCF_BusinessAccessLayer\bin\Release\Microsoft.CSharp.dll
+C:\Kalpana\SVCF\September\29-09-2016\SVCF_BusinessAccessLayer\bin\Release\SVCF_DataAccessLayer.dll
+C:\Kalpana\SVCF\September\29-09-2016\SVCF_BusinessAccessLayer\bin\Release\System.Data.DataSetExtensions.dll
+C:\Kalpana\SVCF\September\29-09-2016\SVCF_BusinessAccessLayer\bin\Release\System.Data.dll
+C:\Kalpana\SVCF\September\29-09-2016\SVCF_BusinessAccessLayer\bin\Release\System.dll
+C:\Kalpana\SVCF\September\29-09-2016\SVCF_BusinessAccessLayer\bin\Release\System.Web.dll
+C:\Kalpana\SVCF\September\29-09-2016\SVCF_BusinessAccessLayer\bin\Release\System.Xml.dll
+C:\Kalpana\SVCF\September\29-09-2016\SVCF_BusinessAccessLayer\bin\Release\System.Xml.Linq.dll
+C:\Kalpana\SVCF\September\29-09-2016\SVCF_BusinessAccessLayer\bin\Release\EntityFramework.dll
+C:\Kalpana\SVCF\September\29-09-2016\SVCF_BusinessAccessLayer\bin\Release\SVCF_DataAccessLayer.pdb
+C:\Kalpana\SVCF\September\29-09-2016\SVCF_BusinessAccessLayer\bin\Release\EntityFramework.xml
+C:\Kalpana\SVCF\September\29-09-2016\SVCF_BusinessAccessLayer\obj\Release\SVCF_BusinessAccessLayer.dll
+C:\Kalpana\SVCF\September\29-09-2016\SVCF_BusinessAccessLayer\obj\Release\SVCF_BusinessAccessLayer.pdb
+C:\Kalpana\SVCF\October\06-10-2016\SVCF_BusinessAccessLayer\obj\Release\SVCF_BusinessAccessLayer.csprojResolveAssemblyReference.cache
+C:\Kalpana\SVCF\October\06-10-2016\SVCF_BusinessAccessLayer\obj\Release\SVCF_BusinessAccessLayer.dll
+C:\Kalpana\SVCF\October\06-10-2016\SVCF_BusinessAccessLayer\obj\Release\SVCF_BusinessAccessLayer.pdb
+C:\Kalpana\SVCF\November\03-11-2016\SVCF_BusinessAccessLayer\bin\Release\SVCF_BusinessAccessLayer.dll
+C:\Kalpana\SVCF\November\03-11-2016\SVCF_BusinessAccessLayer\bin\Release\SVCF_BusinessAccessLayer.pdb
+C:\Kalpana\SVCF\November\03-11-2016\SVCF_BusinessAccessLayer\bin\Release\Microsoft.CSharp.dll
+C:\Kalpana\SVCF\November\03-11-2016\SVCF_BusinessAccessLayer\bin\Release\MySql.Data.dll
+C:\Kalpana\SVCF\November\03-11-2016\SVCF_BusinessAccessLayer\bin\Release\SVCF_DataAccessLayer.dll
+C:\Kalpana\SVCF\November\03-11-2016\SVCF_BusinessAccessLayer\bin\Release\SVCF_PropertyLayer.dll
+C:\Kalpana\SVCF\November\03-11-2016\SVCF_BusinessAccessLayer\bin\Release\System.Data.DataSetExtensions.dll
+C:\Kalpana\SVCF\November\03-11-2016\SVCF_BusinessAccessLayer\bin\Release\System.Data.dll
+C:\Kalpana\SVCF\November\03-11-2016\SVCF_BusinessAccessLayer\bin\Release\System.dll
+C:\Kalpana\SVCF\November\03-11-2016\SVCF_BusinessAccessLayer\bin\Release\System.Web.dll
+C:\Kalpana\SVCF\November\03-11-2016\SVCF_BusinessAccessLayer\bin\Release\System.Xml.dll
+C:\Kalpana\SVCF\November\03-11-2016\SVCF_BusinessAccessLayer\bin\Release\System.Xml.Linq.dll
+C:\Kalpana\SVCF\November\03-11-2016\SVCF_BusinessAccessLayer\bin\Release\EntityFramework.dll
+C:\Kalpana\SVCF\November\03-11-2016\SVCF_BusinessAccessLayer\bin\Release\SVCF_DataAccessLayer.pdb
+C:\Kalpana\SVCF\November\03-11-2016\SVCF_BusinessAccessLayer\bin\Release\SVCF_PropertyLayer.pdb
+C:\Kalpana\SVCF\November\03-11-2016\SVCF_BusinessAccessLayer\bin\Release\EntityFramework.xml
+C:\Kalpana\SVCF\November\03-11-2016\SVCF_BusinessAccessLayer\obj\Release\SVCF_BusinessAccessLayer.dll
+C:\Kalpana\SVCF\November\03-11-2016\SVCF_BusinessAccessLayer\obj\Release\SVCF_BusinessAccessLayer.pdb
+C:\Kalpana\SVCF\November\09-11-2016\SVCF_BusinessAccessLayer\bin\Release\SVCF_BusinessAccessLayer.dll
+C:\Kalpana\SVCF\November\09-11-2016\SVCF_BusinessAccessLayer\bin\Release\SVCF_BusinessAccessLayer.pdb
+C:\Kalpana\SVCF\November\09-11-2016\SVCF_BusinessAccessLayer\bin\Release\Microsoft.CSharp.dll
+C:\Kalpana\SVCF\November\09-11-2016\SVCF_BusinessAccessLayer\bin\Release\MySql.Data.dll
+C:\Kalpana\SVCF\November\09-11-2016\SVCF_BusinessAccessLayer\bin\Release\SVCF_DataAccessLayer.dll
+C:\Kalpana\SVCF\November\09-11-2016\SVCF_BusinessAccessLayer\bin\Release\SVCF_PropertyLayer.dll
+C:\Kalpana\SVCF\November\09-11-2016\SVCF_BusinessAccessLayer\bin\Release\System.Data.DataSetExtensions.dll
+C:\Kalpana\SVCF\November\09-11-2016\SVCF_BusinessAccessLayer\bin\Release\System.Data.dll
+C:\Kalpana\SVCF\November\09-11-2016\SVCF_BusinessAccessLayer\bin\Release\System.dll
+C:\Kalpana\SVCF\November\09-11-2016\SVCF_BusinessAccessLayer\bin\Release\System.Web.dll
+C:\Kalpana\SVCF\November\09-11-2016\SVCF_BusinessAccessLayer\bin\Release\System.Xml.dll
+C:\Kalpana\SVCF\November\09-11-2016\SVCF_BusinessAccessLayer\bin\Release\System.Xml.Linq.dll
+C:\Kalpana\SVCF\November\09-11-2016\SVCF_BusinessAccessLayer\bin\Release\EntityFramework.dll
+C:\Kalpana\SVCF\November\09-11-2016\SVCF_BusinessAccessLayer\bin\Release\SVCF_DataAccessLayer.pdb
+C:\Kalpana\SVCF\November\09-11-2016\SVCF_BusinessAccessLayer\bin\Release\SVCF_PropertyLayer.pdb
+C:\Kalpana\SVCF\November\09-11-2016\SVCF_BusinessAccessLayer\bin\Release\EntityFramework.xml
+C:\Kalpana\SVCF\November\09-11-2016\SVCF_BusinessAccessLayer\obj\Release\SVCF_BusinessAccessLayer.csprojResolveAssemblyReference.cache
+C:\Kalpana\SVCF\November\09-11-2016\SVCF_BusinessAccessLayer\obj\Release\SVCF_BusinessAccessLayer.dll
+C:\Kalpana\SVCF\November\09-11-2016\SVCF_BusinessAccessLayer\obj\Release\SVCF_BusinessAccessLayer.pdb
+C:\Users\admin.ALTIUS-06\Desktop\25.01.2017\SVCF_BusinessAccessLayer\bin\Release\SVCF_BusinessAccessLayer.dll
+C:\Users\admin.ALTIUS-06\Desktop\25.01.2017\SVCF_BusinessAccessLayer\bin\Release\SVCF_BusinessAccessLayer.pdb
+C:\Users\admin.ALTIUS-06\Desktop\25.01.2017\SVCF_BusinessAccessLayer\bin\Release\Microsoft.CSharp.dll
+C:\Users\admin.ALTIUS-06\Desktop\25.01.2017\SVCF_BusinessAccessLayer\bin\Release\MySql.Data.dll
+C:\Users\admin.ALTIUS-06\Desktop\25.01.2017\SVCF_BusinessAccessLayer\bin\Release\SVCF_DataAccessLayer.dll
+C:\Users\admin.ALTIUS-06\Desktop\25.01.2017\SVCF_BusinessAccessLayer\bin\Release\SVCF_PropertyLayer.dll
+C:\Users\admin.ALTIUS-06\Desktop\25.01.2017\SVCF_BusinessAccessLayer\bin\Release\SVCF_TransactionLayer.dll
+C:\Users\admin.ALTIUS-06\Desktop\25.01.2017\SVCF_BusinessAccessLayer\bin\Release\System.Data.DataSetExtensions.dll
+C:\Users\admin.ALTIUS-06\Desktop\25.01.2017\SVCF_BusinessAccessLayer\bin\Release\System.Data.dll
+C:\Users\admin.ALTIUS-06\Desktop\25.01.2017\SVCF_BusinessAccessLayer\bin\Release\System.dll
+C:\Users\admin.ALTIUS-06\Desktop\25.01.2017\SVCF_BusinessAccessLayer\bin\Release\System.Web.dll
+C:\Users\admin.ALTIUS-06\Desktop\25.01.2017\SVCF_BusinessAccessLayer\bin\Release\System.Xml.dll
+C:\Users\admin.ALTIUS-06\Desktop\25.01.2017\SVCF_BusinessAccessLayer\bin\Release\System.Xml.Linq.dll
+C:\Users\admin.ALTIUS-06\Desktop\25.01.2017\SVCF_BusinessAccessLayer\bin\Release\SVCF_DataAccessLayer.pdb
+C:\Users\admin.ALTIUS-06\Desktop\25.01.2017\SVCF_BusinessAccessLayer\bin\Release\SVCF_PropertyLayer.pdb
+C:\Users\admin.ALTIUS-06\Desktop\25.01.2017\SVCF_BusinessAccessLayer\bin\Release\SVCF_TransactionLayer.pdb
+C:\Users\admin.ALTIUS-06\Desktop\25.01.2017\SVCF_BusinessAccessLayer\obj\Release\SVCF_BusinessAccessLayer.csprojResolveAssemblyReference.cache
+C:\Users\admin.ALTIUS-06\Desktop\25.01.2017\SVCF_BusinessAccessLayer\obj\Release\SVCF_BusinessAccessLayer.dll
+C:\Users\admin.ALTIUS-06\Desktop\25.01.2017\SVCF_BusinessAccessLayer\obj\Release\SVCF_BusinessAccessLayer.pdb
+C:\Users\admin.ALTIUS-06\Desktop\03.02.2017\SVCF_BusinessAccessLayer\bin\Release\SVCF_BusinessAccessLayer.dll
+C:\Users\admin.ALTIUS-06\Desktop\03.02.2017\SVCF_BusinessAccessLayer\bin\Release\SVCF_BusinessAccessLayer.pdb
+C:\Users\admin.ALTIUS-06\Desktop\03.02.2017\SVCF_BusinessAccessLayer\bin\Release\Microsoft.CSharp.dll
+C:\Users\admin.ALTIUS-06\Desktop\03.02.2017\SVCF_BusinessAccessLayer\bin\Release\SVCF_DataAccessLayer.dll
+C:\Users\admin.ALTIUS-06\Desktop\03.02.2017\SVCF_BusinessAccessLayer\bin\Release\SVCF_PropertyLayer.dll
+C:\Users\admin.ALTIUS-06\Desktop\03.02.2017\SVCF_BusinessAccessLayer\bin\Release\SVCF_TransactionLayer.dll
+C:\Users\admin.ALTIUS-06\Desktop\03.02.2017\SVCF_BusinessAccessLayer\bin\Release\System.Data.DataSetExtensions.dll
+C:\Users\admin.ALTIUS-06\Desktop\03.02.2017\SVCF_BusinessAccessLayer\bin\Release\System.Data.dll
+C:\Users\admin.ALTIUS-06\Desktop\03.02.2017\SVCF_BusinessAccessLayer\bin\Release\System.dll
+C:\Users\admin.ALTIUS-06\Desktop\03.02.2017\SVCF_BusinessAccessLayer\bin\Release\System.Web.dll
+C:\Users\admin.ALTIUS-06\Desktop\03.02.2017\SVCF_BusinessAccessLayer\bin\Release\System.Xml.dll
+C:\Users\admin.ALTIUS-06\Desktop\03.02.2017\SVCF_BusinessAccessLayer\bin\Release\System.Xml.Linq.dll
+C:\Users\admin.ALTIUS-06\Desktop\03.02.2017\SVCF_BusinessAccessLayer\bin\Release\SVCF_DataAccessLayer.pdb
+C:\Users\admin.ALTIUS-06\Desktop\03.02.2017\SVCF_BusinessAccessLayer\bin\Release\SVCF_PropertyLayer.pdb
+C:\Users\admin.ALTIUS-06\Desktop\03.02.2017\SVCF_BusinessAccessLayer\bin\Release\SVCF_TransactionLayer.pdb
+C:\Users\admin.ALTIUS-06\Desktop\03.02.2017\SVCF_BusinessAccessLayer\obj\Release\SVCF_BusinessAccessLayer.csprojResolveAssemblyReference.cache
+C:\Users\admin.ALTIUS-06\Desktop\03.02.2017\SVCF_BusinessAccessLayer\obj\Release\SVCF_BusinessAccessLayer.dll
+C:\Users\admin.ALTIUS-06\Desktop\03.02.2017\SVCF_BusinessAccessLayer\obj\Release\SVCF_BusinessAccessLayer.pdb
+C:\Users\admin.ALTIUS-06\Desktop\09.02.2017\SVCF_BusinessAccessLayer\bin\Release\SVCF_BusinessAccessLayer.dll
+C:\Users\admin.ALTIUS-06\Desktop\09.02.2017\SVCF_BusinessAccessLayer\bin\Release\SVCF_BusinessAccessLayer.pdb
+C:\Users\admin.ALTIUS-06\Desktop\09.02.2017\SVCF_BusinessAccessLayer\bin\Release\Microsoft.CSharp.dll
+C:\Users\admin.ALTIUS-06\Desktop\09.02.2017\SVCF_BusinessAccessLayer\bin\Release\SVCF_DataAccessLayer.dll
+C:\Users\admin.ALTIUS-06\Desktop\09.02.2017\SVCF_BusinessAccessLayer\bin\Release\SVCF_PropertyLayer.dll
+C:\Users\admin.ALTIUS-06\Desktop\09.02.2017\SVCF_BusinessAccessLayer\bin\Release\SVCF_TransactionLayer.dll
+C:\Users\admin.ALTIUS-06\Desktop\09.02.2017\SVCF_BusinessAccessLayer\bin\Release\System.Data.DataSetExtensions.dll
+C:\Users\admin.ALTIUS-06\Desktop\09.02.2017\SVCF_BusinessAccessLayer\bin\Release\System.Data.dll
+C:\Users\admin.ALTIUS-06\Desktop\09.02.2017\SVCF_BusinessAccessLayer\bin\Release\System.dll
+C:\Users\admin.ALTIUS-06\Desktop\09.02.2017\SVCF_BusinessAccessLayer\bin\Release\System.Web.dll
+C:\Users\admin.ALTIUS-06\Desktop\09.02.2017\SVCF_BusinessAccessLayer\bin\Release\System.Xml.dll
+C:\Users\admin.ALTIUS-06\Desktop\09.02.2017\SVCF_BusinessAccessLayer\bin\Release\System.Xml.Linq.dll
+C:\Users\admin.ALTIUS-06\Desktop\09.02.2017\SVCF_BusinessAccessLayer\bin\Release\SVCF_DataAccessLayer.pdb
+C:\Users\admin.ALTIUS-06\Desktop\09.02.2017\SVCF_BusinessAccessLayer\bin\Release\SVCF_PropertyLayer.pdb
+C:\Users\admin.ALTIUS-06\Desktop\09.02.2017\SVCF_BusinessAccessLayer\bin\Release\SVCF_TransactionLayer.pdb
+C:\Users\admin.ALTIUS-06\Desktop\09.02.2017\SVCF_BusinessAccessLayer\obj\Release\SVCF_BusinessAccessLayer.csprojResolveAssemblyReference.cache
+C:\Users\admin.ALTIUS-06\Desktop\09.02.2017\SVCF_BusinessAccessLayer\obj\Release\SVCF_BusinessAccessLayer.dll
+C:\Users\admin.ALTIUS-06\Desktop\09.02.2017\SVCF_BusinessAccessLayer\obj\Release\SVCF_BusinessAccessLayer.pdb
+C:\Users\admin.ALTIUS-06\Desktop\14-02-2017\SVCF_BusinessAccessLayer\bin\Release\SVCF_BusinessAccessLayer.dll
+C:\Users\admin.ALTIUS-06\Desktop\14-02-2017\SVCF_BusinessAccessLayer\bin\Release\SVCF_BusinessAccessLayer.pdb
+C:\Users\admin.ALTIUS-06\Desktop\14-02-2017\SVCF_BusinessAccessLayer\bin\Release\Microsoft.CSharp.dll
+C:\Users\admin.ALTIUS-06\Desktop\14-02-2017\SVCF_BusinessAccessLayer\bin\Release\SVCF_DataAccessLayer.dll
+C:\Users\admin.ALTIUS-06\Desktop\14-02-2017\SVCF_BusinessAccessLayer\bin\Release\SVCF_PropertyLayer.dll
+C:\Users\admin.ALTIUS-06\Desktop\14-02-2017\SVCF_BusinessAccessLayer\bin\Release\SVCF_TransactionLayer.dll
+C:\Users\admin.ALTIUS-06\Desktop\14-02-2017\SVCF_BusinessAccessLayer\bin\Release\System.Data.DataSetExtensions.dll
+C:\Users\admin.ALTIUS-06\Desktop\14-02-2017\SVCF_BusinessAccessLayer\bin\Release\System.Data.dll
+C:\Users\admin.ALTIUS-06\Desktop\14-02-2017\SVCF_BusinessAccessLayer\bin\Release\System.dll
+C:\Users\admin.ALTIUS-06\Desktop\14-02-2017\SVCF_BusinessAccessLayer\bin\Release\System.Web.dll
+C:\Users\admin.ALTIUS-06\Desktop\14-02-2017\SVCF_BusinessAccessLayer\bin\Release\System.Xml.dll
+C:\Users\admin.ALTIUS-06\Desktop\14-02-2017\SVCF_BusinessAccessLayer\bin\Release\System.Xml.Linq.dll
+C:\Users\admin.ALTIUS-06\Desktop\14-02-2017\SVCF_BusinessAccessLayer\bin\Release\SVCF_DataAccessLayer.pdb
+C:\Users\admin.ALTIUS-06\Desktop\14-02-2017\SVCF_BusinessAccessLayer\bin\Release\SVCF_PropertyLayer.pdb
+C:\Users\admin.ALTIUS-06\Desktop\14-02-2017\SVCF_BusinessAccessLayer\bin\Release\SVCF_TransactionLayer.pdb
+C:\Users\admin.ALTIUS-06\Desktop\14-02-2017\SVCF_BusinessAccessLayer\obj\Release\SVCF_BusinessAccessLayer.csprojResolveAssemblyReference.cache
+C:\Users\admin.ALTIUS-06\Desktop\14-02-2017\SVCF_BusinessAccessLayer\obj\Release\SVCF_BusinessAccessLayer.dll
+C:\Users\admin.ALTIUS-06\Desktop\14-02-2017\SVCF_BusinessAccessLayer\obj\Release\SVCF_BusinessAccessLayer.pdb
+C:\Users\admin.ALTIUS-06\Desktop\20-02-2017\SVCF_BusinessAccessLayer\bin\Release\SVCF_BusinessAccessLayer.dll
+C:\Users\admin.ALTIUS-06\Desktop\20-02-2017\SVCF_BusinessAccessLayer\bin\Release\SVCF_BusinessAccessLayer.pdb
+C:\Users\admin.ALTIUS-06\Desktop\20-02-2017\SVCF_BusinessAccessLayer\bin\Release\Microsoft.CSharp.dll
+C:\Users\admin.ALTIUS-06\Desktop\20-02-2017\SVCF_BusinessAccessLayer\bin\Release\SVCF_DataAccessLayer.dll
+C:\Users\admin.ALTIUS-06\Desktop\20-02-2017\SVCF_BusinessAccessLayer\bin\Release\SVCF_PropertyLayer.dll
+C:\Users\admin.ALTIUS-06\Desktop\20-02-2017\SVCF_BusinessAccessLayer\bin\Release\SVCF_TransactionLayer.dll
+C:\Users\admin.ALTIUS-06\Desktop\20-02-2017\SVCF_BusinessAccessLayer\bin\Release\System.Data.DataSetExtensions.dll
+C:\Users\admin.ALTIUS-06\Desktop\20-02-2017\SVCF_BusinessAccessLayer\bin\Release\System.Data.dll
+C:\Users\admin.ALTIUS-06\Desktop\20-02-2017\SVCF_BusinessAccessLayer\bin\Release\System.dll
+C:\Users\admin.ALTIUS-06\Desktop\20-02-2017\SVCF_BusinessAccessLayer\bin\Release\System.Web.dll
+C:\Users\admin.ALTIUS-06\Desktop\20-02-2017\SVCF_BusinessAccessLayer\bin\Release\System.Xml.dll
+C:\Users\admin.ALTIUS-06\Desktop\20-02-2017\SVCF_BusinessAccessLayer\bin\Release\System.Xml.Linq.dll
+C:\Users\admin.ALTIUS-06\Desktop\20-02-2017\SVCF_BusinessAccessLayer\bin\Release\SVCF_DataAccessLayer.pdb
+C:\Users\admin.ALTIUS-06\Desktop\20-02-2017\SVCF_BusinessAccessLayer\bin\Release\SVCF_PropertyLayer.pdb
+C:\Users\admin.ALTIUS-06\Desktop\20-02-2017\SVCF_BusinessAccessLayer\bin\Release\SVCF_TransactionLayer.pdb
+C:\Users\admin.ALTIUS-06\Desktop\20-02-2017\SVCF_BusinessAccessLayer\obj\Release\SVCF_BusinessAccessLayer.csprojResolveAssemblyReference.cache
+C:\Users\admin.ALTIUS-06\Desktop\20-02-2017\SVCF_BusinessAccessLayer\obj\Release\SVCF_BusinessAccessLayer.dll
+C:\Users\admin.ALTIUS-06\Desktop\20-02-2017\SVCF_BusinessAccessLayer\obj\Release\SVCF_BusinessAccessLayer.pdb
+D:\Source code\nandha\28-02-2017\SVCF_BusinessAccessLayer\bin\Release\SVCF_BusinessAccessLayer.dll
+D:\Source code\nandha\28-02-2017\SVCF_BusinessAccessLayer\bin\Release\SVCF_BusinessAccessLayer.pdb
+D:\Source code\nandha\28-02-2017\SVCF_BusinessAccessLayer\bin\Release\Microsoft.CSharp.dll
+D:\Source code\nandha\28-02-2017\SVCF_BusinessAccessLayer\bin\Release\SVCF_DataAccessLayer.dll
+D:\Source code\nandha\28-02-2017\SVCF_BusinessAccessLayer\bin\Release\SVCF_PropertyLayer.dll
+D:\Source code\nandha\28-02-2017\SVCF_BusinessAccessLayer\bin\Release\SVCF_TransactionLayer.dll
+D:\Source code\nandha\28-02-2017\SVCF_BusinessAccessLayer\bin\Release\System.Data.DataSetExtensions.dll
+D:\Source code\nandha\28-02-2017\SVCF_BusinessAccessLayer\bin\Release\System.Data.dll
+D:\Source code\nandha\28-02-2017\SVCF_BusinessAccessLayer\bin\Release\System.dll
+D:\Source code\nandha\28-02-2017\SVCF_BusinessAccessLayer\bin\Release\System.Web.dll
+D:\Source code\nandha\28-02-2017\SVCF_BusinessAccessLayer\bin\Release\System.Xml.dll
+D:\Source code\nandha\28-02-2017\SVCF_BusinessAccessLayer\bin\Release\System.Xml.Linq.dll
+D:\Source code\nandha\28-02-2017\SVCF_BusinessAccessLayer\bin\Release\SVCF_DataAccessLayer.pdb
+D:\Source code\nandha\28-02-2017\SVCF_BusinessAccessLayer\bin\Release\SVCF_PropertyLayer.pdb
+D:\Source code\nandha\28-02-2017\SVCF_BusinessAccessLayer\bin\Release\SVCF_TransactionLayer.pdb
+D:\Source code\nandha\28-02-2017\SVCF_BusinessAccessLayer\obj\Release\SVCF_BusinessAccessLayer.dll
+D:\Source code\nandha\28-02-2017\SVCF_BusinessAccessLayer\obj\Release\SVCF_BusinessAccessLayer.pdb
+D:\Source code\nandha\03-03-2017\SVCF_BusinessAccessLayer\bin\Release\SVCF_BusinessAccessLayer.dll
+D:\Source code\nandha\03-03-2017\SVCF_BusinessAccessLayer\bin\Release\SVCF_BusinessAccessLayer.pdb
+D:\Source code\nandha\03-03-2017\SVCF_BusinessAccessLayer\bin\Release\Microsoft.CSharp.dll
+D:\Source code\nandha\03-03-2017\SVCF_BusinessAccessLayer\bin\Release\SVCF_DataAccessLayer.dll
+D:\Source code\nandha\03-03-2017\SVCF_BusinessAccessLayer\bin\Release\SVCF_PropertyLayer.dll
+D:\Source code\nandha\03-03-2017\SVCF_BusinessAccessLayer\bin\Release\SVCF_TransactionLayer.dll
+D:\Source code\nandha\03-03-2017\SVCF_BusinessAccessLayer\bin\Release\System.Data.DataSetExtensions.dll
+D:\Source code\nandha\03-03-2017\SVCF_BusinessAccessLayer\bin\Release\System.Data.dll
+D:\Source code\nandha\03-03-2017\SVCF_BusinessAccessLayer\bin\Release\System.dll
+D:\Source code\nandha\03-03-2017\SVCF_BusinessAccessLayer\bin\Release\System.Web.dll
+D:\Source code\nandha\03-03-2017\SVCF_BusinessAccessLayer\bin\Release\System.Xml.dll
+D:\Source code\nandha\03-03-2017\SVCF_BusinessAccessLayer\bin\Release\System.Xml.Linq.dll
+D:\Source code\nandha\03-03-2017\SVCF_BusinessAccessLayer\bin\Release\SVCF_DataAccessLayer.pdb
+D:\Source code\nandha\03-03-2017\SVCF_BusinessAccessLayer\bin\Release\SVCF_PropertyLayer.pdb
+D:\Source code\nandha\03-03-2017\SVCF_BusinessAccessLayer\bin\Release\SVCF_TransactionLayer.pdb
+D:\Source code\nandha\03-03-2017\SVCF_BusinessAccessLayer\obj\Release\SVCF_BusinessAccessLayer.csprojResolveAssemblyReference.cache
+D:\Source code\nandha\03-03-2017\SVCF_BusinessAccessLayer\obj\Release\SVCF_BusinessAccessLayer.dll
+D:\Source code\nandha\03-03-2017\SVCF_BusinessAccessLayer\obj\Release\SVCF_BusinessAccessLayer.pdb
+D:\Source code\nandha\April\03-04-2017\SVCF_BusinessAccessLayer\bin\Release\SVCF_BusinessAccessLayer.dll
+D:\Source code\nandha\April\03-04-2017\SVCF_BusinessAccessLayer\bin\Release\SVCF_BusinessAccessLayer.pdb
+D:\Source code\nandha\April\03-04-2017\SVCF_BusinessAccessLayer\bin\Release\Microsoft.CSharp.dll
+D:\Source code\nandha\April\03-04-2017\SVCF_BusinessAccessLayer\bin\Release\SVCF_DataAccessLayer.dll
+D:\Source code\nandha\April\03-04-2017\SVCF_BusinessAccessLayer\bin\Release\SVCF_PropertyLayer.dll
+D:\Source code\nandha\April\03-04-2017\SVCF_BusinessAccessLayer\bin\Release\SVCF_TransactionLayer.dll
+D:\Source code\nandha\April\03-04-2017\SVCF_BusinessAccessLayer\bin\Release\System.Data.DataSetExtensions.dll
+D:\Source code\nandha\April\03-04-2017\SVCF_BusinessAccessLayer\bin\Release\System.Data.dll
+D:\Source code\nandha\April\03-04-2017\SVCF_BusinessAccessLayer\bin\Release\System.dll
+D:\Source code\nandha\April\03-04-2017\SVCF_BusinessAccessLayer\bin\Release\System.Web.dll
+D:\Source code\nandha\April\03-04-2017\SVCF_BusinessAccessLayer\bin\Release\System.Xml.dll
+D:\Source code\nandha\April\03-04-2017\SVCF_BusinessAccessLayer\bin\Release\System.Xml.Linq.dll
+D:\Source code\nandha\April\03-04-2017\SVCF_BusinessAccessLayer\bin\Release\SVCF_DataAccessLayer.pdb
+D:\Source code\nandha\April\03-04-2017\SVCF_BusinessAccessLayer\bin\Release\SVCF_PropertyLayer.pdb
+D:\Source code\nandha\April\03-04-2017\SVCF_BusinessAccessLayer\bin\Release\SVCF_TransactionLayer.pdb
+D:\Source code\nandha\April\03-04-2017\SVCF_BusinessAccessLayer\obj\Release\SVCF_BusinessAccessLayer.csprojResolveAssemblyReference.cache
+D:\Source code\nandha\April\03-04-2017\SVCF_BusinessAccessLayer\obj\Release\SVCF_BusinessAccessLayer.dll
+D:\Source code\nandha\April\03-04-2017\SVCF_BusinessAccessLayer\obj\Release\SVCF_BusinessAccessLayer.pdb
+D:\Source code\nandha\April\27-04-2017\SVCF_BusinessAccessLayer\bin\Release\SVCF_BusinessAccessLayer.dll
+D:\Source code\nandha\April\27-04-2017\SVCF_BusinessAccessLayer\bin\Release\SVCF_BusinessAccessLayer.pdb
+D:\Source code\nandha\April\27-04-2017\SVCF_BusinessAccessLayer\bin\Release\Microsoft.CSharp.dll
+D:\Source code\nandha\April\27-04-2017\SVCF_BusinessAccessLayer\bin\Release\SVCF_DataAccessLayer.dll
+D:\Source code\nandha\April\27-04-2017\SVCF_BusinessAccessLayer\bin\Release\SVCF_PropertyLayer.dll
+D:\Source code\nandha\April\27-04-2017\SVCF_BusinessAccessLayer\bin\Release\SVCF_TransactionLayer.dll
+D:\Source code\nandha\April\27-04-2017\SVCF_BusinessAccessLayer\bin\Release\System.Data.DataSetExtensions.dll
+D:\Source code\nandha\April\27-04-2017\SVCF_BusinessAccessLayer\bin\Release\System.Data.dll
+D:\Source code\nandha\April\27-04-2017\SVCF_BusinessAccessLayer\bin\Release\System.dll
+D:\Source code\nandha\April\27-04-2017\SVCF_BusinessAccessLayer\bin\Release\System.Web.dll
+D:\Source code\nandha\April\27-04-2017\SVCF_BusinessAccessLayer\bin\Release\System.Xml.dll
+D:\Source code\nandha\April\27-04-2017\SVCF_BusinessAccessLayer\bin\Release\System.Xml.Linq.dll
+D:\Source code\nandha\April\27-04-2017\SVCF_BusinessAccessLayer\bin\Release\SVCF_DataAccessLayer.pdb
+D:\Source code\nandha\April\27-04-2017\SVCF_BusinessAccessLayer\bin\Release\SVCF_PropertyLayer.pdb
+D:\Source code\nandha\April\27-04-2017\SVCF_BusinessAccessLayer\bin\Release\SVCF_TransactionLayer.pdb
+D:\Source code\nandha\April\27-04-2017\SVCF_BusinessAccessLayer\obj\Release\SVCF_BusinessAccessLayer.csprojResolveAssemblyReference.cache
+D:\Source code\nandha\April\27-04-2017\SVCF_BusinessAccessLayer\obj\Release\SVCF_BusinessAccessLayer.dll
+D:\Source code\nandha\April\27-04-2017\SVCF_BusinessAccessLayer\obj\Release\SVCF_BusinessAccessLayer.pdb
+D:\Source code\nandha\june\15-06-2017_pm\SVCF_BusinessAccessLayer\bin\Release\SVCF_BusinessAccessLayer.dll
+D:\Source code\nandha\june\15-06-2017_pm\SVCF_BusinessAccessLayer\bin\Release\SVCF_BusinessAccessLayer.pdb
+D:\Source code\nandha\june\15-06-2017_pm\SVCF_BusinessAccessLayer\bin\Release\Microsoft.CSharp.dll
+D:\Source code\nandha\june\15-06-2017_pm\SVCF_BusinessAccessLayer\bin\Release\SVCF_DataAccessLayer.dll
+D:\Source code\nandha\june\15-06-2017_pm\SVCF_BusinessAccessLayer\bin\Release\SVCF_PropertyLayer.dll
+D:\Source code\nandha\june\15-06-2017_pm\SVCF_BusinessAccessLayer\bin\Release\SVCF_TransactionLayer.dll
+D:\Source code\nandha\june\15-06-2017_pm\SVCF_BusinessAccessLayer\bin\Release\System.Data.DataSetExtensions.dll
+D:\Source code\nandha\june\15-06-2017_pm\SVCF_BusinessAccessLayer\bin\Release\System.Data.dll
+D:\Source code\nandha\june\15-06-2017_pm\SVCF_BusinessAccessLayer\bin\Release\System.dll
+D:\Source code\nandha\june\15-06-2017_pm\SVCF_BusinessAccessLayer\bin\Release\System.Web.dll
+D:\Source code\nandha\june\15-06-2017_pm\SVCF_BusinessAccessLayer\bin\Release\System.Xml.dll
+D:\Source code\nandha\june\15-06-2017_pm\SVCF_BusinessAccessLayer\bin\Release\System.Xml.Linq.dll
+D:\Source code\nandha\june\15-06-2017_pm\SVCF_BusinessAccessLayer\bin\Release\SVCF_DataAccessLayer.pdb
+D:\Source code\nandha\june\15-06-2017_pm\SVCF_BusinessAccessLayer\bin\Release\SVCF_PropertyLayer.pdb
+D:\Source code\nandha\june\15-06-2017_pm\SVCF_BusinessAccessLayer\bin\Release\SVCF_TransactionLayer.pdb
+D:\Source code\nandha\june\15-06-2017_pm\SVCF_BusinessAccessLayer\obj\Release\SVCF_BusinessAccessLayer.csprojResolveAssemblyReference.cache
+D:\Source code\nandha\june\15-06-2017_pm\SVCF_BusinessAccessLayer\obj\Release\SVCF_BusinessAccessLayer.dll
+D:\Source code\nandha\june\15-06-2017_pm\SVCF_BusinessAccessLayer\obj\Release\SVCF_BusinessAccessLayer.pdb
+C:\Users\altius.ALTIUS-LT8\sreevisalam\SVCF_BusinessAccessLayer\bin\Release\SVCF_BusinessAccessLayer.dll
+C:\Users\altius.ALTIUS-LT8\sreevisalam\SVCF_BusinessAccessLayer\bin\Release\SVCF_BusinessAccessLayer.pdb
+C:\Users\altius.ALTIUS-LT8\sreevisalam\SVCF_BusinessAccessLayer\bin\Release\Microsoft.CSharp.dll
+C:\Users\altius.ALTIUS-LT8\sreevisalam\SVCF_BusinessAccessLayer\bin\Release\SVCF_DataAccessLayer.dll
+C:\Users\altius.ALTIUS-LT8\sreevisalam\SVCF_BusinessAccessLayer\bin\Release\SVCF_PropertyLayer.dll
+C:\Users\altius.ALTIUS-LT8\sreevisalam\SVCF_BusinessAccessLayer\bin\Release\SVCF_TransactionLayer.dll
+C:\Users\altius.ALTIUS-LT8\sreevisalam\SVCF_BusinessAccessLayer\bin\Release\System.Data.DataSetExtensions.dll
+C:\Users\altius.ALTIUS-LT8\sreevisalam\SVCF_BusinessAccessLayer\bin\Release\System.Data.dll
+C:\Users\altius.ALTIUS-LT8\sreevisalam\SVCF_BusinessAccessLayer\bin\Release\System.dll
+C:\Users\altius.ALTIUS-LT8\sreevisalam\SVCF_BusinessAccessLayer\bin\Release\System.Web.dll
+C:\Users\altius.ALTIUS-LT8\sreevisalam\SVCF_BusinessAccessLayer\bin\Release\System.Xml.dll
+C:\Users\altius.ALTIUS-LT8\sreevisalam\SVCF_BusinessAccessLayer\bin\Release\System.Xml.Linq.dll
+C:\Users\altius.ALTIUS-LT8\sreevisalam\SVCF_BusinessAccessLayer\bin\Release\SVCF_DataAccessLayer.pdb
+C:\Users\altius.ALTIUS-LT8\sreevisalam\SVCF_BusinessAccessLayer\bin\Release\SVCF_PropertyLayer.pdb
+C:\Users\altius.ALTIUS-LT8\sreevisalam\SVCF_BusinessAccessLayer\bin\Release\SVCF_TransactionLayer.pdb
+C:\Users\altius.ALTIUS-LT8\sreevisalam\SVCF_BusinessAccessLayer\obj\Release\SVCF_BusinessAccessLayer.csprojResolveAssemblyReference.cache
+C:\Users\altius.ALTIUS-LT8\sreevisalam\SVCF_BusinessAccessLayer\obj\Release\SVCF_BusinessAccessLayer.dll
+C:\Users\altius.ALTIUS-LT8\sreevisalam\SVCF_BusinessAccessLayer\obj\Release\SVCF_BusinessAccessLayer.pdb
+D:\kalpna-databackp\d-d-drive-new\SVCF\SVCF_SVN\svcf\svcfdev\SVCF_BusinessAccessLayer\bin\Release\SVCF_BusinessAccessLayer.dll.config
+D:\kalpna-databackp\d-d-drive-new\SVCF\SVCF_SVN\svcf\svcfdev\SVCF_BusinessAccessLayer\bin\Release\SVCF_BusinessAccessLayer.dll
+D:\kalpna-databackp\d-d-drive-new\SVCF\SVCF_SVN\svcf\svcfdev\SVCF_BusinessAccessLayer\bin\Release\SVCF_BusinessAccessLayer.pdb
+D:\kalpna-databackp\d-d-drive-new\SVCF\SVCF_SVN\svcf\svcfdev\SVCF_BusinessAccessLayer\bin\Release\Entity.dll
+D:\kalpna-databackp\d-d-drive-new\SVCF\SVCF_SVN\svcf\svcfdev\SVCF_BusinessAccessLayer\bin\Release\EntityFramework.dll
+D:\kalpna-databackp\d-d-drive-new\SVCF\SVCF_SVN\svcf\svcfdev\SVCF_BusinessAccessLayer\bin\Release\Microsoft.CSharp.dll
+D:\kalpna-databackp\d-d-drive-new\SVCF\SVCF_SVN\svcf\svcfdev\SVCF_BusinessAccessLayer\bin\Release\MySql.Data.dll
+D:\kalpna-databackp\d-d-drive-new\SVCF\SVCF_SVN\svcf\svcfdev\SVCF_BusinessAccessLayer\bin\Release\SVCF_DataAccessLayer.dll
+D:\kalpna-databackp\d-d-drive-new\SVCF\SVCF_SVN\svcf\svcfdev\SVCF_BusinessAccessLayer\bin\Release\SVCF_PropertyLayer.dll
+D:\kalpna-databackp\d-d-drive-new\SVCF\SVCF_SVN\svcf\svcfdev\SVCF_BusinessAccessLayer\bin\Release\SVCF_TransactionLayer.dll
+D:\kalpna-databackp\d-d-drive-new\SVCF\SVCF_SVN\svcf\svcfdev\SVCF_BusinessAccessLayer\bin\Release\System.Data.DataSetExtensions.dll
+D:\kalpna-databackp\d-d-drive-new\SVCF\SVCF_SVN\svcf\svcfdev\SVCF_BusinessAccessLayer\bin\Release\System.Data.dll
+D:\kalpna-databackp\d-d-drive-new\SVCF\SVCF_SVN\svcf\svcfdev\SVCF_BusinessAccessLayer\bin\Release\System.dll
+D:\kalpna-databackp\d-d-drive-new\SVCF\SVCF_SVN\svcf\svcfdev\SVCF_BusinessAccessLayer\bin\Release\System.Web.dll
+D:\kalpna-databackp\d-d-drive-new\SVCF\SVCF_SVN\svcf\svcfdev\SVCF_BusinessAccessLayer\bin\Release\System.Xml.dll
+D:\kalpna-databackp\d-d-drive-new\SVCF\SVCF_SVN\svcf\svcfdev\SVCF_BusinessAccessLayer\bin\Release\System.Xml.Linq.dll
+D:\kalpna-databackp\d-d-drive-new\SVCF\SVCF_SVN\svcf\svcfdev\SVCF_BusinessAccessLayer\bin\Release\Entity.pdb
+D:\kalpna-databackp\d-d-drive-new\SVCF\SVCF_SVN\svcf\svcfdev\SVCF_BusinessAccessLayer\bin\Release\Entity.dll.config
+D:\kalpna-databackp\d-d-drive-new\SVCF\SVCF_SVN\svcf\svcfdev\SVCF_BusinessAccessLayer\bin\Release\EntityFramework.xml
+D:\kalpna-databackp\d-d-drive-new\SVCF\SVCF_SVN\svcf\svcfdev\SVCF_BusinessAccessLayer\bin\Release\MySql.Data.xml
+D:\kalpna-databackp\d-d-drive-new\SVCF\SVCF_SVN\svcf\svcfdev\SVCF_BusinessAccessLayer\bin\Release\SVCF_DataAccessLayer.pdb
+D:\kalpna-databackp\d-d-drive-new\SVCF\SVCF_SVN\svcf\svcfdev\SVCF_BusinessAccessLayer\bin\Release\SVCF_DataAccessLayer.dll.config
+D:\kalpna-databackp\d-d-drive-new\SVCF\SVCF_SVN\svcf\svcfdev\SVCF_BusinessAccessLayer\bin\Release\SVCF_PropertyLayer.pdb
+D:\kalpna-databackp\d-d-drive-new\SVCF\SVCF_SVN\svcf\svcfdev\SVCF_BusinessAccessLayer\bin\Release\SVCF_TransactionLayer.pdb
+D:\kalpna-databackp\d-d-drive-new\SVCF\SVCF_SVN\svcf\svcfdev\SVCF_BusinessAccessLayer\obj\Release\SVCF_BusinessAccessLayer.csprojAssemblyReference.cache
+D:\kalpna-databackp\d-d-drive-new\SVCF\SVCF_SVN\svcf\svcfdev\SVCF_BusinessAccessLayer\obj\Release\SVCF_BusinessAccessLayer.csproj.CoreCompileInputs.cache
+D:\kalpna-databackp\d-d-drive-new\SVCF\SVCF_SVN\svcf\svcfdev\SVCF_BusinessAccessLayer\obj\Release\SVCF_BusinessAccessLayer.csproj.CopyComplete
+D:\kalpna-databackp\d-d-drive-new\SVCF\SVCF_SVN\svcf\svcfdev\SVCF_BusinessAccessLayer\obj\Release\SVCF_BusinessAccessLayer.dll
+D:\kalpna-databackp\d-d-drive-new\SVCF\SVCF_SVN\svcf\svcfdev\SVCF_BusinessAccessLayer\obj\Release\SVCF_BusinessAccessLayer.pdb
+C:\Users\altius\Vignesh Bala\svcfdev Live30032020Old-Copy\svcfdev\SVCF_BusinessAccessLayer\bin\Release\SVCF_BusinessAccessLayer.dll.config
+C:\Users\altius\Vignesh Bala\svcfdev Live30032020Old-Copy\svcfdev\SVCF_BusinessAccessLayer\bin\Release\SVCF_BusinessAccessLayer.dll
+C:\Users\altius\Vignesh Bala\svcfdev Live30032020Old-Copy\svcfdev\SVCF_BusinessAccessLayer\bin\Release\SVCF_BusinessAccessLayer.pdb
+C:\Users\altius\Vignesh Bala\svcfdev Live30032020Old-Copy\svcfdev\SVCF_BusinessAccessLayer\bin\Release\Entity.dll
+C:\Users\altius\Vignesh Bala\svcfdev Live30032020Old-Copy\svcfdev\SVCF_BusinessAccessLayer\bin\Release\EntityFramework.dll
+C:\Users\altius\Vignesh Bala\svcfdev Live30032020Old-Copy\svcfdev\SVCF_BusinessAccessLayer\bin\Release\Microsoft.CSharp.dll
+C:\Users\altius\Vignesh Bala\svcfdev Live30032020Old-Copy\svcfdev\SVCF_BusinessAccessLayer\bin\Release\MySql.Data.dll
+C:\Users\altius\Vignesh Bala\svcfdev Live30032020Old-Copy\svcfdev\SVCF_BusinessAccessLayer\bin\Release\SVCF_DataAccessLayer.dll
+C:\Users\altius\Vignesh Bala\svcfdev Live30032020Old-Copy\svcfdev\SVCF_BusinessAccessLayer\bin\Release\SVCF_PropertyLayer.dll
+C:\Users\altius\Vignesh Bala\svcfdev Live30032020Old-Copy\svcfdev\SVCF_BusinessAccessLayer\bin\Release\SVCF_TransactionLayer.dll
+C:\Users\altius\Vignesh Bala\svcfdev Live30032020Old-Copy\svcfdev\SVCF_BusinessAccessLayer\bin\Release\System.Data.DataSetExtensions.dll
+C:\Users\altius\Vignesh Bala\svcfdev Live30032020Old-Copy\svcfdev\SVCF_BusinessAccessLayer\bin\Release\System.Data.dll
+C:\Users\altius\Vignesh Bala\svcfdev Live30032020Old-Copy\svcfdev\SVCF_BusinessAccessLayer\bin\Release\System.dll
+C:\Users\altius\Vignesh Bala\svcfdev Live30032020Old-Copy\svcfdev\SVCF_BusinessAccessLayer\bin\Release\System.Web.dll
+C:\Users\altius\Vignesh Bala\svcfdev Live30032020Old-Copy\svcfdev\SVCF_BusinessAccessLayer\bin\Release\System.Xml.dll
+C:\Users\altius\Vignesh Bala\svcfdev Live30032020Old-Copy\svcfdev\SVCF_BusinessAccessLayer\bin\Release\System.Xml.Linq.dll
+C:\Users\altius\Vignesh Bala\svcfdev Live30032020Old-Copy\svcfdev\SVCF_BusinessAccessLayer\bin\Release\Entity.pdb
+C:\Users\altius\Vignesh Bala\svcfdev Live30032020Old-Copy\svcfdev\SVCF_BusinessAccessLayer\bin\Release\Entity.dll.config
+C:\Users\altius\Vignesh Bala\svcfdev Live30032020Old-Copy\svcfdev\SVCF_BusinessAccessLayer\bin\Release\EntityFramework.xml
+C:\Users\altius\Vignesh Bala\svcfdev Live30032020Old-Copy\svcfdev\SVCF_BusinessAccessLayer\bin\Release\MySql.Data.xml
+C:\Users\altius\Vignesh Bala\svcfdev Live30032020Old-Copy\svcfdev\SVCF_BusinessAccessLayer\bin\Release\SVCF_DataAccessLayer.pdb
+C:\Users\altius\Vignesh Bala\svcfdev Live30032020Old-Copy\svcfdev\SVCF_BusinessAccessLayer\bin\Release\SVCF_DataAccessLayer.dll.config
+C:\Users\altius\Vignesh Bala\svcfdev Live30032020Old-Copy\svcfdev\SVCF_BusinessAccessLayer\bin\Release\SVCF_PropertyLayer.pdb
+C:\Users\altius\Vignesh Bala\svcfdev Live30032020Old-Copy\svcfdev\SVCF_BusinessAccessLayer\bin\Release\SVCF_TransactionLayer.pdb
+C:\Users\altius\Vignesh Bala\svcfdev Live30032020Old-Copy\svcfdev\SVCF_BusinessAccessLayer\obj\Release\SVCF_BusinessAccessLayer.csprojAssemblyReference.cache
+C:\Users\altius\Vignesh Bala\svcfdev Live30032020Old-Copy\svcfdev\SVCF_BusinessAccessLayer\obj\Release\SVCF_BusinessAccessLayer.csproj.CoreCompileInputs.cache
+C:\Users\altius\Vignesh Bala\svcfdev Live30032020Old-Copy\svcfdev\SVCF_BusinessAccessLayer\obj\Release\SVCF_BusinessAccessLayer.csproj.CopyComplete
+C:\Users\altius\Vignesh Bala\svcfdev Live30032020Old-Copy\svcfdev\SVCF_BusinessAccessLayer\obj\Release\SVCF_BusinessAccessLayer.dll
+C:\Users\altius\Vignesh Bala\svcfdev Live30032020Old-Copy\svcfdev\SVCF_BusinessAccessLayer\obj\Release\SVCF_BusinessAccessLayer.pdb
+E:\E\VigneshBala\SVCF_Full\SVCF_RecentCodes\svcfdev Live\svcfdev\SVCF_BusinessAccessLayer\bin\Release\Properties\AssemblyInfo.cs
+E:\E\VigneshBala\SVCF_Full\SVCF_RecentCodes\svcfdev Live\svcfdev\SVCF_BusinessAccessLayer\bin\Release\SVCF_BusinessAccessLayer.dll.config
+E:\E\VigneshBala\SVCF_Full\SVCF_RecentCodes\svcfdev Live\svcfdev\SVCF_BusinessAccessLayer\bin\Release\SVCF_BusinessAccessLayer.dll
+E:\E\VigneshBala\SVCF_Full\SVCF_RecentCodes\svcfdev Live\svcfdev\SVCF_BusinessAccessLayer\bin\Release\SVCF_BusinessAccessLayer.pdb
+E:\E\VigneshBala\SVCF_Full\SVCF_RecentCodes\svcfdev Live\svcfdev\SVCF_BusinessAccessLayer\bin\Release\Entity.dll
+E:\E\VigneshBala\SVCF_Full\SVCF_RecentCodes\svcfdev Live\svcfdev\SVCF_BusinessAccessLayer\bin\Release\EntityFramework.dll
+E:\E\VigneshBala\SVCF_Full\SVCF_RecentCodes\svcfdev Live\svcfdev\SVCF_BusinessAccessLayer\bin\Release\Microsoft.CSharp.dll
+E:\E\VigneshBala\SVCF_Full\SVCF_RecentCodes\svcfdev Live\svcfdev\SVCF_BusinessAccessLayer\bin\Release\MySql.Data.dll
+E:\E\VigneshBala\SVCF_Full\SVCF_RecentCodes\svcfdev Live\svcfdev\SVCF_BusinessAccessLayer\bin\Release\SVCF_DataAccessLayer.dll
+E:\E\VigneshBala\SVCF_Full\SVCF_RecentCodes\svcfdev Live\svcfdev\SVCF_BusinessAccessLayer\bin\Release\SVCF_PropertyLayer.dll
+E:\E\VigneshBala\SVCF_Full\SVCF_RecentCodes\svcfdev Live\svcfdev\SVCF_BusinessAccessLayer\bin\Release\SVCF_TransactionLayer.dll
+E:\E\VigneshBala\SVCF_Full\SVCF_RecentCodes\svcfdev Live\svcfdev\SVCF_BusinessAccessLayer\bin\Release\System.Data.DataSetExtensions.dll
+E:\E\VigneshBala\SVCF_Full\SVCF_RecentCodes\svcfdev Live\svcfdev\SVCF_BusinessAccessLayer\bin\Release\System.Data.dll
+E:\E\VigneshBala\SVCF_Full\SVCF_RecentCodes\svcfdev Live\svcfdev\SVCF_BusinessAccessLayer\bin\Release\System.dll
+E:\E\VigneshBala\SVCF_Full\SVCF_RecentCodes\svcfdev Live\svcfdev\SVCF_BusinessAccessLayer\bin\Release\System.Web.dll
+E:\E\VigneshBala\SVCF_Full\SVCF_RecentCodes\svcfdev Live\svcfdev\SVCF_BusinessAccessLayer\bin\Release\System.Xml.dll
+E:\E\VigneshBala\SVCF_Full\SVCF_RecentCodes\svcfdev Live\svcfdev\SVCF_BusinessAccessLayer\bin\Release\System.Xml.Linq.dll
+E:\E\VigneshBala\SVCF_Full\SVCF_RecentCodes\svcfdev Live\svcfdev\SVCF_BusinessAccessLayer\bin\Release\SVCF_DataAccessLayer.pdb
+E:\E\VigneshBala\SVCF_Full\SVCF_RecentCodes\svcfdev Live\svcfdev\SVCF_BusinessAccessLayer\bin\Release\SVCF_DataAccessLayer.dll.config
+E:\E\VigneshBala\SVCF_Full\SVCF_RecentCodes\svcfdev Live\svcfdev\SVCF_BusinessAccessLayer\bin\Release\SVCF_PropertyLayer.pdb
+E:\E\VigneshBala\SVCF_Full\SVCF_RecentCodes\svcfdev Live\svcfdev\SVCF_BusinessAccessLayer\bin\Release\SVCF_TransactionLayer.pdb
+E:\E\VigneshBala\SVCF_Full\SVCF_RecentCodes\svcfdev Live\svcfdev\SVCF_BusinessAccessLayer\bin\Release\Entity.pdb
+E:\E\VigneshBala\SVCF_Full\SVCF_RecentCodes\svcfdev Live\svcfdev\SVCF_BusinessAccessLayer\bin\Release\Entity.dll.config
+E:\E\VigneshBala\SVCF_Full\SVCF_RecentCodes\svcfdev Live\svcfdev\SVCF_BusinessAccessLayer\bin\Release\EntityFramework.xml
+E:\E\VigneshBala\SVCF_Full\SVCF_RecentCodes\svcfdev Live\svcfdev\SVCF_BusinessAccessLayer\obj\Release\SVCF_BusinessAccessLayer.csprojAssemblyReference.cache
+E:\E\VigneshBala\SVCF_Full\SVCF_RecentCodes\svcfdev Live\svcfdev\SVCF_BusinessAccessLayer\obj\Release\SVCF_BusinessAccessLayer.csproj.CoreCompileInputs.cache
+E:\E\VigneshBala\SVCF_Full\SVCF_RecentCodes\svcfdev Live\svcfdev\SVCF_BusinessAccessLayer\obj\Release\SVCF_BusinessAccessLayer.csproj.CopyComplete
+E:\E\VigneshBala\SVCF_Full\SVCF_RecentCodes\svcfdev Live\svcfdev\SVCF_BusinessAccessLayer\obj\Release\SVCF_BusinessAccessLayer.dll
+E:\E\VigneshBala\SVCF_Full\SVCF_RecentCodes\svcfdev Live\svcfdev\SVCF_BusinessAccessLayer\obj\Release\SVCF_BusinessAccessLayer.pdb
+F:\GIT Project\SvcfLiveServices\SVCF_BusinessAccessLayer\bin\Release\Properties\AssemblyInfo.cs
+F:\GIT Project\SvcfLiveServices\SVCF_BusinessAccessLayer\bin\Release\SVCF_BusinessAccessLayer.dll.config
+F:\GIT Project\SvcfLiveServices\SVCF_BusinessAccessLayer\bin\Release\SVCF_BusinessAccessLayer.dll
+F:\GIT Project\SvcfLiveServices\SVCF_BusinessAccessLayer\bin\Release\SVCF_BusinessAccessLayer.pdb
+F:\GIT Project\SvcfLiveServices\SVCF_BusinessAccessLayer\bin\Release\Entity.dll
+F:\GIT Project\SvcfLiveServices\SVCF_BusinessAccessLayer\bin\Release\EntityFramework.dll
+F:\GIT Project\SvcfLiveServices\SVCF_BusinessAccessLayer\bin\Release\Microsoft.CSharp.dll
+F:\GIT Project\SvcfLiveServices\SVCF_BusinessAccessLayer\bin\Release\MySql.Data.dll
+F:\GIT Project\SvcfLiveServices\SVCF_BusinessAccessLayer\bin\Release\SVCF_DataAccessLayer.dll
+F:\GIT Project\SvcfLiveServices\SVCF_BusinessAccessLayer\bin\Release\SVCF_PropertyLayer.dll
+F:\GIT Project\SvcfLiveServices\SVCF_BusinessAccessLayer\bin\Release\SVCF_TransactionLayer.dll
+F:\GIT Project\SvcfLiveServices\SVCF_BusinessAccessLayer\bin\Release\System.Data.DataSetExtensions.dll
+F:\GIT Project\SvcfLiveServices\SVCF_BusinessAccessLayer\bin\Release\System.Data.dll
+F:\GIT Project\SvcfLiveServices\SVCF_BusinessAccessLayer\bin\Release\System.dll
+F:\GIT Project\SvcfLiveServices\SVCF_BusinessAccessLayer\bin\Release\System.Web.dll
+F:\GIT Project\SvcfLiveServices\SVCF_BusinessAccessLayer\bin\Release\System.Xml.dll
+F:\GIT Project\SvcfLiveServices\SVCF_BusinessAccessLayer\bin\Release\System.Xml.Linq.dll
+F:\GIT Project\SvcfLiveServices\SVCF_BusinessAccessLayer\bin\Release\SVCF_DataAccessLayer.pdb
+F:\GIT Project\SvcfLiveServices\SVCF_BusinessAccessLayer\bin\Release\SVCF_DataAccessLayer.dll.config
+F:\GIT Project\SvcfLiveServices\SVCF_BusinessAccessLayer\bin\Release\SVCF_PropertyLayer.pdb
+F:\GIT Project\SvcfLiveServices\SVCF_BusinessAccessLayer\bin\Release\SVCF_TransactionLayer.pdb
+F:\GIT Project\SvcfLiveServices\SVCF_BusinessAccessLayer\bin\Release\Entity.pdb
+F:\GIT Project\SvcfLiveServices\SVCF_BusinessAccessLayer\bin\Release\Entity.dll.config
+F:\GIT Project\SvcfLiveServices\SVCF_BusinessAccessLayer\bin\Release\EntityFramework.xml
+F:\GIT Project\SvcfLiveServices\SVCF_BusinessAccessLayer\obj\Release\SVCF_BusinessAccessLayer.csprojAssemblyReference.cache
+F:\GIT Project\SvcfLiveServices\SVCF_BusinessAccessLayer\obj\Release\SVCF_BusinessAccessLayer.csproj.CoreCompileInputs.cache
+F:\GIT Project\SvcfLiveServices\SVCF_BusinessAccessLayer\obj\Release\SVCF_BusinessAccessLayer.csproj.CopyComplete
+F:\GIT Project\SvcfLiveServices\SVCF_BusinessAccessLayer\obj\Release\SVCF_BusinessAccessLayer.dll
+F:\GIT Project\SvcfLiveServices\SVCF_BusinessAccessLayer\obj\Release\SVCF_BusinessAccessLayer.pdb

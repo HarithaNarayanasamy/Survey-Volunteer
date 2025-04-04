@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="709736955bdd4cf4bb750b399fb9f799" Name="Diagram1">
+        <EntityTypeShape EntityType="svcfModel.headstree" Width="1.5" PointX="0.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="svcfModel.membermaster" Width="1.5" PointX="2.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="svcfModel.membersdocument" Width="1.5" PointX="4.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="svcfModel.membersuggestion" Width="1.5" PointX="4.75" PointY="3.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="svcfModel.membertogroupmaster" Width="1.5" PointX="6.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="svcfModel.auctiondetail" Width="1.5" PointX="7.75" PointY="7.75" />
+        <EntityTypeShape EntityType="svcfModel.bankdetail" Width="1.5" PointX="9.75" PointY="0.75" />
+        <EntityTypeShape EntityType="svcfModel.branchdetail" Width="1.5" PointX="9.75" PointY="5.75" />
+        <EntityTypeShape EntityType="svcfModel.employee_details" Width="1.5" PointX="9.75" PointY="9.75" />
+        <EntityTypeShape EntityType="svcfModel.employeedesignation" Width="1.5" PointX="11.75" PointY="0.75" />
+        <EntityTypeShape EntityType="svcfModel.login" Width="1.5" PointX="0.75" PointY="11.75" />
+        <EntityTypeShape EntityType="svcfModel.right" Width="1.5" PointX="2.75" PointY="11.75" />
+        <EntityTypeShape EntityType="svcfModel.role" Width="1.5" PointX="11.75" PointY="3.75" />
+        <EntityTypeShape EntityType="svcfModel.trans_payment" Width="1.5" PointX="4.75" PointY="11.75" />
+        <EntityTypeShape EntityType="svcfModel.transbank" Width="1.5" PointX="11.75" PointY="6.75" />
+        <EntityTypeShape EntityType="svcfModel.voucher" Width="1.5" PointX="6.75" PointY="12.75" />
+        <EntityTypeShape EntityType="svcfModel.commissiondetail" Width="1.5" PointX="13.75" PointY="0.75" />
+        <EntityTypeShape EntityType="svcfModel.chithead" Width="1.5" PointX="14.375" PointY="3.75" />
+        <EntityTypeShape EntityType="svcfModel.filingfee" Width="1.5" PointX="14.375" PointY="7.75" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

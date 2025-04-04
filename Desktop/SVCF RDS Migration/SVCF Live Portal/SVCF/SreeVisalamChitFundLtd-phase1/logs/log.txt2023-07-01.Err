@@ -1,0 +1,3 @@
+INFO  2023-07-01 14:42:44,285 143604ms Home                   Page_Load          - Logged into Site at: 01-07-2023 14:42:44
+INFO  2023-07-01 16:49:55,301 7774620ms paymentnew             btn_ok             - paymentnew.aspx - btn_ok():  Error: Index was outside the bounds of the array.: 01/07/2023 16:49:55 by: admin@svcf.com
+INFO  2023-07-01 17:09:51,775 8971094ms paymentnew             btn_ok             - paymentnew.aspx - btn_ok():  Completed: 01/07/2023 17:09:51 by: admin@svcf.com

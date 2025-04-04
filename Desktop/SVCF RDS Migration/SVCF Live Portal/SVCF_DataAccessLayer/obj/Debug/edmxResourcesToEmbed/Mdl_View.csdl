@@ -1,0 +1,114 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="svcfModel1" Alias="Self" xmlns="http://schemas.microsoft.com/ado/2009/11/edm" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation">
+  <EntityType Name="unpaidprizedmoney">
+    <Key>
+      <PropertyRef Name="Head_Id" />
+      <PropertyRef Name="GrpMemberID" />
+    </Key>
+    <Property Name="Head_Id" Type="Int64" Nullable="false" />
+    <Property Name="GrpMemberID" Type="String" MaxLength="13" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="Credit" Type="Decimal" />
+    <Property Name="Debit" Type="Decimal" />
+    <Property Name="AmountActuallyremittedbytheParty" Type="Decimal" />
+  </EntityType>
+  <EntityType Name="view_groupwisedue">
+    <Key>
+      <PropertyRef Name="GroupIDOriginal" />
+      <PropertyRef Name="IsFinished" />
+      <PropertyRef Name="GroupId" />
+    </Key>
+    <Property Name="GroupIDOriginal" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="IsFinished" Type="Byte" Nullable="false" />
+    <Property Name="GroupId" Type="Int64" Nullable="false" />
+    <Property Name="TotaldueAmount" Type="Decimal" />
+  </EntityType>
+  <EntityType Name="view_parent">
+    <Key>
+      <PropertyRef Name="RootID" />
+      <PropertyRef Name="TREE" />
+    </Key>
+    <Property Name="RootID" Type="Int64" Nullable="false" />
+    <Property Name="BranchID" Type="Decimal" />
+    <Property Name="TREE" Type="String" MaxLength="65535" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="TreeID" Type="Decimal" />
+  </EntityType>
+  <EntityType Name="view_tree">
+    <Key>
+      <PropertyRef Name="NodeId_1" />
+      <PropertyRef Name="T1" />
+    </Key>
+    <Property Name="NodeId_1" Type="Int64" Nullable="false" />
+    <Property Name="BranchID" Type="Decimal" />
+    <Property Name="T1" Type="String" MaxLength="255" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="NodeId_2" Type="Int64" />
+    <Property Name="T2" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+    <Property Name="NodeId_3" Type="Int64" />
+    <Property Name="T3" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+    <Property Name="NodeId_4" Type="Int64" />
+    <Property Name="T4" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+  </EntityType>
+  <EntityType Name="view_unapprovedtoken">
+    <Key>
+      <PropertyRef Name="SuggestedBranchId" />
+      <PropertyRef Name="slno" />
+      <PropertyRef Name="M_ID" />
+      <PropertyRef Name="BranchName" />
+      <PropertyRef Name="CustomerName" />
+      <PropertyRef Name="GroupNo" />
+      <PropertyRef Name="PoolNo" />
+      <PropertyRef Name="EstSuretyDocument" />
+      <PropertyRef Name="EstCallNoOfAuction" />
+      <PropertyRef Name="NoofTokens" />
+      <PropertyRef Name="TypeOfMember" />
+      <PropertyRef Name="ProfessionBusiness" />
+      <PropertyRef Name="MobileNo" />
+      <PropertyRef Name="MemberID" />
+    </Key>
+    <Property Name="SuggestedBranchId" Type="Int64" Nullable="false" />
+    <Property Name="slno" Type="Int64" Nullable="false" />
+    <Property Name="M_ID" Type="Int64" Nullable="false" />
+    <Property Name="NoofTokensApproved" Type="Int64" />
+    <Property Name="BranchName" Type="String" MaxLength="100" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="CustomerName" Type="String" MaxLength="1073741823" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="GroupNo" Type="Int64" Nullable="false" />
+    <Property Name="PoolNo" Type="String" MaxLength="45" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="EstSuretyDocument" Type="String" MaxLength="65535" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="EstCallNoOfAuction" Type="String" MaxLength="100" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="NoofTokens" Type="Int64" Nullable="false" />
+    <Property Name="SuggestedDate" Type="DateTime" />
+    <Property Name="TypeOfMember" Type="String" MaxLength="1073741823" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="Gender" Type="String" MaxLength="1073741823" FixedLength="false" Unicode="false" />
+    <Property Name="Age" Type="Int64" />
+    <Property Name="DOB" Type="DateTime" />
+    <Property Name="FatherHusbandName" Type="String" MaxLength="1073741823" FixedLength="false" Unicode="false" />
+    <Property Name="MotherWifeName" Type="String" MaxLength="1073741823" FixedLength="false" Unicode="false" />
+    <Property Name="ProprietorName" Type="String" MaxLength="1073741823" FixedLength="false" Unicode="false" />
+    <Property Name="PartnersName" Type="String" MaxLength="1073741823" FixedLength="false" Unicode="false" />
+    <Property Name="DateOfPartnershipWithAmendment" Type="DateTime" />
+    <Property Name="compxerox" Type="String" MaxLength="1073741823" FixedLength="false" Unicode="false" />
+    <Property Name="dateofResol" Type="DateTime" />
+    <Property Name="ProfessionBusiness" Type="String" MaxLength="1073741823" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="NatureofProfessionBusiness" Type="String" MaxLength="1073741823" FixedLength="false" Unicode="false" />
+    <Property Name="ResidentialAddress" Type="String" MaxLength="65535" FixedLength="false" Unicode="false" />
+    <Property Name="AddressForCommunication" Type="String" MaxLength="65535" FixedLength="false" Unicode="false" />
+    <Property Name="ProofofResidence" Type="String" MaxLength="1073741823" FixedLength="false" Unicode="false" />
+    <Property Name="AddressProfessionBusiness" Type="String" MaxLength="1073741823" FixedLength="false" Unicode="false" />
+    <Property Name="TelephoneNoProfessionBusiness" Type="String" MaxLength="1073741823" FixedLength="false" Unicode="false" />
+    <Property Name="TelephoneNoResidence" Type="String" MaxLength="1073741823" FixedLength="false" Unicode="false" />
+    <Property Name="MobileNo" Type="String" MaxLength="1073741823" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="SalesTaxRegistrationNoTNGST" Type="String" MaxLength="1073741823" FixedLength="false" Unicode="false" />
+    <Property Name="CSTRegistrationNumber" Type="String" MaxLength="1073741823" FixedLength="false" Unicode="false" />
+    <Property Name="IncomeTaxPANoWardandCircle" Type="String" MaxLength="1073741823" FixedLength="false" Unicode="false" />
+    <Property Name="BankName" Type="String" MaxLength="40" FixedLength="false" Unicode="false" />
+    <Property Name="SavingsCurrentAccountNo" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+    <Property Name="MemberID" Type="Int64" Nullable="false" />
+    <Property Name="NoofRemainingTokens" Type="Int64" />
+  </EntityType>
+  <EntityContainer Name="svcfEntities2" annotation:LazyLoadingEnabled="true" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation">
+    <EntitySet Name="unpaidprizedmoneys" EntityType="Self.unpaidprizedmoney" />
+    <EntitySet Name="view_groupwisedue" EntityType="Self.view_groupwisedue" />
+    <EntitySet Name="view_parent" EntityType="Self.view_parent" />
+    <EntitySet Name="view_tree" EntityType="Self.view_tree" />
+    <EntitySet Name="view_unapprovedtoken" EntityType="Self.view_unapprovedtoken" />
+  </EntityContainer>
+</Schema>

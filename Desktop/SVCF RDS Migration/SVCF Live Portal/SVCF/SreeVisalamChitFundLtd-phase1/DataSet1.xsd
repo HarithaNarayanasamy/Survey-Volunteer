@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="DataSet1" targetNamespace="http://tempuri.org/DataSet1.xsd" xmlns:mstns="http://tempuri.org/DataSet1.xsd" xmlns="http://tempuri.org/DataSet1.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:msprop="urn:schemas-microsoft-com:xml-msprop" attributeFormDefault="qualified" elementFormDefault="qualified">
+  <xs:annotation>
+    <xs:appinfo source="urn:schemas-microsoft-com:xml-msdatasource">
+      <DataSource DefaultConnectionIndex="0" FunctionsComponentName="QueriesTableAdapter" Modifier="AutoLayout, AnsiClass, Class, Public" SchemaSerializationMode="IncludeSchema" xmlns="urn:schemas-microsoft-com:xml-msdatasource">
+        <Connections />
+        <Tables />
+        <Sources />
+      </DataSource>
+    </xs:appinfo>
+  </xs:annotation>
+  <xs:element name="DataSet1" msdata:IsDataSet="true" msdata:UseCurrentLocale="true" msprop:Generator_UserDSName="DataSet1" msprop:Generator_DataSetName="DataSet1" msprop:EnableTableAdapterManager="true">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="dtRpt" msprop:Generator_UserTableName="dtRpt" msprop:Generator_RowDeletedName="dtRptRowDeleted" msprop:Generator_RowChangedName="dtRptRowChanged" msprop:Generator_RowClassName="dtRptRow" msprop:Generator_RowChangingName="dtRptRowChanging" msprop:Generator_RowEvArgName="dtRptRowChangeEvent" msprop:Generator_RowEvHandlerName="dtRptRowChangeEventHandler" msprop:Generator_TableClassName="dtRptDataTable" msprop:Generator_TableVarName="tabledtRpt" msprop:Generator_RowDeletingName="dtRptRowDeleting" msprop:Generator_TablePropName="dtRpt">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Draw_x002F_InstallMent_x0020_No" msprop:Generator_UserColumnName="Draw/InstallMent No" msprop:Generator_ColumnVarNameInTable="_columnDraw_InstallMent_No" msprop:Generator_ColumnPropNameInRow="_Draw_InstallMent_No" msprop:Generator_ColumnPropNameInTable="_Draw_InstallMent_NoColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="Date_x0020_of_x0020_Draw" msprop:Generator_UserColumnName="Date of Draw" msprop:Generator_ColumnPropNameInRow="Date_of_Draw" msprop:Generator_ColumnVarNameInTable="columnDate_of_Draw" msprop:Generator_ColumnPropNameInTable="Date_of_DrawColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="Time" msprop:Generator_UserColumnName="Time" msprop:Generator_ColumnPropNameInRow="Time" msprop:Generator_ColumnVarNameInTable="columnTime" msprop:Generator_ColumnPropNameInTable="TimeColumn" type="xs:string" minOccurs="0" />
+              <xs:element name="Draw_x002F_InstallMent_x0020_No1" msprop:Generator_UserColumnName="Draw/InstallMent No1" msprop:Generator_ColumnPropNameInRow="_Draw_InstallMent_No1" msprop:Generator_ColumnVarNameInTable="_columnDraw_InstallMent_No1" msprop:Generator_ColumnPropNameInTable="_Draw_InstallMent_No1Column" type="xs:string" minOccurs="0" />
+              <xs:element name="Time1" msprop:Generator_UserColumnName="Time1" msprop:Generator_ColumnPropNameInRow="Time1" msprop:Generator_ColumnVarNameInTable="columnTime1" msprop:Generator_ColumnPropNameInTable="Time1Column" type="xs:string" minOccurs="0" />
+              <xs:element name="Date_x0020_of_x0020_Draw1" msprop:Generator_UserColumnName="Date of Draw1" msprop:Generator_ColumnPropNameInRow="Date_of_Draw1" msprop:Generator_ColumnVarNameInTable="columnDate_of_Draw1" msprop:Generator_ColumnPropNameInTable="Date_of_Draw1Column" type="xs:string" minOccurs="0" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

@@ -1,0 +1,26 @@
+INFO  2023-06-09 11:24:48,691 293443ms Home                   Page_Load          - Logged into Site at: 09-06-2023 11:24:48
+INFO  2023-06-09 11:27:26,801 451553ms Home                   Page_Load          - Logged into Site at: 09-06-2023 11:27:26
+INFO  2023-06-09 11:30:03,780 608532ms Home                   Page_Load          - Logged into Site at: 09-06-2023 11:30:03
+INFO  2023-06-09 11:32:37,787 762539ms Home                   Page_Load          - Logged into Site at: 09-06-2023 11:32:37
+INFO  2023-06-09 11:35:22,789 927541ms Home                   Page_Load          - Logged into Site at: 09-06-2023 11:35:22
+INFO  2023-06-09 11:38:06,769 1091521ms Home                   Page_Load          - Logged into Site at: 09-06-2023 11:38:06
+INFO  2023-06-09 11:40:38,796 1243548ms Home                   Page_Load          - Logged into Site at: 09-06-2023 11:40:38
+INFO  2023-06-09 11:43:09,769 1394521ms Home                   Page_Load          - Logged into Site at: 09-06-2023 11:43:09
+INFO  2023-06-09 11:45:41,773 1546525ms Home                   Page_Load          - Logged into Site at: 09-06-2023 11:45:41
+INFO  2023-06-09 11:48:14,774 1699526ms Home                   Page_Load          - Logged into Site at: 09-06-2023 11:48:14
+INFO  2023-06-09 11:53:15,232 1999984ms Home                   Page_Load          - Logged into Site at: 09-06-2023 11:53:15
+INFO  2023-06-09 12:42:28,960 35167ms Home                   Page_Load          - Logged into Site at: 09-06-2023 12:42:28
+INFO  2023-06-09 12:45:00,802 187010ms Home                   Page_Load          - Logged into Site at: 09-06-2023 12:45:00
+INFO  2023-06-09 12:48:07,997 374204ms TRROtherBranch         Page_Load          - TRR Other Branch - at: 09/06/2023 12:48:07 by: admin@svcf.com
+INFO  2023-06-09 12:48:10,088 376295ms Home                   Page_Load          - Logged into Site at: 09-06-2023 12:48:10
+INFO  2023-06-09 18:35:12,926 870831ms Home                   Page_Load          - Logged into Site at: 09-06-2023 18:35:12
+INFO  2023-06-09 18:38:06,467 1044372ms crrnew                 Page_Load          - CRR - current page- at: 09/06/2023 18:38:06
+INFO  2023-06-09 18:38:06,584 1044489ms Home                   Page_Load          - Logged into Site at: 09-06-2023 18:38:06
+INFO  2023-06-09 18:38:20,609 1058514ms Home                   Page_Load          - Logged into Site at: 09-06-2023 18:38:20
+INFO  2023-06-09 18:40:25,783 1183688ms Home                   Page_Load          - Logged into Site at: 09-06-2023 18:40:25
+INFO  2023-06-09 18:42:28,843 1306749ms Home                   Page_Load          - Logged into Site at: 09-06-2023 18:42:28
+INFO  2023-06-09 18:43:29,498 1367403ms crrnew                 Page_Load          - CRR - current page- at: 09/06/2023 18:43:29
+INFO  2023-06-09 18:43:46,857 1384762ms crrnew                 Page_Load          - CRR - current page- at: 09/06/2023 18:43:46
+INFO  2023-06-09 18:44:00,562 1398467ms crrnew                 Page_Load          - CRR - current page- at: 09/06/2023 18:44:00
+INFO  2023-06-09 18:44:32,345 1430250ms Home                   Page_Load          - Logged into Site at: 09-06-2023 18:44:32
+INFO  2023-06-09 18:44:54,404 1452309ms TRROtherBranch         Page_Load          - TRR Other Branch - at: 09/06/2023 18:44:54 by: admin@svcf.com

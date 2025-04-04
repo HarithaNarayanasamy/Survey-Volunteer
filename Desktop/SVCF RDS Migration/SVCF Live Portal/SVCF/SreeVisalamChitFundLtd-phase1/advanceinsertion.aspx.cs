@@ -1,0 +1,157 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+using System.Data;
+using SVCF_BusinessAccessLayer;
+using SVCF_DataAccessLayer;
+using SVCF_TransactionLayer;
+using log4net;
+using log4net.Config;
+
+namespace SreeVisalamChitFundLtd_phase1
+{
+    public partial class advanceinsertion : System.Web.UI.Page
+    {
+        #region Object
+        BusinessLayer balayer = new BusinessLayer();
+        #endregion
+
+        ILog logger = log4net.LogManager.GetLogger(typeof(advanceinsertion));
+
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            if (!IsPostBack)
+            {
+                rvDate.MaximumValue = DateTime.Now.ToString("dd/MM/yyyy");
+                //rvDate.MinimumValue = balayer.GetSingleValue("SELECT DATE_FORMAT( min(ChoosenDate), '%d/%m/%Y') MinimumDate FROM svcf.voucher where BranchID=" + Session["Branchid"]); ;
+                rvDate.MinimumValue = balayer.GetSingleValue("SELECT DATE_FORMAT( min(ChoosenDate), '%d/%m/%Y') MinimumDate FROM svcf.voucher where " +
+                    "BranchID=" + Session["Branchid"] + " and ChoosenDate<>'0000-00-00'");
+
+                DataTable dt = balayer.GetDataTable("SELECT t1.sno ,h1.Node FROM svcf.transadvance as t1 join headstree as h1 on (t1.HeadID=h1.NodeID) where t1.Flag=1 and t1.isTransfered=0 and t1.BranchID=" + Session["Branchid"]);
+                DataRow dr = dt.NewRow();
+                dr[0] = "0";
+                dr[1] = "--Select--";
+                ddlHead.DataTextField = "Node";
+                ddlHead.DataValueField = "sno";
+                dt.Rows.InsertAt(dr, 0);
+                ddlHead.DataSource = dt;
+                ddlHead.DataBind();
+                Session["CheckRefresh"] = System.Guid.NewGuid().ToString();
+            }
+        }
+        protected void btncancel_Click(object sender, EventArgs e)
+        {
+            Response.Redirect(Request.Url.AbsolutePath.ToString(), false);
+        }
+        protected void Page_PreRender(object sender, EventArgs e)
+        {
+            ViewState["CheckRefresh"] = Session["CheckRefresh"];
+        }
+        protected void ddlMedium_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            bindmedium();
+        }
+        void bindmedium()
+        {
+            if (ddlMedium.SelectedValue.ToString() == "Bank")
+            {
+                lblBankHead.Visible = true;
+                lblChequeNo.Visible = true;
+                ddlBankHead.Visible = true;
+                txtChequeNo.Visible = true;
+                CVddlBankHead.Visible = true;
+                RFVtxtIfsc.Visible = true;
+                txtChequeNo.Focus();
+                DataTable dt = balayer.GetDataTable("SELECT concat(BankName,' _ ',IFCCode,' _ ',AccountNo) as Bank,Head_Id FROM svcf.bankdetails where BranchID=" + Session["Branchid"]);
+                DataRow dr = dt.NewRow();
+                dr[0] = "--Select--";
+                dr[1] = "0";
+                ddlBankHead.DataSource = dt;
+                ddlBankHead.DataTextField = "Bank";
+                ddlBankHead.DataValueField = "Head_Id";
+                dt.Rows.InsertAt(dr, 0);
+                ddlBankHead.DataBind();
+            }
+            else
+            {
+                lblBankHead.Visible = false;
+                lblChequeNo.Visible = false;
+                ddlBankHead.Visible = false;
+                txtChequeNo.Visible = false;
+                CVddlBankHead.Visible = false;
+                RFVtxtIfsc.Visible = false;
+                btnPayLoan.Focus();
+            }
+        }
+        protected void btnPayLoan_Click(object sender, EventArgs e)
+        {
+            Page.Validate("chit");
+            if (!Page.IsValid)
+            {
+                return;
+            }
+            if (Session["CheckRefresh"].ToString() != ViewState["CheckRefresh"].ToString())
+            {
+                return;
+            }
+            DataTable dtCheck = balayer.GetDataTable("SELECT * FROM svcf.transadvance where advancenumber=" + txtAdvanceNumber.Text + " and sno=" + ddlHead.SelectedItem.Value);
+            if (dtCheck.Rows.Count == 1)
+            {
+                bool isFinished = true;
+                TransactionLayer trn = new TransactionLayer();
+                try
+                {
+                    DataTable dt = balayer.GetDataTable("SELECT insertkey_from_bin(DualTransactionKey) as DualTransactionKey,Amount,HeadID,Narration FROM svcf.transadvance where sno=" + ddlHead.SelectedItem.Value);
+                    if (ddlMedium.SelectedItem.Text == "Cash")
+                    {
+                        long iResult = trn.insertorupdateTrn("insert into voucher(`DualTransactionKey`,`BranchID`,`CurrDate`,`Voucher_No`,`Voucher_Type`,`Head_Id`,`ChoosenDate`,`Narration`,`Amount`,`Series`,`ReceievedBy`,`Trans_Type`,`T_Day`,`T_Month`,`T_Year`,`MemberID`,`Trans_Medium`,`RootID`,ChitGroupId,`Other_Trans_Type`) values (" + dt.Rows[0]["DualTransactionKey"] + "," + Session["Branchid"] + ",'" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "',0,'D'," + dt.Rows[0]["HeadID"] + ",'" + balayer.indiandateToMysqlDate(txtDate.Text) + "','" + balayer.MySQLEscapeString(balayer.ToobjectstrEvenNull(dt.Rows[0]["Narration"])) + "'," + balayer.ToobjectstrEvenNull(dt.Rows[0]["Amount"]) + ",'Advances','" + Session["UserName"] + "',0," + txtDate.Text.Split('/')[0] + "," + txtDate.Text.Split('/')[1] + "," + txtDate.Text.Split('/')[2] + ",0,0,9,0,2)");
+                        long iResult1 = trn.insertorupdateTrn("insert into voucher(`DualTransactionKey`,`BranchID`,`CurrDate`,`Voucher_No`,`Voucher_Type`,`Head_Id`,`ChoosenDate`,`Narration`,`Amount`,`Series`,`ReceievedBy`,`Trans_Type`,`T_Day`,`T_Month`,`T_Year`,`MemberID`,`Trans_Medium`,`RootID`,ChitGroupId,`Other_Trans_Type`) values (" + dt.Rows[0]["DualTransactionKey"] + "," + Session["Branchid"] + ",'" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "',0,'C',12,'" + balayer.indiandateToMysqlDate(txtDate.Text) + "','" + balayer.MySQLEscapeString(balayer.ToobjectstrEvenNull(dt.Rows[0]["Narration"])) + "','" + balayer.ToobjectstrEvenNull(dt.Rows[0]["Amount"]) + "','Advances','" + Session["UserName"] + "',0," + txtDate.Text.Split('/')[0] + "," + txtDate.Text.Split('/')[1] + "," + txtDate.Text.Split('/')[2] + ",0,0,12,0,2)");
+                        long uResult = trn.insertorupdateTrn("UPDATE svcf.transadvance set TransactionKey=" + iResult + ",ChoosenDate='" + balayer.indiandateToMysqlDate(txtDate.Text) + "',Transmedium=0,isTransfered=1 where sno=" + ddlHead.SelectedItem.Value);
+                    }
+                    else if (ddlMedium.SelectedItem.Text == "Bank")
+                    {
+                        long iResult = trn.insertorupdateTrn("insert into voucher(`DualTransactionKey`,`BranchID`,`CurrDate`,`Voucher_No`,`Voucher_Type`,`Head_Id`,`ChoosenDate`,`Narration`,`Amount`,`Series`,`ReceievedBy`,`Trans_Type`,`T_Day`,`T_Month`,`T_Year`,`MemberID`,`Trans_Medium`,`RootID`,ChitGroupId,`Other_Trans_Type`) values (" + dt.Rows[0]["DualTransactionKey"] + "," + Session["Branchid"] + ",'" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "',0,'D'," + dt.Rows[0]["HeadID"] + ",'" + balayer.indiandateToMysqlDate(txtDate.Text) + "','" + balayer.MySQLEscapeString(balayer.ToobjectstrEvenNull(dt.Rows[0]["Narration"])) + "'," + balayer.ToobjectstrEvenNull(dt.Rows[0]["Amount"]) + ",'Advances','" + Session["UserName"] + "',0," + txtDate.Text.Split('/')[0] + "," + txtDate.Text.Split('/')[1] + "," + txtDate.Text.Split('/')[2] + ",0,0,9,0,2)");
+                        long iResult1 = trn.insertorupdateTrn("insert into voucher(`DualTransactionKey`,`BranchID`,`CurrDate`,`Voucher_No`,`Voucher_Type`,`Head_Id`,`ChoosenDate`,`Narration`,`Amount`,`Series`,`ReceievedBy`,`Trans_Type`,`T_Day`,`T_Month`,`T_Year`,`MemberID`,`Trans_Medium`,`RootID`,ChitGroupId,`Other_Trans_Type`) values (" + dt.Rows[0]["DualTransactionKey"] + "," + Session["Branchid"] + ",'" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "',0,'C'," + ddlBankHead.SelectedItem.Value + ",'" + balayer.indiandateToMysqlDate(txtDate.Text) + "','" + balayer.MySQLEscapeString(balayer.ToobjectstrEvenNull(dt.Rows[0]["Narration"])) + "'," + balayer.ToobjectstrEvenNull(dt.Rows[0]["Amount"]) + ",'Advances','" + Session["UserName"] + "',0," + txtDate.Text.Split('/')[0] + "," + txtDate.Text.Split('/')[1] + "," + txtDate.Text.Split('/')[2] + ",0,0,3,0,2)");
+                        string strBankName = balayer.GetSingleValue("SELECT BankName FROM svcf.bankdetails where Head_Id=" + ddlBankHead.SelectedItem.Value);
+                        long iResult2 = trn.insertorupdateTrn("insert into svcf.transbank (BranchID,DualTransactionKey,T_Day,T_Month,T_Year,BankHeadID,Head_Id,MemberID,CustomersBankName,DateInCheque,ChequeDDNO,GivenAmount,TotalChequeDDAmount,IsBounced,Trans_Type) values (" + Session["Branchid"] + "," + dt.Rows[0]["DualTransactionKey"] + "," + txtDate.Text.Split('/')[0] + "," + txtDate.Text.Split('/')[1] + "," + txtDate.Text.Split('/')[2] + "," + ddlBankHead.SelectedItem.Value + "," + dt.Rows[0]["HeadID"] + ",0,'" + balayer.MySQLEscapeString(strBankName) + "','" + balayer.indiandateToMysqlDate(txtDate.Text) + "','" + txtChequeNo.Text + "'," + balayer.ToobjectstrEvenNull(dt.Rows[0]["Amount"]) + "," + balayer.ToobjectstrEvenNull(dt.Rows[0]["Amount"]) + ",0,0)");
+                        long uResult = trn.insertorupdateTrn("UPDATE svcf.transadvance set TransactionKey=" + iResult + ",ChoosenDate='" + balayer.indiandateToMysqlDate(txtDate.Text) + "',Transmedium=1,isTransfered=1 where sno=" + ddlHead.SelectedItem.Value);
+                    }
+
+                    trn.CommitTrn();
+                    logger.Info("advanceinsertion.aspx - btnPayLoan_Click() - Completed: " + DateTime.Now + " by: " + Convert.ToString(Session["UserName"]) + "");
+                }
+                catch (Exception error)
+                {
+                   trn.RollbackTrn();
+                   logger.Info("advanceinsertion.aspx - btnPayLoan_Click() - Error: " + error.Message +": " + DateTime.Now + " by: " + Convert.ToString(Session["UserName"]) + "");
+                    ModalPopupExtender1.PopupControlID = "pnlmsg";
+                    ModalPopupExtender1.Show();
+                    pnlmsg.Visible = true;
+                    lblcon.Text = error.Message;
+                    isFinished = false;
+                }
+                finally
+                {
+                    trn.DisposeTrn();
+                    if (isFinished)
+                    {
+                        ModalPopupExtender1.PopupControlID = "pnlmsg";
+                        ModalPopupExtender1.Show();
+                        pnlmsg.Visible = true;
+                        lblcon.Text = "Data saved suucessfully";
+                    }
+                }
+            }
+            else
+            {
+                ModalPopupExtender1.PopupControlID = "pnlmsg";
+                ModalPopupExtender1.Show();
+                pnlmsg.Visible = true;
+                lblcon.Text = "Advance Number Does not match";
+            }
+        }
+    }
+}

@@ -1,0 +1,10 @@
+INFO  2018-03-27 10:15:20,565 34807ms Home                   Page_Load          - Logged into Site at: 27/03/18 10:15:20 AM
+INFO  2018-03-27 10:15:47,163 61405ms VoucherMultiple        Page_Load          - Voucher Multiple: 27/03/2018 10:15:47 by: admin@svcf.com
+INFO  2018-03-27 10:16:33,100 107342ms VoucherMultiple        Page_Load          - Voucher Multiple: 27/03/2018 10:16:33 by: admin@svcf.com
+INFO  2018-03-27 10:16:38,189 112431ms VoucherMultiple        Page_Load          - Voucher Multiple: 27/03/2018 10:16:38 by: admin@svcf.com
+INFO  2018-03-27 10:26:24,384 15787ms Home                   Page_Load          - Logged into Site at: 27/03/18 10:26:24 AM
+INFO  2018-03-27 10:26:53,500 44904ms VoucherMultiple        Page_Load          - Voucher Multiple: 27/03/2018 10:26:53 by: admin@svcf.com
+INFO  2018-03-27 10:27:30,578 81981ms VoucherMultiple        Page_Load          - Voucher Multiple: 27/03/2018 10:27:30 by: admin@svcf.com
+INFO  2018-03-27 10:27:35,786 87189ms VoucherMultiple        Page_Load          - Voucher Multiple: 27/03/2018 10:27:35 by: admin@svcf.com
+INFO  2018-03-27 10:27:40,164 91568ms VoucherMultiple        btnYes_Click       - VoucherMultiple.aspx - btnYes_Click():  Completed: 27/03/2018 10:27:40 by: admin@svcf.com
+INFO  2018-03-27 10:27:42,283 93687ms VoucherMultiple        btnYes_Click       - VoucherMultiple.aspx - btnYes_Click():  Completed: 27/03/2018 10:27:42 by: admin@svcf.com

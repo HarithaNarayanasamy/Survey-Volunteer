@@ -1,0 +1,616 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+using System.IO;
+using SVCF_BusinessAccessLayer;
+using SVCF_DataAccessLayer;
+using SVCF_PropertyLayer;
+using SVCF_TransactionLayer;
+using DevExpress.Web;
+using System.Data;
+using System.ComponentModel;//To list branchnames in custom order.
+using System.Reflection;
+
+namespace SreeVisalamChitFundLtd_phase1
+{
+    public partial class PandLCompilation : System.Web.UI.Page
+    {
+        CommonVariables objCOM = new CommonVariables();
+        #region Object
+        BusinessLayer balayer = new BusinessLayer();
+        TransactionLayer trn = new TransactionLayer();
+        #endregion
+        DataTable dtbranch = new DataTable();
+        DataTable dtHeads = new DataTable();
+
+        //public enum BranchNames
+        //{
+        //    [Description("Tirunelveli Town")]
+        //    TirunelveliTown,//0
+        //    [Description("Tirunelveli Junction")]
+        //    TirunelveliJunction,//1
+        //    Ambasamudram,//2
+        //    Tuticorin,//3
+        //    Tiruchendur,//4
+        //    Nagercoil,//5
+        //    Kovilpatti,//6
+        //    Sivakasi,//7
+        //    Virudhunagar,//8
+        //    Paramakudi,//9
+        //    [Description("Madurai Unit-I")]
+        //    Madurai_Unit_I,//10
+        //    Dindigul,//11
+        //    [Description("Coimbatore - 1")]
+        //    Coimbatore,//12
+        //    Gobichettipalayam,//13
+        //    Erode,//14
+        //    [Description("Karaikudi Unit-I")]
+        //    Karaikudi,//15
+        //    Pudukkottai,//16
+        //    Tiruchirappalli,//17
+        //    Thanjavur,//18
+        //    Kumbakonam,//19
+        //    Tiruppapuliyur,//20
+        //    Tambaram,//21
+        //    [Description("Triplicane")]
+        //    Mount_Road_Chennai_2,//22
+        //    Purasaiwakkam,//23
+        //    [Description("T Nagar")]
+        //    Thiyagaraya_nagar,//24
+        //    [Description("Tirunelveli- M")]
+        //    Tirunelveli_M_Chit,//25
+        //    [Description("MADURAI-M")]
+        //    Madurai_M_Chit,//26
+        //    [Description("Coimbatore -M")]
+        //    Coimbatore_M_Chit,//27
+        //    [Description("Karaikudi-M")]
+        //    Karaikudi_M_Chit,//28
+        //    CentralOffice,//29
+        //    Pallathur,//30
+        //}
+
+
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            if (!IsPostBack)
+            {
+                txtFromDate.Text = DateTime.Now.ToString("01/04/yyyy");
+                txtToDate.Text = DateTime.Now.ToString("" + DateTime.DaysInMonth(DateTime.Now.Year, DateTime.Now.Month) + "/MM/yyyy");
+                gridIncome.Visible = false;
+                gridExpenses.Visible = false;
+            }
+
+        }
+        public void LoadBranches()
+        {
+            string qry = "select NodeID,Node from headstree where ParentID=1";
+            dtbranch = balayer.GetDataTable(qry);
+            var lst = balayer.Getlistdata(qry);
+            List<branch> lstBranch = new List<branch>();
+            for (int i = 0; i < dtbranch.Rows.Count - 1; i++)
+            {
+                branch b = new branch();
+                b.nodeid = dtbranch.Rows[i]["nodeid"].ToString().Trim();
+                b.nodename = dtbranch.Rows[i]["node"].ToString().Trim();
+                lstBranch.Add(b);
+            }
+            //testing code-Re-arranging the branches
+            DataTable table = new DataTable();
+            table.Columns.Add("Index", typeof(int));
+            table.Columns.Add("NodeId", typeof(int));
+            table.Columns.Add("Node", typeof(string));
+
+            table.Rows.Add(1, 1022, "Tirunelveli Town");
+            table.Rows.Add(2, 1805, "Tirunelveli JN");
+            table.Rows.Add(3, 1486, "Ambasamudram");
+            table.Rows.Add(4, 3369, "Tuticorin");
+            table.Rows.Add(5, 1113838, "Tiruchendur");
+            table.Rows.Add(6, 3371, "Nagercoil");
+            table.Rows.Add(7, 3370, "Kovilpatti");
+            table.Rows.Add(8, 3367, "Sivakasi");
+            table.Rows.Add(9, 1779, "Virudhunagar");
+            table.Rows.Add(10, 3368, "Paramakudi");
+            table.Rows.Add(11, 1647, "Madurai- Unit I");
+            table.Rows.Add(12, 1595, "Dindigul");
+            table.Rows.Add(13, 1051, "Coimbatore - 1");
+            table.Rows.Add(14, 1479, "Gobichettipalayam");
+            table.Rows.Add(15, 1478, "Erode");
+            table.Rows.Add(16, 1649, "Karaikudi-Unit I");
+            table.Rows.Add(17, 1402, "Pudukottai");
+            table.Rows.Add(18, 1480, "Tiruchirappalli");
+            table.Rows.Add(19, 1483, "Thanjavur");
+            table.Rows.Add(20, 1484, "Kumbakonam");
+            table.Rows.Add(21, 1599, "Tiruppapuliyur");
+            table.Rows.Add(22, 6000, "Tambaram");
+            table.Rows.Add(23, 1593, "Triplicane");
+            table.Rows.Add(24, 1594, "Purasawakkam");
+            table.Rows.Add(25, 6001, "Thiyagaraya nagar");
+            table.Rows.Add(26, 1113841, "Tirunelveli -M Chit");
+            table.Rows.Add(27, 1394, "Madurai-M Chit");
+            table.Rows.Add(28, 159, "Coimbatore -M");
+            table.Rows.Add(29, 1485, "Karaikudi - M chit");
+            table.Rows.Add(30, 1481, "CentralOffice");
+            table.Rows.Add(31, 161, "Pallathur");
+            #region test1
+            //List<string> lstString = new List<string>();
+            //for (int i = 0; i < dtbranch.Rows.Count - 1; i++)
+            //{
+            //    lstString.Add(dtbranch.Rows[i]["node"].ToString().Trim());
+            //}
+
+            //List<string> sortedList = new List<string>()
+            //{
+            //    "Tirunelveli Town",
+            //    "Tirunelveli JN",
+            //    "Ambasamudram",
+            //    "Tuticorin",
+            //    "Tiruchendur",
+            //    "Nagercoil",
+            //    "Kovilpatti",
+            //    "Sivakasi",
+            //    "Virudhunagar",
+            //    "Paramakudi",
+            //    "Madurai- Unit I",
+            //    "Dindigul",
+            //    "Coimbatore - 1",
+            //    "Gobichettipalayam",
+            //    "Erode",
+            //    "Karaikudi-Unit I",
+            //    "Pudukottai",
+            //    "Tiruchirappalli",
+            //    "Thanjavur",
+            //    "Kumbakonam",
+            //    "Tiruppapuliyur",
+            //    "Tambaram",
+            //    "Triplicane",
+            //    "Purasawakkam",
+            //    "Thiyagaraya nagar",
+            //    "Tirunelveli -M Chit",
+            //    "Madurai-M Chit",
+            //    "Coimbatore -M",
+            //    "Karaikudi - M chit",
+            //    "CentralOffice",
+            //    "Pallathur I",
+            //    "Pallathur",
+            //    "Pallathur",
+            //    "Pallathur",
+            //    "Pallathur",
+            //    "Pallathur",
+            //    "Pallathur",
+            //    "Pallathur",
+            //    "Pallathur"
+
+            //};
+
+
+
+            //var Receipe1 = lstBranch.OrderBy(x => sortedList.IndexOf(x.nodename.Trim())).ToList();
+            //var Receipe2 = lstString.OrderBy(d =>
+            //{
+            //    var index = sortedList.IndexOf(d);
+            //    return index == -1 ? int.MaxValue : index;
+            //}).ToList();
+
+            //dtbranch = new DataTable();
+
+            //List<String> lstbranch = lstString.OrderBy(d =>
+            //{
+            //    var index = sortedList.IndexOf(d);
+            //    return index == -1 ? int.MaxValue : index;
+            //}).ToList();
+            //DataTable dt = new DataTable();
+            //dt.Columns.Add("NodeName");
+            //    foreach(var item in Receipe2)
+            //{
+            //    DataRow dr = dt.NewRow();
+            //    dr[0] = item.ToString();
+            //    dt.Rows.Add(dr);
+            //}
+            //dtbranch =  dt.Copy();
+            #endregion
+            dtbranch = table.Copy();
+            string qry1 = "select NodeID,Node from headstree where Rootid=11";
+            dtHeads = balayer.GetDataTable(qry1);
+        }
+        protected void btnIncome_Click(object sender, EventArgs e)
+        {
+            LoadIncomeGrid();
+        }
+        public void LoadIncomeGrid()
+        {
+            gridIncome.SettingsText.Title = "Profit and Loss Income Details for " + txtFromDate.Text + " - " + txtToDate.Text;
+            gridIncome.Visible = true;
+            gridExpenses.Visible = false;
+            DataTable dt1 = new DataTable();
+            DataTable dt = new DataTable();
+            dt.Columns.Add("SNo");
+            dt.Columns.Add("BranchName");
+            dt.Columns.Add("Foreman's Commission", typeof(decimal));
+            //dt.Columns.Add(" Default interest", typeof(decimal));
+            dt.Columns.Add("Interest on Chit Debts", typeof(decimal));
+            dt.Columns.Add("Bank Interest", typeof(decimal));
+            dt.Columns.Add("Loan Interest", typeof(decimal));
+            dt.Columns.Add("Dividend on Foreman Chit", typeof(decimal));
+            dt.Columns.Add("Profit/Loss of Dividend on Foreman Substituted Chits", typeof(decimal));
+            dt.Columns.Add("Recovery of Bad Debts", typeof(decimal));
+            dt.Columns.Add("Building Rent Receipts", typeof(decimal));
+            dt.Columns.Add("Dividend From Companies", typeof(decimal));
+            dt.Columns.Add("Profit on Sale of Vehicles", typeof(decimal));
+            dt.Columns.Add("Insurance Claim Received", typeof(decimal));
+            dt.Columns.Add("Sale of News Paper & Periodicals", typeof(decimal));
+            dt.Columns.Add("Foreman Substituted Chit Commission", typeof(decimal));
+            dt.Columns.Add("Contribution to ESI Rounding off", typeof(decimal));
+            dt.Columns.Add("Indivisible Dividend ", typeof(decimal));
+            dt.Columns.Add("Total", typeof(decimal));
+            DataRow dr = dt.NewRow();
+            int iCount = 0;
+            string branchID = "";
+            string branchName = "";
+            string nodeID = "";
+            string node = "";
+            decimal total = 0;
+            LoadBranches();
+            string[] colNames = dt.Columns.Cast<DataColumn>().Select(x => x.ColumnName).ToArray();
+            DataTable dtNodes = new DataTable();
+            dtNodes.Columns.Add("NodeID");
+            dtNodes.Columns.Add("Node");
+            DataRow dr1 = dtNodes.NewRow();
+            for (int col = 2; col < colNames.Length - 1; col++)
+            {
+                dr1["NodeID"] = balayer.GetSingleValue("select NodeID from headstree where Node=\"" + colNames[col] + "\"");
+                dr1["Node"] = colNames[col];
+                dtNodes.Rows.Add(dr1.ItemArray);
+            }
+            //for (int col=2;col<colNames.Length-1;col++)
+            //{
+            //    if(string.IsNullOrEmpty(strHeads))
+            //    {
+            //        strHeads = "\""+colNames[col]+"\"";
+            //    }
+            //    else
+            //    {
+            //        strHeads = strHeads + ",\"" + colNames[col]+"\"";
+            //    }
+            //}
+            //string query = "select NodeID,Node from headstree where Node in(" + strHeads + ")";
+            //DataTable dtNodeId = balayer.GetDataTable(query);
+            try
+            {
+
+                for (int i = 0; i < dtbranch.Rows.Count; i++)
+                {
+                    dr["SNo"] = i + 1;
+                    branchID = dtbranch.Rows[i]["NodeID"].ToString();
+                    branchName = dtbranch.Rows[i]["Node"].ToString();
+                    dr["BranchName"] = branchName;
+                    DataTable dt2 = new DataTable();
+                    DataRow dr2 = dt2.NewRow();
+                    //dt2.Columns.Add("NodeID");
+                    //dt2.Columns.Add("Node");
+                    //dt2.Columns.Add("Credit");
+                    /*To retrieve row data based on Heads and create a table contains Heads as columns*/
+                    for (int j = 0; j < dtNodes.Rows.Count; j++)
+                    {
+                        nodeID = dtNodes.Rows[j]["NodeID"].ToString();
+                        node = dtNodes.Rows[j]["Node"].ToString();
+                        //string str = @"select t1.ChoosenDate as `Date`,t3.Node as Heads , (case when (sum(case when t1.Voucher_Type='C' then t1.Amount else 0.00 end )>sum(case when t1.Voucher_Type='D' then t1.Amount else 0.00 end )) then sum(case when t1.Voucher_Type='C' then t1.Amount else 0.00 end )-sum(case when t1.Voucher_Type='D' then t1.Amount else 0.00 end ) else 0.00 end ) as `Credit`,(case when (sum((case when t1.Voucher_Type='D' then t1.Amount else 0.00 end ))>sum((case when t1.Voucher_Type='C' then t1.Amount else 0.00 end ))) then sum((case when t1.Voucher_Type='D' then t1.Amount else 0.00 end ))-sum((case when t1.Voucher_Type='C' then t1.Amount else 0.00 end )) else 0.00 end ) as `Debit` from voucher as t1  left Join headstree as t3 on t1.Head_ID=t3.NodeID where `t1`.`BranchID` =" + Session["Branchid"] + " and `t1`.`RootID` = 11 and t1.ChoosenDate between '" + balayer.indiandateToMysqlDate(txtFromDate.Text) + "' and '" + balayer.indiandateToMysqlDate(txtToDate.Text) + "' group by `t1`.`Head_ID`";
+                        string str = @"select t1.ChoosenDate as `Date`,t3.Node as Heads , t3.NodeID as NodeID,(case when (sum(case when t1.Voucher_Type='C' then t1.Amount else 0.00 end )>sum(case when t1.Voucher_Type='D' then t1.Amount else 0.00 end )) then sum(case when t1.Voucher_Type='C' then t1.Amount else 0.00 end )-sum(case when t1.Voucher_Type='D' then t1.Amount else 0.00 end ) else 0.00 end ) as `Credit`,(case when (sum((case when t1.Voucher_Type='D' then t1.Amount else 0.00 end ))>sum((case when t1.Voucher_Type='C' then t1.Amount else 0.00 end ))) then sum((case when t1.Voucher_Type='D' then t1.Amount else 0.00 end ))-sum((case when t1.Voucher_Type='C' then t1.Amount else 0.00 end )) else 0.00 end ) as `Debit` from voucher as t1  left Join headstree as t3 on t1.Head_ID=t3.NodeID where `t1`.`BranchID` =" + branchID + " and `t1`.`RootID` = 11 and `t1`.`Head_ID`=" + nodeID + " and t1.ChoosenDate between '" + balayer.indiandateToMysqlDate(txtFromDate.Text) + "' and '" + balayer.indiandateToMysqlDate(txtToDate.Text) + "' group by `t1`.`Head_ID`";
+                        dt1 = balayer.GetDataTable(str);
+                        dt2.Columns.Add(node);
+                        if (dt1.Rows.Count > 0)
+                        {
+                            if (Convert.ToDecimal(dt1.Rows[0]["Credit"]) > 0)
+                            {
+                                dr2[node] = dt1.Rows[0]["Credit"];
+                                total = total + Convert.ToDecimal(dt1.Rows[0]["Credit"]);
+                            }
+                            else if (Convert.ToDecimal(dt1.Rows[0]["Debit"]) > 0)
+                            {
+                                dr2[node] = "-" + dt1.Rows[0]["Debit"];
+                                total = total - Convert.ToDecimal(dt1.Rows[0]["Debit"]);
+                            }
+                            else
+                            {
+                                dr2[node] = "0.00";
+                            }
+                        }
+                        else
+                        {
+                            dr2[node] = "0.00";
+                        }
+
+                    }
+                    dt2.Rows.Add(dr2.ItemArray);
+                    //string[] credits = new string[dtNodes.Rows.Count];
+                    //for(int head=0;head<dtNodes.Rows.Count;head++)
+                    //{
+                    //    credits[head] = dt2.Rows[head]["Credit"].ToString();
+                    //}
+                    //object[] rowData = new object[dr2.ItemArray.Length];
+                    //Array.ConstrainedCopy(dr2.ItemArray, 0, rowData, 0, rowData.Length);
+                    //Array.ConstrainedCopy(dr2.ItemArray, 0, dr.ItemArray, 2, dr2.ItemArray.Length);
+                    string[] columnsName = dt2.Columns.Cast<DataColumn>().Select(x => x.ColumnName).ToArray();
+                    /* Add Credit data to the table*/
+                    foreach (var colname in columnsName)
+                    {
+                        dr[colname] = dr2[colname];
+                    }
+                    dr["Total"] = total;
+                    total = 0;
+                    dt.Rows.Add(dr.ItemArray);
+                }
+                dr["SNo"] = "";
+                dr["BranchName"] = "Grand Total";
+                decimal decTotal = 0;
+                foreach (DataColumn col in dt.Columns)
+                {
+                    if (col.ColumnName != "SNo" && col.ColumnName != "BranchName")
+                    {
+                        string colValue = col.ColumnName;
+                        decTotal = Convert.ToDecimal(dt.Compute("Sum([" + colValue + "])", ""));
+                        dr[col.ColumnName] = decTotal;
+                    }
+                }
+                //dr["Total"] = Convert.ToDecimal(dt.Compute("Sum(Total)", ""));
+                dt.Rows.Add(dr.ItemArray);
+                //test code 
+                //var list =
+                gridIncome.DataSource = dt;
+                gridIncome.DataBind();
+            }
+            catch (Exception e)
+            {
+                Response.Write(e.Message);
+            }
+        }
+        public void LoadExpensesGrid()
+        {
+            gridExpenses.SettingsText.Title = "Profit and Loss Expenses Details for " + txtFromDate.Text + " - " + txtToDate.Text;
+            gridExpenses.Visible = true;
+            gridIncome.Visible = false;
+            DataTable dt1 = new DataTable();
+            DataTable dt = new DataTable();
+            dt.Columns.Add("SNo");
+            dt.Columns.Add("BranchName");
+            dt.Columns.Add("Salary to the Establishment", typeof(decimal));
+            dt.Columns.Add("Dearness Allowance", typeof(decimal));
+            dt.Columns.Add("House Rent Allowance", typeof(decimal));
+            dt.Columns.Add("Company Contribution to EPF", typeof(decimal));
+            dt.Columns.Add("Company Contribution to EPS", typeof(decimal));
+            dt.Columns.Add("Company Contribution to ESI", typeof(decimal));
+            dt.Columns.Add("Rent Paid(Registered)", typeof(decimal));
+            dt.Columns.Add("Rent Paid(Un Registered)", typeof(decimal));
+            dt.Columns.Add("Courier(Registered)", typeof(decimal));
+            dt.Columns.Add("Courier(Un Registered)", typeof(decimal));
+            dt.Columns.Add("Postage", typeof(decimal));
+            dt.Columns.Add("Telephone Charges(Registered)", typeof(decimal));
+            dt.Columns.Add("Telephone Charges", typeof(decimal));
+            dt.Columns.Add("Printing and Stationery(Registered)", typeof(decimal));
+            dt.Columns.Add("Printing and Stationery(Un Registered)", typeof(decimal));
+            dt.Columns.Add("Arbitration & Court Expenses", typeof(decimal));
+            dt.Columns.Add("Travelling Expenses (General)", typeof(decimal));
+            dt.Columns.Add("Travelling Expenses (Batta)", typeof(decimal));
+            dt.Columns.Add("Petrol Expenses (Two Wheelers)", typeof(decimal));
+            dt.Columns.Add("Lighting and Water Charges", typeof(decimal));
+            dt.Columns.Add("Bank Charges", typeof(decimal));
+            dt.Columns.Add("News Paper and Periodicals", typeof(decimal));
+            dt.Columns.Add("Photo Copying Charges(Registered)", typeof(decimal));
+            dt.Columns.Add("Photo Copying Charges(Un Registered)", typeof(decimal));
+            dt.Columns.Add("Repair and Maintenance(Registered)", typeof(decimal));
+            dt.Columns.Add("Miscellaneous Expenses(Registered)", typeof(decimal));
+            dt.Columns.Add("Miscellaneous Expenses(Un Registered)", typeof(decimal));
+            dt.Columns.Add("Filing Fees under Indian Companies Act", typeof(decimal));
+            dt.Columns.Add("Filing Fees under Chit Funds Act", typeof(decimal));
+            dt.Columns.Add("Business Performance Pay", typeof(decimal));
+            dt.Columns.Add("Business Incentive", typeof(decimal));
+            dt.Columns.Add("Bad Debts written off", typeof(decimal));
+            dt.Columns.Add("Two Wheelers Insurance", typeof(decimal));
+            dt.Columns.Add("Four Wheelers Insurance", typeof(decimal));
+            dt.Columns.Add("Two Wheelers Maintenance", typeof(decimal));
+            dt.Columns.Add("Four Wheelers Maintenance", typeof(decimal));
+            dt.Columns.Add("Staff Welfare Expenses", typeof(decimal));
+            dt.Columns.Add("Freight Charges (Registered) ", typeof(decimal));
+            dt.Columns.Add("Freight Charges (Un Registered) ", typeof(decimal));
+            dt.Columns.Add("professional fees", typeof(decimal));
+            dt.Columns.Add("Profession Tax For Company", typeof(decimal));
+            dt.Columns.Add("Association Membership subscription", typeof(decimal));
+            dt.Columns.Add("Advertisement Charges(Registered)", typeof(decimal));
+            dt.Columns.Add("Advertisement Charges(Un Registered)", typeof(decimal));
+            dt.Columns.Add("Diesel Expenses (Generators)", typeof(decimal));
+            dt.Columns.Add("Inspection Charges under P.F. Act", typeof(decimal));
+            dt.Columns.Add("Interest on un-secured Loan ", typeof(decimal));
+            dt.Columns.Add("Premium to Employees Group Insurance", typeof(decimal));
+            dt.Columns.Add("Library Books", typeof(decimal));
+            dt.Columns.Add("Computer Maintenance (Registered) ", typeof(decimal));
+            dt.Columns.Add("Legal Fees", typeof(decimal));
+            dt.Columns.Add("Managing Director Remuneration", typeof(decimal));
+            dt.Columns.Add("Travelling expenses for Directors", typeof(decimal));
+            dt.Columns.Add("Travelling Expenses for Managing Director", typeof(decimal));
+            dt.Columns.Add("Petrol Expenses (Four wheelers)", typeof(decimal));
+            dt.Columns.Add("Computer Maintenance (Un Registered)", typeof(decimal));
+            dt.Columns.Add("Generator Maintenance(Registered)", typeof(decimal));
+            dt.Columns.Add("Stationary Stock Insurance", typeof(decimal));
+            dt.Columns.Add("Bonus", typeof(decimal));
+            dt.Columns.Add("Municipal and Land Tax", typeof(decimal));
+            //dt.Columns.Add("professional fees", typeof(decimal));
+            dt.Columns.Add("Interest for TDS Late Payment", typeof(decimal));
+            dt.Columns.Add("Software Maintenance", typeof(decimal));
+            dt.Columns.Add("Google Vault Services", typeof(decimal));
+            //dt.Columns.Add("Repair and Maintenance(Registered)", typeof(decimal));
+            dt.Columns.Add("Repair and Maintenance(Un Registered)", typeof(decimal));
+            dt.Columns.Add("Depreciation", typeof(decimal));
+            dt.Columns.Add("Loss on sale of vehicles", typeof(decimal));
+            dt.Columns.Add("Storage Service", typeof(decimal));
+            dt.Columns.Add("License Fee For Talley", typeof(decimal));
+            dt.Columns.Add("Rounding Off", typeof(decimal));
+            dt.Columns.Add("GST Paid", typeof(decimal));
+            dt.Columns.Add("Interest on GST Late Payment", typeof(decimal));
+            dt.Columns.Add("Subscription Fee", typeof(decimal));
+            dt.Columns.Add("Directors Remuneration", typeof(decimal));
+            dt.Columns.Add("Audit Fees for Statutory and Other Audits", typeof(decimal));
+            dt.Columns.Add("NSDL (Demat) Connectivity Charges", typeof(decimal));
+            dt.Columns.Add("Annual Custody Fees for NSDL", typeof(decimal));
+            dt.Columns.Add("Contribution Made to Sree Visalam Chit Fund Ltd Employees Provident Fund Trust Towards Shortfall", typeof(decimal));
+            dt.Columns.Add("Contribution Paid to Employees Gratuity Fund A/C", typeof(decimal));
+            dt.Columns.Add("Contribution to EGF", typeof(decimal));
+            dt.Columns.Add("Corporate Action Fee", typeof(decimal));
+            dt.Columns.Add("UPS Maintenance(Registered)", typeof(decimal));
+            dt.Columns.Add("UPS Maintenance(Un Registered)", typeof(decimal));
+            dt.Columns.Add("Loan Documentation Charges", typeof(decimal));
+            //dt.Columns.Add("", typeof(decimal));
+            dt.Columns.Add("Total", typeof(decimal));
+            DataRow dr = dt.NewRow();
+            string branchID = "";
+            string branchName = "";
+            string nodeID = "";
+            string node = "";
+            decimal total = 0;
+            LoadBranches();
+            string[] colNames = dt.Columns.Cast<DataColumn>().Select(x => x.ColumnName).ToArray();
+            DataTable dtNodes = new DataTable();
+            dtNodes.Columns.Add("NodeID");
+            dtNodes.Columns.Add("Node");
+            DataRow dr1 = dtNodes.NewRow();
+            for (int col = 2; col < colNames.Length - 1; col++)
+            {
+                dr1["NodeID"] = balayer.GetSingleValue("select NodeID from headstree where Node=\"" + colNames[col] + "\"");
+                dr1["Node"] = colNames[col];
+                dtNodes.Rows.Add(dr1.ItemArray);
+            }
+            try
+            {
+
+                for (int i = 0; i < dtbranch.Rows.Count; i++)
+                {
+                    dr["SNo"] = i + 1;
+                    branchID = dtbranch.Rows[i]["NodeID"].ToString();
+                    branchName = dtbranch.Rows[i]["Node"].ToString();
+                    dr["BranchName"] = branchName;
+                    DataTable dt2 = new DataTable();
+                    DataRow dr2 = dt2.NewRow();
+                    //dt2.Columns.Add("NodeID");
+                    //dt2.Columns.Add("Node");
+                    //dt2.Columns.Add("Credit");
+                    /*To retrieve row data based on Heads and create a table contains Heads as columns*/
+                    for (int j = 0; j < dtNodes.Rows.Count; j++)
+                    {
+                        nodeID = dtNodes.Rows[j]["NodeID"].ToString();
+                        node = dtNodes.Rows[j]["Node"].ToString();
+                        //string str = @"select t1.ChoosenDate as `Date`,t3.Node as Heads , (case when (sum(case when t1.Voucher_Type='C' then t1.Amount else 0.00 end )>sum(case when t1.Voucher_Type='D' then t1.Amount else 0.00 end )) then sum(case when t1.Voucher_Type='C' then t1.Amount else 0.00 end )-sum(case when t1.Voucher_Type='D' then t1.Amount else 0.00 end ) else 0.00 end ) as `Credit`,(case when (sum((case when t1.Voucher_Type='D' then t1.Amount else 0.00 end ))>sum((case when t1.Voucher_Type='C' then t1.Amount else 0.00 end ))) then sum((case when t1.Voucher_Type='D' then t1.Amount else 0.00 end ))-sum((case when t1.Voucher_Type='C' then t1.Amount else 0.00 end )) else 0.00 end ) as `Debit` from voucher as t1  left Join headstree as t3 on t1.Head_ID=t3.NodeID where `t1`.`BranchID` =" + Session["Branchid"] + " and `t1`.`RootID` = 11 and t1.ChoosenDate between '" + balayer.indiandateToMysqlDate(txtFromDate.Text) + "' and '" + balayer.indiandateToMysqlDate(txtToDate.Text) + "' group by `t1`.`Head_ID`";
+                        string str = @"select t1.ChoosenDate as `Date`,t3.Node as Heads , t3.NodeID as NodeID,(case when (sum(case when t1.Voucher_Type='C' then t1.Amount else 0.00 end )>sum(case when t1.Voucher_Type='D' then t1.Amount else 0.00 end )) then sum(case when t1.Voucher_Type='C' then t1.Amount else 0.00 end )-sum(case when t1.Voucher_Type='D' then t1.Amount else 0.00 end ) else 0.00 end ) as `Credit`,(case when (sum((case when t1.Voucher_Type='D' then t1.Amount else 0.00 end ))>sum((case when t1.Voucher_Type='C' then t1.Amount else 0.00 end ))) then sum((case when t1.Voucher_Type='D' then t1.Amount else 0.00 end ))-sum((case when t1.Voucher_Type='C' then t1.Amount else 0.00 end )) else 0.00 end ) as `Debit` from voucher as t1  left Join headstree as t3 on t1.Head_ID=t3.NodeID where `t1`.`BranchID` =" + branchID + " and `t1`.`RootID` = 11 and `t1`.`Head_ID`=" + nodeID + " and t1.ChoosenDate between '" + balayer.indiandateToMysqlDate(txtFromDate.Text) + "' and '" + balayer.indiandateToMysqlDate(txtToDate.Text) + "' group by `t1`.`Head_ID`";
+                        dt1 = balayer.GetDataTable(str);
+                        dt2.Columns.Add(node);
+                        if (dt1.Rows.Count > 0)
+                        {
+                            if (Convert.ToDecimal(dt1.Rows[0]["Debit"]) > 0)
+                            {
+                                dr2[node] = dt1.Rows[0]["Debit"];
+                                total = total + Convert.ToDecimal(dt1.Rows[0]["Debit"]);
+                            }
+                            else if (Convert.ToDecimal(dt1.Rows[0]["Credit"]) > 0)
+                            {
+                                dr2[node] = "-" + dt1.Rows[0]["Credit"];
+                                total = total - Convert.ToDecimal(dt1.Rows[0]["Credit"]);
+                            }
+                            else
+                            {
+                                dr2[node] = "0.00";
+                            }
+                        }
+                        else
+                        {
+                            dr2[node] = "0.00";
+                        }
+
+                    }
+                    dt2.Rows.Add(dr2.ItemArray);
+                    string[] columnsName = dt2.Columns.Cast<DataColumn>().Select(x => x.ColumnName).ToArray();
+                    /* Add Credit data to the table*/
+                    foreach (var colname in columnsName)
+                    {
+                        dr[colname] = dr2[colname];
+                    }
+                    dr["Total"] = total;
+                    total = 0;
+                    dt.Rows.Add(dr.ItemArray);
+                }
+                dr["SNo"] = "";
+                dr["BranchName"] = "TOTAL";
+                decimal decTotal = 0;
+                foreach (DataColumn col in dt.Columns)
+                {
+                    if (col.ColumnName != "SNo" && col.ColumnName != "BranchName")
+                    {
+                        string colName = col.ColumnName;
+                        decTotal = Convert.ToDecimal(dt.Compute("Sum([" + colName + "])", ""));
+                        dr[col.ColumnName] = decTotal;
+                    }
+                }
+                dt.Rows.Add(dr.ItemArray);
+                gridExpenses.DataSource = dt;
+                gridExpenses.DataBind();
+            }
+            catch (Exception e)
+            {
+                Response.Write(e.Message);
+            }
+
+        }
+
+        protected void btnExportIncome_Click(object sender, EventArgs e)
+        {
+            LoadIncomeGrid();
+            gridIncomeExport.FileName = "P&LIncome" + DateTime.Now.Millisecond.ToString();
+            gridIncomeExport.WriteXlsToResponse();
+
+        }
+
+        protected void btnExportExpense_Click(object sender, EventArgs e)
+        {
+            LoadExpensesGrid();
+            gridExpensesExport.FileName = "P&LExpenses" + DateTime.Now.Millisecond.ToString();
+            gridExpensesExport.WriteXlsToResponse();
+        }
+
+        protected void btnExpenses_Click(object sender, EventArgs e)
+        {
+            LoadExpensesGrid();
+        }
+
+        public static DataTable ToDataTable<T>(List<T> items)
+        {
+            DataTable dataTable = new DataTable(typeof(T).Name);
+
+            //Get all the properties
+            PropertyInfo[] Props = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance);
+            foreach (PropertyInfo prop in Props)
+            {
+                //Defining type of data column gives proper data table 
+                var type = (prop.PropertyType.IsGenericType && prop.PropertyType.GetGenericTypeDefinition() == typeof(Nullable<>) ? Nullable.GetUnderlyingType(prop.PropertyType) : prop.PropertyType);
+                //Setting column names as Property names
+                dataTable.Columns.Add(prop.Name, type);
+            }
+            foreach (T item in items)
+            {
+                var values = new object[Props.Length];
+                for (int i = 0; i < Props.Length; i++)
+                {
+                    //inserting property values to datatable rows
+                    values[i] = Props[i].GetValue(item) ?? DBNull.Value;
+                }
+                dataTable.Rows.Add(values);
+            }
+            //put a breakpoint here and check datatable
+            return dataTable;
+        }
+    }
+
+    public class branch
+    {
+        public string nodeid { get; set; }
+        public string nodename { get; set; }
+    }
+}

@@ -1,0 +1,17 @@
+INFO  2018-08-04 18:20:55,912 52487ms Home                   Page_Load          - Logged into Site at: 04/08/18 6:20:55 PM
+INFO  2018-08-04 18:27:34,632 30888ms Home                   Page_Load          - Logged into Site at: 04/08/18 6:27:34 PM
+INFO  2018-08-04 18:38:44,820 27128ms Home                   Page_Load          - Logged into Site at: 04/08/18 6:38:44 PM
+INFO  2018-08-04 18:41:32,669 194977ms Design                 Page_Load          - Member Addition- at: 04/08/2018 18:41:32
+INFO  2018-08-04 18:41:45,077 207385ms Design                 Page_Load          - Member Addition- at: 04/08/2018 18:41:45
+INFO  2018-08-04 18:41:51,513 213822ms Design                 Page_Load          - Member Addition- at: 04/08/2018 18:41:51
+INFO  2018-08-04 18:45:57,753 31290ms Home                   Page_Load          - Logged into Site at: 04/08/18 6:45:57 PM
+INFO  2018-08-04 18:46:18,077 51615ms Design                 Page_Load          - Member Addition- at: 04/08/2018 18:46:18
+INFO  2018-08-04 18:46:28,525 62063ms Design                 Page_Load          - Member Addition- at: 04/08/2018 18:46:28
+INFO  2018-08-04 18:46:36,084 69622ms Design                 Page_Load          - Member Addition- at: 04/08/2018 18:46:36
+INFO  2018-08-04 18:46:38,114 71652ms Design                 Page_Load          - Member Addition- at: 04/08/2018 18:46:38
+INFO  2018-08-04 18:46:42,277 75815ms Design                 Page_Load          - Member Addition- at: 04/08/2018 18:46:42
+INFO  2018-08-04 18:46:51,894 85431ms Design                 Page_Load          - Member Addition- at: 04/08/2018 18:46:51
+INFO  2018-08-04 18:54:09,471 128809ms Home                   Page_Load          - Logged into Site at: 04/08/18 6:54:09 PM
+INFO  2018-08-04 18:55:14,071 193409ms EditMemtoGrp           Page_Load          - Edit member to group- at: 04/08/18 6:55:14 PM
+INFO  2018-08-04 18:55:18,480 197817ms EditMemtoGrp           Page_Load          - Edit member to group- at: 04/08/18 6:55:18 PM
+INFO  2018-08-04 18:56:11,360 250697ms EditMemtoGrp           Page_Load          - Edit member to group- at: 04/08/18 6:56:11 PM

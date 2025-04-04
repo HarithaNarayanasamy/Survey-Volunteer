@@ -1,0 +1,327 @@
+﻿<%@ Page Title="SVCF Admin Panel" Culture="en-GB" Language="C#" MasterPageFile="~/Branch.Master" AutoEventWireup="true"
+    CodeBehind="Editmembermaster3.aspx.cs" Inherits="SreeVisalamChitFundLtd_phase1.Editmembermaster3" %>
+
+<%@ Register Assembly="AjaxControlToolkit" Namespace="AjaxControlToolkit" TagPrefix="ajax" %>
+
+<asp:Content ID="Content2" ContentPlaceHolderID="cphHead" runat="server">
+    <style type="text/css">
+        .chzn-results {
+            text-align: center;
+        }
+
+        .panel-table .panel-body {
+            padding: 0;
+        }
+        
+            .panel-table .panel-body .table-bordered {
+                border-style: none;
+                margin: 0;
+            }
+
+                .panel-table .panel-body .table-bordered > thead > tr > th:first-of-type {
+                    text-align: center;
+                    width: 100px;
+                }
+
+                .panel-table .panel-body .table-bordered > thead > tr > th:last-of-type,
+                .panel-table .panel-body .table-bordered > tbody > tr > td:last-of-type {
+                    border-right: 0px;
+                }
+
+                .panel-table .panel-body .table-bordered > thead > tr > th:first-of-type,
+                .panel-table .panel-body .table-bordered > tbody > tr > td:first-of-type {
+                    border-left: 0px;
+                }
+
+                .panel-table .panel-body .table-bordered > tbody > tr:first-of-type > td {
+                    border-bottom: 0px;
+                }
+
+                .panel-table .panel-body .table-bordered > thead > tr:first-of-type > th {
+                    border-top: 0px;
+                }
+
+        .panel-table .panel-footer .pagination {
+            margin: 0;
+        }
+
+        /*
+used to vertically center elements, may need modification if you're not using default sizes.
+*/
+        .panel-table .panel-footer .col {
+            line-height: 34px;
+            height: 34px;
+        }
+
+        .panel-table .panel-heading .col h3 {
+            line-height: 30px;
+            height: 30px;
+        }
+
+        .panel-table .panel-body .table-bordered > tbody > tr > td {
+            line-height: 34px;
+        }
+        .WrappedText
+    {
+        word-break: break-all;
+        word-wrap: break-word;
+    }
+        table.member_table tr th:first-child {
+            width:6%;
+        }
+        table.member_table tr th:nth-child(2) {
+               width: 12%;
+        }
+        table.member_table tr th:nth-child(3) {
+           width: 12%;
+        }
+        table.member_table tr th:nth-child(4) {
+               width: 17%;
+        }
+        table.member_table tr th:nth-child(5) {
+               width: 17%;
+        }
+        table.member_table tr th:nth-child(6) {
+                width: 15%;
+        }
+        table.member_table tr th:nth-child(7) {
+               width: 10%;
+        }
+        table.member_table tr th:nth-child(8) {
+               width: 11%;
+        }
+       
+        table.member_table tr th {
+            text-align: left;
+            padding: 8px 10px;
+            white-space: nowrap;
+            font-size: 14px;
+        }
+        .member_table tr td {
+            vertical-align: middle;
+            border-bottom: 1px solid darkgrey;
+            padding: 8px 10px;
+            font-weight: 300;
+        }
+    </style>
+    
+  <%--  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.4.0/css/font-awesome.min.css" rel='stylesheet' type='text/css'>--%>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.4.0/css/font-awesome.min.css" rel='stylesheet' type='text/css'>
+<%--     <meta name="viewport" content="width=device-width, initial-scale=1">--%>
+ <%-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">--%>
+ <%-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>--%>
+</asp:Content>
+
+<asp:Content ID="Content3" ContentPlaceHolderID="cphMainContent" runat="server">
+
+
+    <ajax:ToolkitScriptManager ID="ToolkitScriptManager1" runat="server">
+    </ajax:ToolkitScriptManager>
+ <%--   <script type="text/javascript">
+       
+        $(document).ready(function () {
+            debugger;
+            gridviewSearch();
+        });
+
+        function gridviewSearch() {
+            $('#<%=lblNoRecords.ClientID%>').css('display', 'none');
+            $('#<%=txtSearch.ClientID%>').keyup(function () {
+                $('#<%=lblNoRecords.ClientID%>').css('display', 'none'); // Hide No records to display label.
+                $("#<%=gridBranch.ClientID%> tr:has(td)").hide(); // Hide all the rows.
+
+                var iCounter = 0;
+                var sSearchTerm = $('#<%=txtSearch.ClientID%>').val(); //Get the search box value
+
+                if (sSearchTerm.length == 0) //if nothing is entered then show all the rows.
+                {
+                    $("#<%=gridBranch.ClientID%> tr:has(td)").show();
+                    return false;
+                }
+                //Iterate through all the td.
+                $("#<%=gridBranch.ClientID%> tr:has(td)").children().each(function () {
+                    var cellText = $(this).text().toLowerCase();
+                    if (cellText.indexOf(sSearchTerm.toLowerCase()) >= 0) //Check if data matches
+                    {
+                        $(this).parent().show();
+                        iCounter++;
+                        return true;
+                    }
+                });
+                if (iCounter == 0) {
+                    $('#<%=lblNoRecords.ClientID%>').css('display', '');
+                }
+                e.preventDefault();
+            })
+        }
+    </script>--%>
+  
+ 
+    <div class="row">
+
+        <div class="col-md-10 col-md-offset-1">
+            <div class="panel panel-default panel-table">
+                <div class="panel-heading">
+
+                    <div class="row">
+                        <asp:Label ID="Label1" Text="Search Text :" runat="server"> </asp:Label>
+                        <asp:TextBox ID="txtSearch" runat="server" CssClass="twitterStyleTextbox "></asp:TextBox>
+                        <asp:Button Text="Search" runat="server" OnClick="Search" />
+                         <asp:Button Text="Clear" runat="server" OnClick="Clear" />
+                        <asp:Label ID="lblNoRecords" runat="server"></asp:Label>
+                    </div>
+                     <div style="display: table-cell; vertical-align: top; padding-top: 10px; padding-right: 5px !important;">
+                                <asp:Label ID="Label5" runat="server" Text="Branch: "  Visible="false"></asp:Label>
+                            </div>
+                            <div style="display:table-cell; vertical-align:top; padding-top:4px; padding-right:5px !important;">
+                               <%-- <asp:DropDownList ID="ddlbranch" Width="150px" CssClass="chzn-select" AutoPostBack="true" 
+                                  runat="server" OnSelectedIndexChanged="ddlbranch_SelectedIndexChanged" Visible="false"></asp:DropDownList>   --%>
+                                 <asp:DropDownList ID="ddlbranch" Width="150px" CssClass="chzn-select" AutoPostBack="true" 
+                                  runat="server" Visible="false"></asp:DropDownList>   
+                            </div>
+                </div>
+                <div class="panel-body">
+                    <div class="box_c_heading box_actions">
+                        <p>
+                            Edit Member Details
+                        </p>
+                    </div>
+
+                    <div class="box_c_content">
+                        <div style="width: 100%; margin: 0 auto;">
+                            
+                           <%-- <asp:GridView ID="gridBranch" runat="server" AutoGenerateColumns="False" CssClass="table table-striped table-bordered table-list" HeaderStyle-Font-Bold="true" Font-Names="Verdana" ForeColor="#333333"
+                                GridLines="None" ShowFooter="True" CellPadding="4" Width="867px" Font-Size="9.2pt" OnPageIndexChanging="gridBranch_PageIndexChanging" AllowPaging="True" Font-Bold="True" PageSize="20">--%>
+                             <asp:GridView ID="gridBranch" runat="server" AutoGenerateColumns="False" CssClass="member_table table table-bordered" OnRowDataBound="gridBranch_OnRowDataBound"
+                                 ShowFooter="True" AllowPaging="false" Font-Bold="True" PageSize="20" >
+                                
+                                <Columns>
+                                    <asp:TemplateField HeaderText="Action" >
+                                        <ItemTemplate>
+                                            <%-- <asp:HyperLink ID="Edit" runat="server" NavigateUrl="~/EditMemberMaster2.aspx"
+                    Text='<%# Eval("Edit") %>' />--%>
+
+                                            <asp:HyperLink ID="hyEdit" runat="server" CssClass="btn btn-default" NavigateUrl='<%# "~/EditMemberMaster2.aspx?MemberID=" + Eval("MemberIDNew")+"&BranchId= " + Eval("BranchId")+"&TokenNo="+Eval("TokenNo") %>' 
+                                                Text="Edit"><em class="fa fa-pencil"></em></asp:HyperLink>
+                                        </ItemTemplate>
+                                        
+                                    </asp:TemplateField>
+                                    <asp:TemplateField HeaderText="Thumb Image">
+                                        <ItemTemplate>
+                                            <asp:Image ID="Image1" Height="80px" Width="80px" runat="server" ImageUrl='<%# Bind("ImageUrl") %>' />
+                                        </ItemTemplate>
+                                    </asp:TemplateField>
+                                    <%--  <asp:ImageField DataImageUrlField="ImageUrl" HeaderText="Image" ControlStyle-Height="100" ControlStyle-Width="100">
+                                        <ControlStyle Height="100px" Width="100px"></ControlStyle>
+                                    </asp:ImageField>--%>
+
+                                    <asp:TemplateField HeaderText="BranchId" Visible="false">
+                                        <ItemTemplate>
+                                            <asp:Label ID="lblbranch" runat="server" Text='<%#Eval("BranchId")%>'></asp:Label>
+                                        </ItemTemplate>
+                                       
+                                    </asp:TemplateField>
+                                     <asp:TemplateField HeaderText="Member ID">
+                                        <ItemTemplate>
+                                            <asp:Label ID="lblMemberID" runat="server" Text='<%#Eval("MemberID")%>'></asp:Label>
+                                        </ItemTemplate>
+                                      
+                                    </asp:TemplateField>
+
+                                    <asp:TemplateField HeaderText="MemberIDNew" Visible="false">
+                                        <ItemTemplate>
+                                            <asp:Label ID="lblMemberIDnew" runat="server" Text='<%#Eval("MemberIDNew") %>'></asp:Label>
+                                        </ItemTemplate>
+                                      
+                                    </asp:TemplateField>
+
+                                    <asp:TemplateField HeaderText="Name">
+                                        <ItemTemplate>
+                                            <asp:Label ID="lblCustomerName" runat="server" Text='<%#Eval("CustomerName")%>'></asp:Label>
+                                        </ItemTemplate>
+
+                                        
+                                    </asp:TemplateField>
+
+                                    <asp:TemplateField HeaderText="Father/Husband Name" >
+                                        <ItemTemplate>
+                                            <asp:Label ID="lblfatherhusbandname" CssClass="WrappedText" runat="server" Text='<%#Eval("FatherHusbandName")%>'></asp:Label>
+                                        </ItemTemplate>
+                                      
+                                    </asp:TemplateField>
+
+                                    <asp:TemplateField HeaderText="Aadhar Number">
+                                        <ItemTemplate>
+                                            <asp:Label ID="IblAadharNumber" CssClass="WrappedText" runat="server" Text='<%#Eval("AadharNumber")%>'></asp:Label>
+                                        </ItemTemplate>                                       
+                                    </asp:TemplateField>
+
+                                    <asp:TemplateField HeaderText="Mobile No">
+                                        <ItemTemplate>
+                                            <asp:Label ID="lblMobileNo" runat="server" Text='<%#Eval("MobileNo")%>'></asp:Label>
+                                        </ItemTemplate>
+                                      
+                                    </asp:TemplateField>
+
+                                      <asp:TemplateField HeaderText="Token" >
+                                        <ItemTemplate>
+                                            <asp:Label ID="lblToken"  CssClass="WrappedText" runat="server" Text='<%#Eval("TokenNo")%>'></asp:Label>
+                                        </ItemTemplate>                                      
+                                    </asp:TemplateField>
+                                </Columns>
+                               <%-- <EditRowStyle BackColor="#999999" />
+                                <FooterStyle BackColor="#5D7B9D" Font-Bold="True" ForeColor="White" />
+
+                                <HeaderStyle Font-Bold="True" BackColor="#5D7B9D" ForeColor="White"></HeaderStyle>
+                                <PagerStyle BackColor="#284775" ForeColor="White" HorizontalAlign="Center" Width="20px" />
+                                <RowStyle BackColor="#F7F6F3" ForeColor="#333333" />
+                                <SelectedRowStyle BackColor="#E2DED6" Font-Bold="True" ForeColor="#333333" />
+                                <SortedAscendingCellStyle BackColor="#E9E7E2" />
+                                <SortedAscendingHeaderStyle BackColor="#506C8C" />
+                                <SortedDescendingCellStyle BackColor="#FFFDF8" />
+                                <SortedDescendingHeaderStyle BackColor="#6F8DAE" />--%>
+                            </asp:GridView>
+                           
+                        </div>
+                       <asp:Repeater ID="rptPager" runat="server">
+      <ItemTemplate>
+        <asp:LinkButton ID="lnkPage" runat="server" Text='<%#Eval("Text") %>' CommandArgument='<%# Eval("Value") %>'
+            CssClass='<%# Convert.ToBoolean(Eval("Enabled")) ? "page_enabled" : "page_disabled" %>'
+            OnClick="Page_Changed" OnClientClick='<%# !Convert.ToBoolean(Eval("Enabled")) ? "return false;" : "" %>'></asp:LinkButton>
+    </ItemTemplate>
+</asp:Repeater>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $(".chzn-select").chosen({ search_contains: true });
+
+
+            $(".sp_number").numeric({
+                decimal: false,
+                negative: false
+            },
+                function () {
+                    alert("Positive integers only");
+                    this.value = "";
+                    this.focus();
+                });
+            $(".sp_float").numeric({
+                negative: false
+            },
+                function () {
+                    alert("Positive only");
+                    this.value = "";
+                    this.focus();
+                });
+            prth_mask_input.init();
+        });
+    </script>
+
+</asp:Content>
