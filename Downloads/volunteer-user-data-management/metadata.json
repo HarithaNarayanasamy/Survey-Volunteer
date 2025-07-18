@@ -1,0 +1,5 @@
+{
+  "name": "Volunteer-User Data Management App",
+  "description": "An application for SuperAdmins to manage user data, assign users to volunteers, and for users to update their own information via a secure link. Data is handled through Excel file imports and exports.",
+  "requestFramePermissions": []
+}
